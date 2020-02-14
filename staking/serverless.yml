@@ -1,0 +1,85 @@
+plugins:
+  - serverless-offline
+  - serverless-python-requirements
+  - serverless-plugin-tracing
+  - serverless-prune-plugin
+
+service: staking
+provider:
+  name: aws
+  runtime: python3.6
+  description: staking service.
+  memorySize: 512
+  timeout: 30
+  region: ${file(./config.${self:provider.stage}.json):REGION}
+  stage: ${opt:stage,'dev'}
+  deploymentBucket:
+    name: snet-serverless-artifacts
+    serverSideEncryption: AES256
+    tags:
+      key1: staking
+    deploymentPrefix: serverless
+    tracing: true
+
+custom:
+  pythonRequirements:
+    fileName: staking/requirement.txt
+    dockerizePip: true
+    useDownloadCache: true
+    useStaticCache: true
+    cacheLocation: "/var/cache/serverless"
+  prune:
+    automatic: true
+    includeLayers: true
+    number: 5
+
+package:
+  exclude:
+    - .circleci/**
+    - .gitignore/**
+    - .serverless/**
+    - requirement.txt
+    - venv/**
+    - config.ropsten.json
+    - sls_deploy.sh
+    - serverless.yml
+    - test/**
+    - Readme.md
+    - package.json
+    - Dockerfile
+    - License
+    - log_setup.py
+    - node_modules/**
+  include:
+    - node_modules/singularitynet-platform-contracts/**
+
+functions:
+  get-stake-window-details:
+    handler: staking.application.handlers.stake_handler.get_stake_window_details
+    role: ${file(./config.${self:provider.stage}.json):ROLE}
+    vpc:
+      securityGroupIds:
+        - ${file(./config.${self:provider.stage}.json):SG1}
+        - ${file(./config.${self:provider.stage}.json):SG2}
+      subnetIds:
+        - ${file(./config.${self:provider.stage}.json):VPC1}
+        - ${file(./config.${self:provider.stage}.json):VPC2}
+    events:
+      - http:
+          method: GET
+          path: /staking-window
+          authorizer:
+            name: user-authorizer
+            type: COGNITO_USER_POOLS
+            arn: ${file(./config.${self:provider.stage}.json):AUTHORIZER}
+            identitySource: method.request.header.Authorization
+          cors:
+            origin: ${file(./config.${self:provider.stage}.json):ORIGIN}
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - x-requested-with
