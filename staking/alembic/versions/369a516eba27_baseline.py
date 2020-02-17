@@ -1,8 +1,8 @@
 """baseline
 
-Revision ID: 93b3fbdf258e
+Revision ID: 369a516eba27
 Revises: 
-Create Date: 2020-02-17 13:55:38.513687
+Create Date: 2020-02-17 16:20:41.872211
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import mysql
 
 # revision identifiers, used by Alembic.
-revision = '93b3fbdf258e'
+revision = '369a516eba27'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -37,11 +37,11 @@ def upgrade():
     op.create_table('stake_window',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('blockchain_id', sa.Integer(), nullable=False),
-    sa.Column('start_period', sa.Interval(), nullable=False),
-    sa.Column('submission_end_period', sa.Interval(), nullable=False),
-    sa.Column('approval_end_period', sa.Interval(), nullable=False),
-    sa.Column('request_withdraw_start_period', sa.Interval(), nullable=False),
-    sa.Column('end_period', sa.Interval(), nullable=False),
+    sa.Column('start_period', sa.Integer(), nullable=False),
+    sa.Column('submission_end_period', sa.Integer(), nullable=False),
+    sa.Column('approval_end_period', sa.Integer(), nullable=False),
+    sa.Column('request_withdraw_start_period', sa.Integer(), nullable=False),
+    sa.Column('end_period', sa.Integer(), nullable=False),
     sa.Column('min_stake', mysql.BIGINT(), nullable=False),
     sa.Column('max_stake', mysql.BIGINT(), nullable=False),
     sa.Column('window_max_cap', mysql.BIGINT(), nullable=False),

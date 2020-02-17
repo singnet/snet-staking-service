@@ -1,6 +1,5 @@
 from sqlalchemy import Column, Integer
 from sqlalchemy.dialects.mysql import JSON, TIMESTAMP, VARCHAR, BOOLEAN, BIGINT
-from sqlalchemy.types import Interval
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import func
@@ -12,11 +11,11 @@ class StakeWindow(Base):
     __tablename__ = "stake_window"
     id = Column("id", Integer, primary_key=True)
     blockchain_id = Column("blockchain_id", Integer, nullable=False)
-    start_period = Column("start_period", Interval, nullable=False)
-    submission_end_period = Column("submission_end_period", Interval, nullable=False)
-    approval_end_period = Column("approval_end_period", Interval, nullable=False)
-    request_withdraw_start_period = Column("request_withdraw_start_period", Interval, nullable=False)
-    end_period = Column("end_period", Interval, nullable=False)
+    start_period = Column("start_period", Integer, nullable=False)
+    submission_end_period = Column("submission_end_period", Integer, nullable=False)
+    approval_end_period = Column("approval_end_period", Integer, nullable=False)
+    request_withdraw_start_period = Column("request_withdraw_start_period", Integer, nullable=False)
+    end_period = Column("end_period", Integer, nullable=False)
     min_stake = Column("min_stake", BIGINT, nullable=False)
     max_stake = Column("max_stake", BIGINT, nullable=False)
     window_max_cap = Column("window_max_cap", BIGINT, nullable=False)
