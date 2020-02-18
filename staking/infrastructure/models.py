@@ -42,3 +42,16 @@ class StakeHolder(Base):
     block_no_created = Column("block_no_created", Integer, nullable=False)
     created_on = Column("created_on", TIMESTAMP(timezone=False), nullable=False)
     updated_on = Column("updated_on", TIMESTAMP(timezone=False), nullable=False, default=func.utc_timestamp())
+
+
+class StakeTransaction(Base):
+    __tablename__ = "stake_transaction"
+    transaction_id = Column("transaction_id", VARCHAR(128), primary_key=True, nullable=False)
+    blockchain_id = Column("blockchain_id", Integer, nullable=False)
+    staker = Column("staker", VARCHAR(50))
+    event = Column("event", VARCHAR(128), nullable=False)
+    event_data = Column("event_data", JSON, nullable=False)
+    block_no = Column("block_no", Integer, nullable=False)
+    transaction_hash = Column("transaction_hash", VARCHAR(128), nullable=False)
+    created_on = Column("created_on", TIMESTAMP(timezone=False), nullable=False)
+    updated_on = Column("updated_on", TIMESTAMP(timezone=False), nullable=False, default=func.utc_timestamp())
