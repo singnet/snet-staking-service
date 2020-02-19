@@ -172,6 +172,25 @@ class TestStakeService(TestCase):
 
     def test_get_all_transactions_of_stake_holder_for_given_address(self):
         self.tearDown()
+        stake_window_repo.add_item(
+            StakeWindow(
+                blockchain_id=100,
+                start_period=int(dt.utcnow().timestamp()) - 350000,
+                submission_end_period=int(dt.utcnow().timestamp()) - 250000,
+                approval_end_period=int(dt.utcnow().timestamp()) - 100000,
+                request_withdraw_start_period=int(dt.utcnow().timestamp()) - 50000,
+                end_period=int(dt.utcnow().timestamp()) - 10000,
+                min_stake=10000,
+                max_stake=100000,
+                window_max_cap=500000,
+                open_for_external=True,
+                total_stake=70000,
+                reward_amount=5000,
+                token_operator="0xq2w3e4r5t6y7u8e3r45ty6u78i",
+                created_on=dt.utcnow(),
+                updated_on=dt.utcnow()
+            )
+        )
         stake_transaction_repo.add_item(
             StakeTransaction(
                 transaction_id="0x2qw3e4r5t6y7u8i92w3e4r5t6y",
@@ -201,8 +220,8 @@ class TestStakeService(TestCase):
         assert (response["statusCode"] == 200)
         response_body = json.loads(response["body"])
         assert (response_body["status"] == "success")
-        assert(response_body["data"][0]["transaction_id"] == "0x2qw3e4r5t6y7u8i92w3e4r5t6y")
-        assert(response_body["data"][0]["blockchain_id"] == 100)
+        assert(response_body["data"][0]["transaction"]["transaction_id"] == "0x2qw3e4r5t6y7u8i92w3e4r5t6y")
+        assert(response_body["data"][0]["stake_window"]["blockchain_id"] == 100)
 
     def tearDown(self):
         stake_holder_repo.session.query(StakeHolder).delete()
