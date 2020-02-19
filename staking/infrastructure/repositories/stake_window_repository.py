@@ -16,6 +16,14 @@ class StakeWindowRepository(BaseRepository):
         self.session.commit()
         return stake_windows
 
+    def get_upcoming_stake_window(self):
+        current_time = dt.utcnow().timestamp()  # GMT Epoch
+        stake_windows_raw_data = self.session.query(StakeWindow).filter(StakeWindow.start_period >= current_time).all()
+        stake_windows = [StakeFactory.convert_stake_window_db_model_to_entity_model(stake_window_db)
+                         for stake_window_db in stake_windows_raw_data]
+        self.session.commit()
+        return stake_windows
+
     def get_active_stake_window(self):
         current_time = dt.utcnow().timestamp()  # GMT Epoch
         stake_windows_raw_data = self.session.query(StakeWindow).filter(StakeWindow.start_period < current_time) \

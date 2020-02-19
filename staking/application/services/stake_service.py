@@ -13,6 +13,8 @@ class StakeService:
         stake_windows = []
         if status == "OPEN":
             stake_windows = StakeWindowRepository().get_stake_window_open_for_submission()
+        if not stake_windows:
+            stake_windows = StakeWindowRepository().get_upcoming_stake_window()
         return [stake_window.to_dict() for stake_window in stake_windows]
 
     @staticmethod
@@ -44,6 +46,14 @@ class StakeService:
 
     @staticmethod
     def get_all_transactions_of_stake_holder_for_given_address(address):
+        transactions_details = []
         stake_transactions = StakeTransactionRepository().get_all_transactions_of_stake_holder_for_given_address(
             address)
-        return [transaction.to_dict() for transaction in stake_transactions]
+        for transaction in stake_transactions:
+            blockchain_id = transaction.blockchain_id
+            stake_window = StakeWindowRepository().get_stake_windows_for_given_blockchain_id(blockchain_id)
+            transactions_details.append({
+                "transaction": transaction.to_dict(),
+                "stake_window": stake_window.to_dict()
+            })
+        return transactions_details
