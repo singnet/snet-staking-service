@@ -9,13 +9,25 @@ class StakeService:
         pass
 
     @staticmethod
-    def get_stake_window_based_on_status(status):
+    def get_stake_window_based_on_status(status, staker):
         stake_windows = []
+        no_of_stakers = 0
+        stake_amount_for_given_staker_address = 0
+        total_stake_deposited_for_given_staker_address = 0
         if status == "OPEN":
             stake_windows = StakeWindowRepository().get_stake_window_open_for_submission()
         if not stake_windows:
             stake_windows = StakeWindowRepository().get_upcoming_stake_window()
-        return [stake_window.to_dict() for stake_window in stake_windows]
+        return [{
+            "stake_window": stake_window.to_dict(),
+            "no_of_stakers": StakeHolderRepository().get_total_no_of_stakers(stake_window.blockchain_id),
+            "stake_amount_for_given_staker_address": sum([stake_holder.amount_pending_for_approval for stake_holder in
+                                                          StakeHolderRepository().get_stake_holder_for_given_blockchain_index_and_address(
+                                                              blockchain_id=stake_window.blockchain_id,
+                                                              address=staker)]),
+            "total_stake_deposited": StakeHolderRepository().get_total_stake_deposited(stake_window.blockchain_id)
+
+        } for stake_window in stake_windows]
 
     @staticmethod
     def get_stake_holder_details_for_active_stake_window(address):

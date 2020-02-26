@@ -40,6 +40,18 @@ class TestStakeService(TestCase):
                 updated_on=dt.utcnow()
             )
         )
+        stake_holder_repo.add_item(
+            StakeHolder(
+                blockchain_id=100,
+                staker="0xq2w3e4r5t6y7u8e3r45ty6u78i",
+                amount_pending_for_approval=100000,
+                amount_approved=50000,
+                auto_renewal=False,
+                block_no_created=12345678,
+                created_on=dt.utcnow(),
+                updated_on=dt.utcnow()
+            )
+        )
         event = {
             "requestContext": {
                 "authorizer": {
@@ -50,13 +62,16 @@ class TestStakeService(TestCase):
             },
             "path": "/staking-window",
             "httpMethod": "GET",
-            "queryStringParameters": {"status": "OPEN"}
+            "queryStringParameters": {"status": "OPEN", "staker": "0xq2w3e4r5t6y7u8e3r45ty6u78i"}
         }
         response = get_stake_window(event=event, context=None)
         assert (response["statusCode"] == 200)
         response_body = json.loads(response["body"])
         assert (response_body["status"] == "success")
-        assert(response_body["data"][0]["blockchain_id"] == 100)
+        assert(response_body["data"][0]["stake_window"]["blockchain_id"] == 100)
+        assert(response_body["data"][0]["no_of_stakers"] == 1)
+        assert(response_body["data"][0]["stake_amount_for_given_staker_address"] == 100000)
+        assert(response_body["data"][0]["total_stake_deposited"] == 100000)
 
     def test_get_staker_details_for_active_window(self):
         self.tearDown()

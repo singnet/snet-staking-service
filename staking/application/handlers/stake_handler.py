@@ -12,9 +12,9 @@ logger = get_logger(__name__)
 def get_stake_window(event, context):
     username = event["requestContext"]["authorizer"]["claims"]["email"]
     query_parameters = event["queryStringParameters"]
-    if "status" not in query_parameters:
+    if "status" not in query_parameters or "staker" not in query_parameters:
         raise BadRequestException()
-    response = StakeService.get_stake_window_based_on_status(status=query_parameters["status"])
+    response = StakeService.get_stake_window_based_on_status(status=query_parameters["status"], staker=query_parameters["staker"])
     return generate_lambda_response(
         StatusCode.OK,
         {"status": "success", "data": response, "error": {}}, cors_enabled=True
