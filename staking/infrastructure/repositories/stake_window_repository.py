@@ -33,12 +33,22 @@ class StakeWindowRepository(BaseRepository):
         self.session.commit()
         return stake_windows
 
-    def get_stake_windows_for_given_blockchain_id(self, blockchain_id):
+    def get_claim_stake_windows_for_given_blockchain_id(self, blockchain_id):
         current_time = dt.utcnow().timestamp()  # GMT Epoch
         stake_windows_raw_data = self.session.query(StakeWindow).filter(StakeWindow.blockchain_id == blockchain_id) \
             .filter(StakeWindow.end_period < current_time).all()
         if len(stake_windows_raw_data) == 0:
-            raise StakeWindowNotFound()
+            return None
+        stake_window = StakeFactory.convert_stake_window_db_model_to_entity_model(stake_windows_raw_data[0])
+        self.session.commit()
+        return stake_window
+
+    def get_stake_windows_for_given_blockchain_id(self, blockchain_id):
+        current_time = dt.utcnow().timestamp()  # GMT Epoch
+        stake_windows_raw_data = self.session.query(StakeWindow).filter(StakeWindow.blockchain_id == blockchain_id)\
+            .all()
+        if len(stake_windows_raw_data) == 0:
+            return None
         stake_window = StakeFactory.convert_stake_window_db_model_to_entity_model(stake_windows_raw_data[0])
         self.session.commit()
         return stake_window
