@@ -32,13 +32,13 @@ class StakeHolder(Base):
     id = Column("id", Integer, primary_key=True)
     blockchain_id = Column("blockchain_id", Integer, nullable=False)
     staker = Column("staker", VARCHAR(50), nullable=False)
-    amount = Column("amount", BIGINT, nullable=False)
-    amount_staked = Column("amount_staked", BIGINT, nullable=False)
+    # amount = Column("amount", BIGINT, nullable=False) no more needed
+    # amount_staked = Column("amount_staked", BIGINT, nullable=False) no more needed
     amount_pending_for_approval = Column("amount_pending_for_approval", BIGINT, nullable=False)
     amount_approved = Column("amount_approved", BIGINT, nullable=False)
     auto_renewal = Column("auto_renewal", BOOLEAN, nullable=False)
-    status = Column("status", Integer, nullable=False)
-    staker_id = Column("staker_id", Integer, nullable=False)
+    # status = Column("status", Integer, nullable=False) status will be based on amount_approved and amount_pending_for_approval
+    # staker_id = Column("staker_id", Integer, nullable=False) no more needed
     block_no_created = Column("block_no_created", Integer, nullable=False)
     created_on = Column("created_on", TIMESTAMP(timezone=False), nullable=False)
     updated_on = Column("updated_on", TIMESTAMP(timezone=False), nullable=False, default=func.utc_timestamp())

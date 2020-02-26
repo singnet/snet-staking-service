@@ -1,8 +1,8 @@
 """baseline
 
-Revision ID: 410c7a672793
+Revision ID: 6ab506c8dd0c
 Revises: 
-Create Date: 2020-02-18 14:42:18.265708
+Create Date: 2020-02-26 12:16:34.396221
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import mysql
 
 # revision identifiers, used by Alembic.
-revision = '410c7a672793'
+revision = '6ab506c8dd0c'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -22,13 +22,9 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('blockchain_id', sa.Integer(), nullable=False),
     sa.Column('staker', mysql.VARCHAR(length=50), nullable=False),
-    sa.Column('amount', mysql.BIGINT(), nullable=False),
-    sa.Column('amount_staked', mysql.BIGINT(), nullable=False),
     sa.Column('amount_pending_for_approval', mysql.BIGINT(), nullable=False),
     sa.Column('amount_approved', mysql.BIGINT(), nullable=False),
     sa.Column('auto_renewal', sa.BOOLEAN(), nullable=False),
-    sa.Column('status', sa.Integer(), nullable=False),
-    sa.Column('staker_id', sa.Integer(), nullable=False),
     sa.Column('block_no_created', sa.Integer(), nullable=False),
     sa.Column('created_on', mysql.TIMESTAMP(), nullable=False),
     sa.Column('updated_on', mysql.TIMESTAMP(), nullable=False),
