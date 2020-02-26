@@ -64,13 +64,9 @@ class TestStakeService(TestCase):
             StakeHolder(
                 blockchain_id=100,
                 staker="0xq2w3e4r5t6y7u8e3r45ty6u78i",
-                amount=150000,
-                amount_staked=50000,
                 amount_pending_for_approval=100000,
                 amount_approved=50000,
                 auto_renewal=False,
-                status=0,
-                staker_id=1000,
                 block_no_created=12345678,
                 created_on=dt.utcnow(),
                 updated_on=dt.utcnow()
@@ -120,13 +116,9 @@ class TestStakeService(TestCase):
             StakeHolder(
                 blockchain_id=100,
                 staker="0xq2w3e4r5t6y7u8e3r45ty6u78i",
-                amount=150000,
-                amount_staked=150000,
                 amount_pending_for_approval=0,
                 amount_approved=150000,
                 auto_renewal=False,
-                status=0,
-                staker_id=1000,
                 block_no_created=12345678,
                 created_on=dt.utcnow(),
                 updated_on=dt.utcnow()

@@ -30,13 +30,9 @@ class StakeFactory:
         return StakeHolder(
             blockchain_id=stake_holder_db.blockchain_id,
             staker=stake_holder_db.staker,
-            amount=stake_holder_db.amount,
-            amount_staked=stake_holder_db.amount_staked,
             amount_pending_for_approval=stake_holder_db.amount_pending_for_approval,
             amount_approved=stake_holder_db.amount_approved,
             auto_renewal=stake_holder_db.auto_renewal,
-            status=stake_holder_db.status,
-            staker_id=stake_holder_db.staker_id,
             block_no_created=stake_holder_db.block_no_created
         )
 
