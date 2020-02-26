@@ -68,7 +68,7 @@ class TestStakeService(TestCase):
         assert (response["statusCode"] == 200)
         response_body = json.loads(response["body"])
         assert (response_body["status"] == "success")
-        assert(response_body["data"][0]["stake_window"]["blockchain_id"] == 100)
+        assert(response_body["data"][0]["blockchain_id"] == 100)
         assert(response_body["data"][0]["no_of_stakers"] == 1)
         assert(response_body["data"][0]["stake_amount_for_given_staker_address"] == 100000)
         assert(response_body["data"][0]["total_stake_deposited"] == 100000)
