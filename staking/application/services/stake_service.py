@@ -52,11 +52,12 @@ class StakeService:
         stake_holders = StakeHolderRepository().get_stake_holders_for_given_address(address)
         for stake_holder in stake_holders:
             blockchain_id = stake_holder.blockchain_id
-            stake_window = StakeWindowRepository().get_stake_windows_for_given_blockchain_id(blockchain_id)
-            claims_details.append({
-                "stake_holder": stake_holder.to_dict(),
-                "stake_window": stake_window.to_dict()
-            })
+            stake_window = StakeWindowRepository().get_claim_stake_windows_for_given_blockchain_id(blockchain_id)
+            if stake_window is not None:
+                claims_details.append({
+                    "stake_holder": stake_holder.to_dict(),
+                    "stake_window": stake_window.to_dict()
+                })
         return claims_details
 
     @staticmethod
