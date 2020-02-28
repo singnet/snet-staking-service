@@ -27,7 +27,8 @@ class StakeService:
                      StakeHolderRepository().get_stake_holder_for_given_blockchain_index_and_address(
                          blockchain_id=stake_window["blockchain_id"],
                          address=staker)]),
-                "total_stake_deposited": StakeHolderRepository().get_total_stake_deposited(stake_window["blockchain_id"])
+                "total_stake_deposited": StakeHolderRepository().get_total_stake_deposited(
+                    stake_window["blockchain_id"])
 
             })
         return list_of_stake_window
@@ -37,14 +38,17 @@ class StakeService:
         # ACTIVE stake window means current time stamp is between stake window start period and end period
         stake_windows = StakeWindowRepository().get_active_stake_window()
         if len(stake_windows) == 0:
-            raise ActiveStakeWindowNotFound()
-        blockchain_id = stake_windows[0].blockchain_id
-        stake_holders = StakeHolderRepository().get_stake_holder_for_given_blockchain_index_and_address(
-            blockchain_id=blockchain_id, address=address)
-        return {
-            "stake_holder": stake_holders[0].to_dict(),
-            "stake_window": stake_windows[0].to_dict()
-        }
+            return []
+        response = []
+        for stake_window in stake_windows:
+            blockchain_id = stake_window.blockchain_id
+            stake_holder = StakeHolderRepository().get_stake_holder_for_given_blockchain_index_and_address(
+                blockchain_id=blockchain_id, address=address)
+            response.append({
+                "stake_holder": stake_holder[0].to_dict() if len(stake_holder) > 0 else {},
+                "stake_window": stake_window.to_dict()
+            })
+        return response
 
     @staticmethod
     def get_stake_holder_details_for_claim_stake_windows(address):
@@ -53,10 +57,14 @@ class StakeService:
         for stake_holder in stake_holders:
             blockchain_id = stake_holder.blockchain_id
             stake_window = StakeWindowRepository().get_claim_stake_windows_for_given_blockchain_id(blockchain_id)
+            no_of_stakers = StakeHolderRepository().get_total_no_of_stakers(stake_window.blockchain_id)
+            stake_window_dict = stake_window.to_dict()
+            stake_window_dict.update(
+                {"no_of_stakers": no_of_stakers}) if stake_window is not None else {}
             if stake_window is not None:
                 claims_details.append({
                     "stake_holder": stake_holder.to_dict(),
-                    "stake_window": stake_window.to_dict()
+                    "stake_window": stake_window_dict
                 })
         return claims_details
 
