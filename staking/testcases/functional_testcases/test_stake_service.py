@@ -122,8 +122,8 @@ class TestStakeService(TestCase):
         assert (response["statusCode"] == 200)
         response_body = json.loads(response["body"])
         assert (response_body["status"] == "success")
-        assert(response_body["data"]["stake_holder"]["blockchain_id"] == 100)
-        assert(response_body["data"]["stake_window"]["blockchain_id"] == 100)
+        assert(response_body["data"][0]["stake_holder"]["blockchain_id"] == 100)
+        assert(response_body["data"][0]["stake_window"]["blockchain_id"] == 100)
 
     def test_get_stake_holder_claims_details(self):
         self.tearDown()
