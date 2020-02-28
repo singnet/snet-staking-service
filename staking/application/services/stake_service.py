@@ -42,6 +42,9 @@ class StakeService:
         response = []
         for stake_window in stake_windows:
             blockchain_id = stake_window.blockchain_id
+            no_of_stakers = StakeHolderRepository().get_total_no_of_stakers(stake_window.blockchain_id)
+            stake_window_dict = stake_window.to_dict()
+            stake_window_dict.update({"no_of_stakers": no_of_stakers})
             stake_holder = StakeHolderRepository().get_stake_holder_for_given_blockchain_index_and_address(
                 blockchain_id=blockchain_id, address=address)
             response.append({
@@ -57,10 +60,12 @@ class StakeService:
         for stake_holder in stake_holders:
             blockchain_id = stake_holder.blockchain_id
             stake_window = StakeWindowRepository().get_claim_stake_windows_for_given_blockchain_id(blockchain_id)
-            no_of_stakers = StakeHolderRepository().get_total_no_of_stakers(stake_window.blockchain_id)
-            stake_window_dict = stake_window.to_dict()
-            stake_window_dict.update(
-                {"no_of_stakers": no_of_stakers}) if stake_window is not None else {}
+            if stake_window is None:
+                stake_window_dict = {}
+            else:
+                no_of_stakers = StakeHolderRepository().get_total_no_of_stakers(stake_window.blockchain_id)
+                stake_window_dict = stake_window.to_dict()
+                stake_window_dict.update({"no_of_stakers": no_of_stakers})
             if stake_window is not None:
                 claims_details.append({
                     "stake_holder": stake_holder.to_dict(),
