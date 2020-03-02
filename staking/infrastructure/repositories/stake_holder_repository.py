@@ -22,10 +22,15 @@ class StakeHolderRepository(BaseRepository):
 
     def get_total_no_of_stakers(self, blockchain_id):
         total_no_of_stakers = self.session.query(StakeHolder).filter(StakeHolder.blockchain_id == blockchain_id).count()
+        self.session.commit()
         return total_no_of_stakers
 
     def get_total_stake_deposited(self, blockchain_id):
         total_stake_deposited = self.session.query(
             func.sum(StakeHolder.amount_pending_for_approval).label("total_stake_deposited")).filter(
             StakeHolder.blockchain_id == blockchain_id).all()
-        return int(total_stake_deposited[0].total_stake_deposited)
+        self.session.commit()
+        total_stake_deposit = total_stake_deposited[0].total_stake_deposited
+        if total_stake_deposit is None:
+            return 0
+        return int(total_stake_deposit)
