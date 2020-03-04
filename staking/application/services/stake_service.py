@@ -36,22 +36,23 @@ class StakeService:
     @staticmethod
     def get_stake_holder_details_for_active_stake_window(address):
         # ACTIVE stake window means current time stamp is between stake window start period and end period
-        stake_windows = StakeWindowRepository().get_active_stake_window()
-        if len(stake_windows) == 0:
-            return []
-        response = []
-        for stake_window in stake_windows:
-            blockchain_id = stake_window.blockchain_id
-            no_of_stakers = StakeHolderRepository().get_total_no_of_stakers(stake_window.blockchain_id)
-            stake_window_dict = stake_window.to_dict()
-            stake_window_dict.update({"no_of_stakers": no_of_stakers})
-            stake_holder = StakeHolderRepository().get_stake_holder_for_given_blockchain_index_and_address(
-                blockchain_id=blockchain_id, address=address)
-            response.append({
-                "stake_holder": stake_holder[0].to_dict() if len(stake_holder) > 0 else {},
-                "stake_window": stake_window.to_dict()
-            })
-        return response
+        active_stake_details = []
+        stake_holders = StakeHolderRepository().get_stake_holders_for_given_address(address=address)
+        for stake_holder in stake_holders:
+            blockchain_id = stake_holder.blockchain_id
+            stake_window = StakeWindowRepository().get_stake_windows_for_given_blockchain_id(blockchain_id)
+            if stake_window is None:
+                stake_window_dict = {}
+            else:
+                no_of_stakers = StakeHolderRepository().get_total_no_of_stakers(stake_window.blockchain_id)
+                stake_window_dict = stake_window.to_dict()
+                stake_window_dict.update({"no_of_stakers": no_of_stakers})
+            if stake_window is not None:
+                active_stake_details.append({
+                    "stake_holder": stake_holder.to_dict(),
+                    "stake_window": stake_window_dict
+                })
+        return active_stake_details
 
     @staticmethod
     def get_stake_holder_details_for_claim_stake_windows(address):
