@@ -1,13 +1,13 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from staking.config import NETWORKS, NETWORK_ID
+from staking.config import NETWORK, NETWORK_ID
 
 engine = create_engine(
-    f"{NETWORKS['db']['DB_DRIVER']}://{NETWORKS['db']['DB_USER']}:"
-    f"{NETWORKS['db']['DB_PASSWORD']}"
-    f"@{NETWORKS['db']['DB_HOST']}:"
-    f"{NETWORKS['db']['DB_PORT']}/{NETWORKS['db']['DB_NAME']}", echo=False)
+    f"{NETWORK['db']['DB_DRIVER']}://{NETWORK['db']['DB_USER']}:"
+    f"{NETWORK['db']['DB_PASSWORD']}"
+    f"@{NETWORK['db']['DB_HOST']}:"
+    f"{NETWORK['db']['DB_PORT']}/{NETWORK['db']['DB_NAME']}", echo=False)
 
 Session = sessionmaker(bind=engine)
 default_session = Session()

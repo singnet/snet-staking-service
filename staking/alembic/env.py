@@ -4,16 +4,16 @@ from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
 from alembic import context
-from staking.config import NETWORK_ID, NETWORKS
+from staking.config import NETWORK_ID, NETWORK
 from staking.infrastructure.models import Base
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
-MYSQL_CONNECTION_STRING = f"mysql+pymysql://{NETWORKS['db']['DB_USER']}:" \
-                          f"{NETWORKS['db']['DB_PASSWORD']}" \
-                          f"@{NETWORKS['db']['DB_HOST']}:" \
-                          f"{NETWORKS['db']['DB_PORT']}/{NETWORKS['db']['DB_NAME']}"
+MYSQL_CONNECTION_STRING = f"mysql+pymysql://{NETWORK['db']['DB_USER']}:" \
+                          f"{NETWORK['db']['DB_PASSWORD']}" \
+                          f"@{NETWORK['db']['DB_HOST']}:" \
+                          f"{NETWORK['db']['DB_PORT']}/{NETWORK['db']['DB_NAME']}"
 config.set_main_option('sqlalchemy.url', MYSQL_CONNECTION_STRING)
 
 # Interpret the config file for Python logging.

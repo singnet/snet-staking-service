@@ -1,4 +1,4 @@
-NETWORKS = {
+NETWORK = {
     "name": "test",
     "http_provider": "https://ropsten.infura.io",
     "ws_provider": "wss://ropsten.infura.io/ws",
@@ -20,4 +20,9 @@ SLACK_HOOK = {
     'headers': {
         'Content-Type': 'application/json'
     }
+}
+IPFS_URL = {
+    'url': '',
+    'port': '80',
+
 }
