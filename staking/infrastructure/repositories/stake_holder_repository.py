@@ -1,3 +1,4 @@
+from datetime import datetime as dt
 from staking.infrastructure.repositories.base_repository import BaseRepository
 from staking.infrastructure.models import StakeHolder as StakeHolderDBModel
 from staking.domain.factory.stake_factory import StakeFactory
@@ -50,7 +51,9 @@ class StakeHolderRepository(BaseRepository):
                 amount_pending_for_approval=stake_holder.amount_pending_for_approval,
                 amount_approved=stake_holder.amount_approved,
                 auto_renewal=stake_holder.auto_renewal,
-                block_no_created=stake_holder.block_no_created
+                block_no_created=stake_holder.block_no_created,
+                created_on=dt.utcnow(),
+                updated_on=dt.utcnow()
             ))
         else:
             stake_holder_db = self.session.query(StakeHolderDBModel).\
