@@ -184,7 +184,7 @@ class WithdrawStakeEventConsumer(TokenStakeEventConsumer):
 
 
 # {'newStakeIndex': 4, 'staker': '0xC4f3BFE7D69461B7f363509393D44357c084404c', 'oldStakeIndex': 2, 'tokenOperator': '0x2e9c6C4145107cD21fCDc7319E4b24a8FF636c6B', 'stakeAmount': 3642553191, 'approvedAmount': 1700000000, 'returnAmount': 1942553191}
-class AutoRenewEventConsumer(TokenStakeEventConsumer):
+class AutoRenewTokenStakeEventConsumer(TokenStakeEventConsumer):
 
     def __init__(self, net_id, ws_provider, ipfs_url, ipfs_port):
         super().__init__(net_id, ws_provider, ipfs_url, ipfs_port)
