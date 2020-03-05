@@ -105,7 +105,7 @@ class SubmitStakeEventConsumer(TokenStakeEventConsumer):
         amount_pending_for_approval = stake_holder_data[1]
         amount_approved = stake_holder_data[2]
         auto_renewal = stake_holder_data[3]
-        block_no_created = event["block_no"]
+        block_no_created = event["data"]["block_no"]
         stake_holder = StakeHolder(
             blockchain_id, event_data["staker"], amount_pending_for_approval, amount_approved, auto_renewal,
             block_no_created
@@ -129,7 +129,7 @@ class ApproveStakeEventConsumer(TokenStakeEventConsumer):
         amount_pending_for_approval = stake_holder_data[1]
         amount_approved = stake_holder_data[2]
         auto_renewal = stake_holder_data[3]
-        block_no_created = event["block_no"]
+        block_no_created = event["data"]["block_no"]
         stake_holder = StakeHolder(
             blockchain_id, event_data["staker"], amount_pending_for_approval, amount_approved, auto_renewal,
             block_no_created
@@ -152,7 +152,7 @@ class RejectStakeEventConsumer(TokenStakeEventConsumer):
         amount_pending_for_approval = stake_holder_data[1]
         amount_approved = stake_holder_data[2]
         auto_renewal = stake_holder_data[3]
-        block_no_created = event["block_no"]
+        block_no_created = event["data"]["block_no"]
         stake_holder = StakeHolder(
             blockchain_id, event_data["staker"], amount_pending_for_approval, amount_approved, auto_renewal,
             block_no_created
@@ -175,7 +175,7 @@ class WithdrawStakeEventConsumer(TokenStakeEventConsumer):
         amount_pending_for_approval = stake_holder_data[1]
         amount_approved = stake_holder_data[2]
         auto_renewal = stake_holder_data[3]
-        block_no_created = event["block_no"]
+        block_no_created = event["data"]["block_no"]
         stake_holder = StakeHolder(
             blockchain_id, event_data["staker"], amount_pending_for_approval, amount_approved, auto_renewal,
             block_no_created
@@ -198,7 +198,7 @@ class AutoRenewTokenStakeEventConsumer(TokenStakeEventConsumer):
         old_stake_holder_data = self._get_stake_holder_for_given_stake_index_and_address(old_blockchain_id, staker)
         logger.info(
             f"old_stake_holder_data {old_stake_holder_data} from blockchain for given blockchain_id {old_blockchain_id} and staker {staker}")
-        block_no_created = event["block_no"]
+        block_no_created = event["data"]["block_no"]
         old_stake_holder = StakeHolder(
             old_blockchain_id, event_data["staker"], old_stake_holder_data[1],
             old_stake_holder_data[2], old_stake_holder_data[3], block_no_created
@@ -209,7 +209,7 @@ class AutoRenewTokenStakeEventConsumer(TokenStakeEventConsumer):
         new_stake_holder_data = self._get_stake_holder_for_given_stake_index_and_address(new_blockchain_id, staker)
         logger.info(
             f"new_stake_holder_data {new_stake_holder_data} from blockchain for given blockchain_id {new_blockchain_id} and staker {staker}")
-        block_no_created = event["block_no"]
+        block_no_created = event["data"]["block_no"]
         new_stake_holder = StakeHolder(
             new_blockchain_id, event_data["staker"], new_stake_holder_data[1],
             new_stake_holder_data[3], new_stake_holder_data[3], block_no_created
