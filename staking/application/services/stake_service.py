@@ -76,14 +76,16 @@ class StakeService:
 
     @staticmethod
     def get_all_transactions_of_stake_holder_for_given_address(address):
-        transactions_details = []
+        transactions_details = {}
         stake_transactions = StakeTransactionRepository().get_all_transactions_of_stake_holder_for_given_address(
             address)
         for transaction in stake_transactions:
             blockchain_id = transaction.blockchain_id
-            stake_window = StakeWindowRepository().get_stake_windows_for_given_blockchain_id(blockchain_id)
-            transactions_details.append({
-                "transaction": transaction.to_dict(),
-                "stake_window": stake_window.to_dict()
-            })
-        return transactions_details
+            if transactions_details.get(blockchain_id, None) is None:
+                stake_window = StakeWindowRepository().get_stake_windows_for_given_blockchain_id(blockchain_id)
+                transactions_details[blockchain_id] = {
+                    "stake_window": stake_window.to_dict(),
+                    "transactions": []
+                }
+            transactions_details[blockchain_id]["transactions"].append(transaction.to_dict())
+        return list(transactions_details.values())
