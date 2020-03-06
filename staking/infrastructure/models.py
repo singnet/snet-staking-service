@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer
+from sqlalchemy import Column, Integer, UniqueConstraint
 from sqlalchemy.dialects.mysql import JSON, TIMESTAMP, VARCHAR, BOOLEAN, BIGINT
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
@@ -9,7 +9,7 @@ Base = declarative_base()
 
 class StakeWindow(Base):
     __tablename__ = "stake_window"
-    id = Column("id", Integer, primary_key=True)
+    id = Column("id", Integer, primary_key=True, autoincrement=True)
     blockchain_id = Column("blockchain_id", Integer, nullable=False)
     start_period = Column("start_period", Integer, nullable=False)
     submission_end_period = Column("submission_end_period", Integer, nullable=False)
@@ -29,29 +29,28 @@ class StakeWindow(Base):
 
 class StakeHolder(Base):
     __tablename__ = "stake_holder"
-    id = Column("id", Integer, primary_key=True)
+    id = Column("id", Integer, primary_key=True, autoincrement=True)
     blockchain_id = Column("blockchain_id", Integer, nullable=False)
     staker = Column("staker", VARCHAR(50), nullable=False)
-    # amount = Column("amount", BIGINT, nullable=False) no more needed
-    # amount_staked = Column("amount_staked", BIGINT, nullable=False) no more needed
     amount_pending_for_approval = Column("amount_pending_for_approval", BIGINT, nullable=False)
     amount_approved = Column("amount_approved", BIGINT, nullable=False)
     auto_renewal = Column("auto_renewal", BOOLEAN, nullable=False)
-    # status = Column("status", Integer, nullable=False) status will be based on amount_approved and amount_pending_for_approval
-    # staker_id = Column("staker_id", Integer, nullable=False) no more needed
     block_no_created = Column("block_no_created", Integer, nullable=False)
+    refund_amount = Column("refund_amount", BIGINT, nullable=False)
     created_on = Column("created_on", TIMESTAMP(timezone=False), nullable=False)
     updated_on = Column("updated_on", TIMESTAMP(timezone=False), nullable=False, default=func.utc_timestamp())
+    UniqueConstraint(blockchain_id, staker, name="uq_stake_holder")
 
 
 class StakeTransaction(Base):
     __tablename__ = "stake_transaction"
-    transaction_id = Column("transaction_id", VARCHAR(128), primary_key=True, nullable=False)
+    id = Column("id", Integer, primary_key=True, autoincrement=True)
     blockchain_id = Column("blockchain_id", Integer, nullable=False)
     staker = Column("staker", VARCHAR(50))
     event = Column("event", VARCHAR(128), nullable=False)
     event_data = Column("event_data", JSON, nullable=False)
     block_no = Column("block_no", Integer, nullable=False)
     transaction_hash = Column("transaction_hash", VARCHAR(128), nullable=False)
+    transaction_date = Column("transaction_date", TIMESTAMP(timezone=False), nullable=False)
     created_on = Column("created_on", TIMESTAMP(timezone=False), nullable=False)
     updated_on = Column("updated_on", TIMESTAMP(timezone=False), nullable=False, default=func.utc_timestamp())

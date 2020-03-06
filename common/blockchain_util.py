@@ -45,8 +45,7 @@ class BlockChainUtil(object):
     def get_contract_instance(self, base_path, contract_name, net_id):
         contract_network_path, contract_abi_path = self.get_contract_file_paths(base_path, contract_name)
 
-        contract_address = self.read_contract_address(net_id=net_id, path=contract_network_path,
-                                                      key='address')
+        contract_address = self.read_contract_address(net_id=net_id, path=contract_network_path, key='address')
         contract_abi = self.load_contract(contract_abi_path)
         logger.debug(f"contract address is {contract_address}")
         contract_instance = self.contract_instance(contract_abi=contract_abi, address=contract_address)
@@ -126,3 +125,8 @@ class BlockChainUtil(object):
         function = getattr(contract.functions, contract_function)
         result = function(*positional_inputs).call()
         return result
+        return result
+
+    def get_created_at_for_block(self, block_no):
+        block_details = self.web3_object.eth.getBlock(block_no)
+        return block_details
