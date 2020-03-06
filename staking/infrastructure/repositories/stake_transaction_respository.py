@@ -14,6 +14,7 @@ class StakeTransactionRepository(BaseRepository):
             all()
         stake_transactions = [StakeFactory.convert_stake_transaction_db_model_to_entity_model(transaction) for
                               transaction in transactions_raw_data]
+        self.session.commit()
         return stake_transactions
 
     def add_stake_transaction(self, stake_transaction):

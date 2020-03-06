@@ -67,6 +67,7 @@ class StakeHolderRepository(BaseRepository):
             stake_holder_db.amount_pending_for_approval = stake_holder.amount_pending_for_approval
             stake_holder_db.amount_approved = stake_holder.amount_approved
             stake_holder_db.auto_renewal = stake_holder.auto_renewal
+            stake_holder_db.refund_amount = stake_holder_db.refund_amount + stake_holder.refund_amount
             stake_holder_db.block_no_created = stake_holder.block_no_created
             self.session.commit()
         return stake_holder
