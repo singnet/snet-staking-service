@@ -1,8 +1,6 @@
 from common.logger import get_logger
 import os
-import time
 from common.blockchain_util import BlockChainUtil
-from common.ipfs_util import IPFSUtil
 from staking.domain.model.stake_window import StakeWindow
 from staking.domain.model.stake_holder import StakeHolder
 from staking.infrastructure.repositories.stake_window_repository import StakeWindowRepository
@@ -15,8 +13,7 @@ stake_holder_repo = StakeHolderRepository()
 
 class TokenStakeEventConsumer(object):
 
-    def __init__(self, ws_provider, ipfs_url, ipfs_port, net_id):
-        self._ipfs_util = IPFSUtil(ipfs_url, ipfs_port)
+    def __init__(self, ws_provider, net_id):
         self._blockchain_util = BlockChainUtil("WS_PROVIDER", ws_provider)
         self._net_id = net_id
 
@@ -31,9 +28,6 @@ class TokenStakeEventConsumer(object):
                                                                            self._net_id)
 
         return token_stake_contract
-
-    def _get_token_stake_metadata_from_ipfs(self, ipfs_hash):
-        return self._ipfs_util.read_file_from_ipfs(ipfs_hash)
 
     @staticmethod
     def _get_event_data(event):
@@ -60,8 +54,8 @@ class TokenStakeEventConsumer(object):
 
 class OpenForStakeEventConsumer(TokenStakeEventConsumer):
 
-    def __init__(self, net_id, ws_provider, ipfs_url, ipfs_port):
-        super().__init__(net_id, ws_provider, ipfs_url, ipfs_port)
+    def __init__(self, net_id, ws_provider):
+        super().__init__(net_id=net_id, ws_provider=ws_provider)
 
     def on_event(self, event):
         event_data = self._get_event_data(event)
@@ -92,8 +86,8 @@ class OpenForStakeEventConsumer(TokenStakeEventConsumer):
 # {'stakeIndex': 2, 'staker': '0x46EF7d49aaA68B29C227442BDbD18356415f8304', 'stakeAmount': 800000000, 'autoRenewal': True}
 class SubmitStakeEventConsumer(TokenStakeEventConsumer):
 
-    def __init__(self, net_id, ws_provider, ipfs_url, ipfs_port):
-        super().__init__(net_id, ws_provider, ipfs_url, ipfs_port)
+    def __init__(self, net_id, ws_provider):
+        super().__init__(net_id=net_id, ws_provider=ws_provider)
 
     def on_event(self, event):
         event_data = self._get_event_data(event)
@@ -116,8 +110,8 @@ class SubmitStakeEventConsumer(TokenStakeEventConsumer):
 # {'stakeIndex': 2, 'staker': '0x46EF7d49aaA68B29C227442BDbD18356415f8304', 'tokenOperator': '0x2e9c6C4145107cD21fCDc7319E4b24a8FF636c6B', 'approvedStakeAmount': 750000000, 'returnAmount': 0}
 class ApproveStakeEventConsumer(TokenStakeEventConsumer):
 
-    def __init__(self, net_id, ws_provider, ipfs_url, ipfs_port):
-        super().__init__(net_id, ws_provider, ipfs_url, ipfs_port)
+    def __init__(self, net_id, ws_provider):
+        super().__init__(net_id=net_id, ws_provider=ws_provider)
 
     def on_event(self, event):
         event_data = self._get_event_data(event)
@@ -139,8 +133,8 @@ class ApproveStakeEventConsumer(TokenStakeEventConsumer):
 
 class RejectStakeEventConsumer(TokenStakeEventConsumer):
 
-    def __init__(self, net_id, ws_provider, ipfs_url, ipfs_port):
-        super().__init__(net_id, ws_provider, ipfs_url, ipfs_port)
+    def __init__(self, net_id, ws_provider):
+        super().__init__(net_id=net_id, ws_provider=ws_provider)
 
     def on_event(self, event):
         event_data = self._get_event_data(event)
@@ -162,8 +156,8 @@ class RejectStakeEventConsumer(TokenStakeEventConsumer):
 
 class WithdrawStakeEventConsumer(TokenStakeEventConsumer):
 
-    def __init__(self, net_id, ws_provider, ipfs_url, ipfs_port):
-        super().__init__(net_id, ws_provider, ipfs_url, ipfs_port)
+    def __init__(self, net_id, ws_provider):
+        super().__init__(net_id=net_id, ws_provider=ws_provider)
 
     def on_event(self, event):
         event_data = self._get_event_data(event)
@@ -186,8 +180,8 @@ class WithdrawStakeEventConsumer(TokenStakeEventConsumer):
 # {'newStakeIndex': 4, 'staker': '0xC4f3BFE7D69461B7f363509393D44357c084404c', 'oldStakeIndex': 2, 'tokenOperator': '0x2e9c6C4145107cD21fCDc7319E4b24a8FF636c6B', 'stakeAmount': 3642553191, 'approvedAmount': 1700000000, 'returnAmount': 1942553191}
 class AutoRenewTokenStakeEventConsumer(TokenStakeEventConsumer):
 
-    def __init__(self, net_id, ws_provider, ipfs_url, ipfs_port):
-        super().__init__(net_id, ws_provider, ipfs_url, ipfs_port)
+    def __init__(self, net_id, ws_provider):
+        super().__init__(net_id=net_id, ws_provider=ws_provider)
 
     def on_event(self, event):
         event_data = self._get_event_data(event)
