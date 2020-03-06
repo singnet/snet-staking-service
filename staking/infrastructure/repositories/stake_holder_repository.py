@@ -3,6 +3,9 @@ from staking.infrastructure.repositories.base_repository import BaseRepository
 from staking.infrastructure.models import StakeHolder as StakeHolderDBModel
 from staking.domain.factory.stake_factory import StakeFactory
 from sqlalchemy import func
+from common.logger import get_logger
+
+logger = get_logger(__name__)
 
 
 class StakeHolderRepository(BaseRepository):
@@ -40,6 +43,7 @@ class StakeHolderRepository(BaseRepository):
         return int(total_stake_deposit)
 
     def add_or_update_stake_holder(self, stake_holder):
+        logger.info(f"add_or_update_stake_holder::stake_holder {stake_holder}")
         blockchain_id = stake_holder.blockchain_id
         staker = stake_holder.staker
         stake_holder_record = self.get_stake_holder_for_given_blockchain_index_and_address(
@@ -56,8 +60,8 @@ class StakeHolderRepository(BaseRepository):
                 updated_on=dt.utcnow()
             ))
         else:
-            stake_holder_db = self.session.query(StakeHolderDBModel).\
-                filter(StakeHolderDBModel.blockchain_id == blockchain_id).\
+            stake_holder_db = self.session.query(StakeHolderDBModel). \
+                filter(StakeHolderDBModel.blockchain_id == blockchain_id). \
                 filter(StakeHolderDBModel.staker == staker).all()
             stake_holder_db.amount_pending_for_approval = stake_holder.amount_pending_for_approval
             stake_holder_db.amount_approved = stake_holder.amount_approved
