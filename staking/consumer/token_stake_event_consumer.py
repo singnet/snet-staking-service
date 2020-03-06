@@ -115,7 +115,7 @@ class SubmitStakeEventConsumer(TokenStakeEventConsumer):
         amount_approved = stake_holder_data[2]
         auto_renewal = stake_holder_data[3]
         block_no_created = event["data"]["block_no"]
-        refund_amount = event_data["stakeAmount"]
+        refund_amount = event_data["returnAmount"]
         stake_holder = StakeHolder(
             blockchain_id, event_data["staker"], amount_pending_for_approval, amount_approved, auto_renewal,
             block_no_created, refund_amount
@@ -144,7 +144,7 @@ class ApproveStakeEventConsumer(TokenStakeEventConsumer):
         amount_approved = stake_holder_data[2]
         auto_renewal = stake_holder_data[3]
         block_no_created = event["data"]["block_no"]
-        refund_amount = event_data["stakeAmount"]
+        refund_amount = event_data["returnAmount"]
         stake_holder = StakeHolder(
             blockchain_id, event_data["staker"], amount_pending_for_approval, amount_approved, auto_renewal,
             block_no_created, refund_amount
@@ -172,7 +172,7 @@ class RejectStakeEventConsumer(TokenStakeEventConsumer):
         amount_approved = stake_holder_data[2]
         auto_renewal = stake_holder_data[3]
         block_no_created = event["data"]["block_no"]
-        refund_amount = event_data["stakeAmount"]
+        refund_amount = event_data["returnAmount"]
         stake_holder = StakeHolder(
             blockchain_id, event_data["staker"], amount_pending_for_approval, amount_approved, auto_renewal,
             block_no_created, refund_amount
@@ -200,7 +200,7 @@ class WithdrawStakeEventConsumer(TokenStakeEventConsumer):
         amount_approved = stake_holder_data[2]
         auto_renewal = stake_holder_data[3]
         block_no_created = event["data"]["block_no"]
-        refund_amount = event_data["stakeAmount"]
+        refund_amount = event_data["returnAmount"]
         stake_holder = StakeHolder(
             blockchain_id, event_data["staker"], amount_pending_for_approval, amount_approved, auto_renewal,
             block_no_created, refund_amount
@@ -227,7 +227,7 @@ class AutoRenewTokenStakeEventConsumer(TokenStakeEventConsumer):
         logger.info(
             f"old_stake_holder_data {old_stake_holder_data} from blockchain for given blockchain_id {old_blockchain_id} and staker {staker}")
         block_no_created = event["data"]["block_no"]
-        refund_amount = event_data["stakeAmount"]
+        refund_amount = event_data["returnAmount"]
         old_stake_holder = StakeHolder(
             old_blockchain_id, event_data["staker"], old_stake_holder_data[1],
             old_stake_holder_data[2], old_stake_holder_data[3], block_no_created, refund_amount
