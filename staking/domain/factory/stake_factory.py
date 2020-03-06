@@ -33,17 +33,18 @@ class StakeFactory:
             amount_pending_for_approval=stake_holder_db.amount_pending_for_approval,
             amount_approved=stake_holder_db.amount_approved,
             auto_renewal=stake_holder_db.auto_renewal,
-            block_no_created=stake_holder_db.block_no_created
+            block_no_created=stake_holder_db.block_no_created,
+            refund_amount=stake_holder_db.refund_amount
         )
 
     @staticmethod
     def convert_stake_transaction_db_model_to_entity_model(stake_transaction_db):
         return StakeTransaction(
-            transaction_id=stake_transaction_db.transaction_id,
             blockchain_id=stake_transaction_db.blockchain_id,
             block_no=stake_transaction_db.block_no,
             event=stake_transaction_db.event,
             event_data=stake_transaction_db.event_data,
             transaction_hash=stake_transaction_db.transaction_hash,
-            staker=stake_transaction_db.staker
+            staker=stake_transaction_db.staker,
+            transaction_date=stake_transaction_db.transaction_date
         )
