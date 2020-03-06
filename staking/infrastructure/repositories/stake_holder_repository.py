@@ -56,13 +56,14 @@ class StakeHolderRepository(BaseRepository):
                 amount_approved=stake_holder.amount_approved,
                 auto_renewal=stake_holder.auto_renewal,
                 block_no_created=stake_holder.block_no_created,
+                refund_amount=stake_holder.refund_amount,
                 created_on=dt.utcnow(),
                 updated_on=dt.utcnow()
             ))
         else:
             stake_holder_db = self.session.query(StakeHolderDBModel). \
                 filter(StakeHolderDBModel.blockchain_id == blockchain_id). \
-                filter(StakeHolderDBModel.staker == staker).all()
+                filter(StakeHolderDBModel.staker == staker).one()
             stake_holder_db.amount_pending_for_approval = stake_holder.amount_pending_for_approval
             stake_holder_db.amount_approved = stake_holder.amount_approved
             stake_holder_db.auto_renewal = stake_holder.auto_renewal
