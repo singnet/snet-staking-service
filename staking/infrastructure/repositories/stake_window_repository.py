@@ -33,7 +33,7 @@ class StakeWindowRepository(BaseRepository):
             StakeWindowDBModel.blockchain_id == blockchain_id). \
             filter(StakeWindowDBModel.submission_end_period < current_time).filter(
             StakeWindowDBModel.end_period > current_time).all()
-        if bool(stake_windows_raw_data):
+        if not bool(stake_windows_raw_data):
             self.session.commit()
             return None
         stake_window = StakeFactory.convert_stake_window_db_model_to_entity_model(stake_windows_raw_data[0])
@@ -45,7 +45,7 @@ class StakeWindowRepository(BaseRepository):
         stake_windows_raw_data = self.session.query(StakeWindowDBModel).filter(
             StakeWindowDBModel.blockchain_id == blockchain_id).filter(
             StakeWindowDBModel.end_period < current_time).all()
-        if bool(stake_windows_raw_data):
+        if not bool(stake_windows_raw_data):
             self.session.commit()
             return None
         stake_window = StakeFactory.convert_stake_window_db_model_to_entity_model(stake_windows_raw_data[0])
@@ -57,7 +57,7 @@ class StakeWindowRepository(BaseRepository):
         stake_windows_raw_data = self.session.query(StakeWindowDBModel).filter(
             StakeWindowDBModel.blockchain_id == blockchain_id) \
             .all()
-        if bool(stake_windows_raw_data):
+        if not bool(stake_windows_raw_data):
             self.session.commit()
             return None
         stake_window = StakeFactory.convert_stake_window_db_model_to_entity_model(stake_windows_raw_data[0])
