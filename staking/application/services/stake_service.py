@@ -40,7 +40,7 @@ class StakeService:
         stake_holders = StakeHolderRepository().get_stake_holders_for_given_address(address=address)
         for stake_holder in stake_holders:
             blockchain_id = stake_holder.blockchain_id
-            stake_window = StakeWindowRepository().get_stake_windows_for_given_blockchain_id(blockchain_id)
+            stake_window = StakeWindowRepository().get_incubation_stake_window_for_given_blockchain_id(blockchain_id)
             if stake_window is None:
                 stake_window_dict = {}
             else:
@@ -59,19 +59,20 @@ class StakeService:
         claims_details = []
         stake_holders = StakeHolderRepository().get_stake_holders_for_given_address(address)
         for stake_holder in stake_holders:
-            blockchain_id = stake_holder.blockchain_id
-            stake_window = StakeWindowRepository().get_claim_stake_windows_for_given_blockchain_id(blockchain_id)
-            if stake_window is None:
-                stake_window_dict = {}
-            else:
-                no_of_stakers = StakeHolderRepository().get_total_no_of_stakers(stake_window.blockchain_id)
-                stake_window_dict = stake_window.to_dict()
-                stake_window_dict.update({"no_of_stakers": no_of_stakers})
-            if stake_window is not None:
-                claims_details.append({
-                    "stake_holder": stake_holder.to_dict(),
-                    "stake_window": stake_window_dict
-                })
+            if stake_holder.amount_approved > 0 or stake_holder.amount_pending_for_approval > 0:
+                blockchain_id = stake_holder.blockchain_id
+                stake_window = StakeWindowRepository().get_claim_stake_windows_for_given_blockchain_id(blockchain_id)
+                if stake_window is None:
+                    stake_window_dict = {}
+                else:
+                    no_of_stakers = StakeHolderRepository().get_total_no_of_stakers(stake_window.blockchain_id)
+                    stake_window_dict = stake_window.to_dict()
+                    stake_window_dict.update({"no_of_stakers": no_of_stakers})
+                if stake_window is not None:
+                    claims_details.append({
+                        "stake_holder": stake_holder.to_dict(),
+                        "stake_window": stake_window_dict
+                    })
         return claims_details
 
     @staticmethod

@@ -77,6 +77,10 @@ class StakeWindow:
     def total_stake(self):
         return self._total_stake
 
+    @total_stake.setter
+    def total_stake(self, total_stake):
+        self._total_stake = total_stake
+
     @property
     def reward_amount(self):
         return self._reward_amount
