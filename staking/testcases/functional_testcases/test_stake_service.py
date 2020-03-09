@@ -92,7 +92,7 @@ class TestStakeService(TestCase):
             StakeWindow(
                 blockchain_id=100,
                 start_period=int(dt.utcnow().timestamp()) - 50000,
-                submission_end_period=int(dt.utcnow().timestamp()) + 50000,
+                submission_end_period=int(dt.utcnow().timestamp()) - 10000,
                 approval_end_period=int(dt.utcnow().timestamp()) + 100000,
                 request_withdraw_start_period=int(dt.utcnow().timestamp()) + 200000,
                 end_period=int(dt.utcnow().timestamp()) + 300000,

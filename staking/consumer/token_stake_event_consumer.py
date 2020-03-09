@@ -76,7 +76,7 @@ class OpenForStakeEventConsumer(TokenStakeEventConsumer):
         logger.info(f"OpenForStake event data : {event_data}")
         blockchain_id = event_data["stakeIndex"]
         stake_window_data = self._get_stake_window_by_stake_index(blockchain_id)
-        logger.info(f"stake_window_data from blockchain for blockchain_id {blockchain_id}")
+        logger.info(f"stake_window_data {stake_window_data} from blockchain for blockchain_id {blockchain_id}")
         start_period = stake_window_data[0]
         submission_end_period = stake_window_data[1]
         approval_end_period = stake_window_data[2]
@@ -87,7 +87,7 @@ class OpenForStakeEventConsumer(TokenStakeEventConsumer):
         window_max_cap = stake_window_data[7]
         open_for_external = stake_window_data[8]
         total_stake = stake_window_data[9]
-        reward_amount = stake_window_data[9]
+        reward_amount = stake_window_data[10]
         stake_window = StakeWindow(
             blockchain_id=blockchain_id, start_period=start_period, submission_end_period=submission_end_period,
             approval_end_period=approval_end_period, request_withdraw_start_period=request_withdraw_start_period,
@@ -140,6 +140,9 @@ class ApproveStakeEventConsumer(TokenStakeEventConsumer):
         stake_holder_data = self._get_stake_holder_for_given_stake_index_and_address(blockchain_id, staker)
         logger.info(
             f"stake_holder_data {stake_holder_data} from blockchain for given blockchain_id {blockchain_id} and staker {staker}")
+        stake_window_data = self._get_stake_window_by_stake_index(blockchain_id)
+        logger.info(f"stake_window_data {stake_window_data} from blockchain for blockchain_id {blockchain_id}")
+        total_stake = stake_window_data[9]
         amount_pending_for_approval = stake_holder_data[1]
         amount_approved = stake_holder_data[2]
         auto_renewal = stake_holder_data[3]
@@ -150,6 +153,11 @@ class ApproveStakeEventConsumer(TokenStakeEventConsumer):
             block_no_created, refund_amount
         )
         stake_holder_repo.add_or_update_stake_holder(stake_holder)
+
+        stake_window = stake_window_repo.get_stake_windows_for_given_blockchain_id(blockchain_id=blockchain_id)
+        stake_window.total_stake = total_stake
+        stake_window_repo.update_stake_window(stake_window)
+
         self._add_stake_transaction(
             block_no=block_no_created, blockchain_id=blockchain_id, transaction_hash=event["data"]["transactionHash"],
             event_name=event["data"]["event"], event_data=event["data"], staker=staker)
@@ -241,9 +249,45 @@ class AutoRenewTokenStakeEventConsumer(TokenStakeEventConsumer):
         new_stake_holder_data = self._get_stake_holder_for_given_stake_index_and_address(new_blockchain_id, staker)
         logger.info(
             f"new_stake_holder_data {new_stake_holder_data} from blockchain for given blockchain_id {new_blockchain_id} and staker {staker}")
+        new_stake_window_data = self._get_stake_window_by_stake_index(new_blockchain_id)
+        logger.info(f"new_stake_window_data {new_stake_window_data} from blockchain for blockchain_id {new_blockchain_id}")
+        total_stake_for_new_blockchain_id = new_stake_holder_data[9]
         block_no_created = event["data"]["block_no"]
         new_stake_holder = StakeHolder(
             new_blockchain_id, event_data["staker"], new_stake_holder_data[1],
             new_stake_holder_data[3], new_stake_holder_data[3], block_no_created, refund_amount
         )
         stake_holder_repo.add_or_update_stake_holder(new_stake_holder)
+        stake_window = stake_window_repo.get_stake_windows_for_given_blockchain_id(blockchain_id=new_blockchain_id)
+        stake_window.total_stake = total_stake_for_new_blockchain_id
+        stake_window_repo.update_stake_window(stake_window)
+
+# {'stakeIndex': 4, 'staker': '0x46EF7d49aaA68B29C227442BDbD18356415f8304', 'rewardAmount': 1380952380, 'totalAmount': 2830952380}
+
+
+class ClaimStakeEventConsumer(TokenStakeEventConsumer):
+
+    def __init__(self, net_id, ws_provider):
+        super().__init__(net_id=net_id, ws_provider=ws_provider)
+
+    def on_event(self, event):
+        event_data = self._get_event_data(event)
+        logger.info(f"ClaimStake event data : {event_data}")
+        blockchain_id = event_data["stakeIndex"]
+        staker = event_data["staker"]
+        stake_holder_data = self._get_stake_holder_for_given_stake_index_and_address(blockchain_id, staker)
+        logger.info(
+            f"stake_holder_data {stake_holder_data} from blockchain for given blockchain_id {blockchain_id} and staker {staker}")
+        amount_pending_for_approval = stake_holder_data[1]
+        amount_approved = stake_holder_data[2]
+        auto_renewal = stake_holder_data[3]
+        block_no_created = event["data"]["block_no"]
+        refund_amount = 0
+        stake_holder = StakeHolder(
+            blockchain_id, event_data["staker"], amount_pending_for_approval, amount_approved, auto_renewal,
+            block_no_created, refund_amount
+        )
+        stake_holder_repo.add_or_update_stake_holder(stake_holder)
+        self._add_stake_transaction(
+            block_no=block_no_created, blockchain_id=blockchain_id, transaction_hash=event["data"]["transactionHash"],
+            event_name=event["data"]["event"], event_data=event["data"], staker=staker)
