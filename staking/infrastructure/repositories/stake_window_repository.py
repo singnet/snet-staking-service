@@ -85,21 +85,24 @@ class StakeWindowRepository(BaseRepository):
         return stake_window
 
     def update_stake_window(self, stake_window):
-        stake_windows_db = self.session.query(
-            StakeWindowDBModel).filter(StakeWindowDBModel.blockchain_id == stake_window.blockchain_id).one()
-        stake_windows_db.start_period = stake_window.start_period,
-        stake_windows_db.submission_end_period = stake_window.submission_end_period,
-        stake_windows_db.approval_end_period = stake_window.approval_end_period,
-        stake_windows_db.request_withdraw_start_period = stake_window.request_withdraw_start_period,
-        stake_windows_db.end_period = stake_window.end_period,
-        stake_windows_db.min_stake = stake_window.min_stake,
-        stake_windows_db.max_stake = stake_window.max_stake,
-        stake_windows_db.window_max_cap = stake_window.window_max_cap,
-        stake_windows_db.open_for_external = stake_window.open_for_external,
-        stake_windows_db.total_stake = stake_window.total_stake,
-        stake_windows_db.reward_amount = stake_window.reward_amount,
-        stake_windows_db.token_operator = stake_window.token_operator,
-        stake_windows_db.updated_on = dt.utcnow()
-        stake_window = StakeFactory.convert_stake_window_db_model_to_entity_model(stake_windows_db)
-        self.session.commit()
-        return stake_window
+        try:
+            stake_windows_db = self.session.query(
+                StakeWindowDBModel).filter(StakeWindowDBModel.blockchain_id == stake_window.blockchain_id).one()
+            stake_windows_db.start_period = stake_window.start_period,
+            stake_windows_db.submission_end_period = stake_window.submission_end_period,
+            stake_windows_db.approval_end_period = stake_window.approval_end_period,
+            stake_windows_db.request_withdraw_start_period = stake_window.request_withdraw_start_period,
+            stake_windows_db.end_period = stake_window.end_period,
+            stake_windows_db.min_stake = stake_window.min_stake,
+            stake_windows_db.max_stake = stake_window.max_stake,
+            stake_windows_db.window_max_cap = stake_window.window_max_cap,
+            stake_windows_db.total_stake = stake_window.total_stake,
+            stake_windows_db.reward_amount = stake_window.reward_amount,
+            stake_windows_db.token_operator = stake_window.token_operator,
+            stake_windows_db.updated_on = dt.utcnow()
+            stake_window = StakeFactory.convert_stake_window_db_model_to_entity_model(stake_windows_db)
+            self.session.commit()
+            return stake_window
+        except Exception as e:
+            self.session.rollback()
+            raise e
