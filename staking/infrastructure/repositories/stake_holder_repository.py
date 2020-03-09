@@ -69,5 +69,5 @@ class StakeHolderRepository(BaseRepository):
             stake_holder_db.auto_renewal = stake_holder.auto_renewal
             stake_holder_db.refund_amount = stake_holder_db.refund_amount + stake_holder.refund_amount
             stake_holder_db.block_no_created = stake_holder.block_no_created
-            self.session.commit()
+        self.session.commit()
         return stake_holder
