@@ -215,7 +215,7 @@ class WithdrawStakeEventConsumer(TokenStakeEventConsumer):
             event_name=event["data"]["event"], event_data=event["data"], staker=staker)
 
 
-class AutoRenewTokenStakeEventConsumer(TokenStakeEventConsumer):
+class AutoRenewStakeEventConsumer(TokenStakeEventConsumer):
 
     def __init__(self, net_id, ws_provider):
         super().__init__(net_id=net_id, ws_provider=ws_provider)
@@ -248,7 +248,7 @@ class AutoRenewTokenStakeEventConsumer(TokenStakeEventConsumer):
         new_stake_window_data = self._get_stake_window_by_stake_index(new_blockchain_id)
         logger.info(
             f"new_stake_window_data {new_stake_window_data} from blockchain for blockchain_id {new_blockchain_id}")
-        total_stake_for_new_blockchain_id = new_stake_holder_data[9]
+        total_stake_for_new_blockchain_id = new_stake_window_data[9]
         block_no_created = event["data"]["block_no"]
         new_stake_holder = StakeHolder(
             new_blockchain_id, event_data["staker"], new_stake_holder_data[1],
