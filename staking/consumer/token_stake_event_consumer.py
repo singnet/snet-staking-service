@@ -255,6 +255,10 @@ class AutoRenewTokenStakeEventConsumer(TokenStakeEventConsumer):
             new_stake_holder_data[3], new_stake_holder_data[3], block_no_created, refund_amount
         )
         stake_holder_repo.add_or_update_stake_holder(new_stake_holder)
+        self._add_stake_transaction(
+            block_no=block_no_created, blockchain_id=new_blockchain_id,
+            transaction_hash=event["data"]["transactionHash"],
+            event_name=event["data"]["event"], event_data=event["data"], staker=staker)
         stake_window = stake_window_repo.get_stake_windows_for_given_blockchain_id(blockchain_id=new_blockchain_id)
         stake_window.total_stake = total_stake_for_new_blockchain_id
         stake_window_repo.update_stake_window(stake_window)
