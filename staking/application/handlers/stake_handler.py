@@ -1,14 +1,15 @@
-from common.utils import handle_exception_with_slack_notification, generate_lambda_response
+from common.utils import generate_lambda_response
 from staking.config import SLACK_HOOK, NETWORK_ID
 from common.logger import get_logger
 from common.constant import StatusCode
 from staking.exceptions import BadRequestException
+from common.exception_handler import exception_handler
 from staking.application.services.stake_service import StakeService
 
 logger = get_logger(__name__)
 
 
-@handle_exception_with_slack_notification(SLACK_HOOK=SLACK_HOOK, NETWORK_ID=NETWORK_ID, logger=logger)
+@exception_handler(SLACK_HOOK=SLACK_HOOK, NETWORK_ID=NETWORK_ID, logger=logger)
 def get_stake_window(event, context):
     username = event["requestContext"]["authorizer"]["claims"]["email"]
     query_parameters = event["queryStringParameters"]
@@ -21,7 +22,7 @@ def get_stake_window(event, context):
     )
 
 
-@handle_exception_with_slack_notification(SLACK_HOOK=SLACK_HOOK, NETWORK_ID=NETWORK_ID, logger=logger)
+@exception_handler(SLACK_HOOK=SLACK_HOOK, NETWORK_ID=NETWORK_ID, logger=logger)
 def get_stake_holder_details_for_active_stake_window(event, context):
     username = event["requestContext"]["authorizer"]["claims"]["email"]
     query_parameters = event["queryStringParameters"]
@@ -34,7 +35,7 @@ def get_stake_holder_details_for_active_stake_window(event, context):
     )
 
 
-@handle_exception_with_slack_notification(SLACK_HOOK=SLACK_HOOK, NETWORK_ID=NETWORK_ID, logger=logger)
+@exception_handler(SLACK_HOOK=SLACK_HOOK, NETWORK_ID=NETWORK_ID, logger=logger)
 def get_stake_holder_details_for_claim_stake_windows(event, context):
     username = event["requestContext"]["authorizer"]["claims"]["email"]
     query_parameters = event["queryStringParameters"]
@@ -47,7 +48,7 @@ def get_stake_holder_details_for_claim_stake_windows(event, context):
     )
 
 
-@handle_exception_with_slack_notification(SLACK_HOOK=SLACK_HOOK, NETWORK_ID=NETWORK_ID, logger=logger)
+@exception_handler(SLACK_HOOK=SLACK_HOOK, NETWORK_ID=NETWORK_ID, logger=logger)
 def get_all_transactions_of_stake_holder_for_given_address(event, context):
     username = event["requestContext"]["authorizer"]["claims"]["email"]
     query_parameters = event["queryStringParameters"]
