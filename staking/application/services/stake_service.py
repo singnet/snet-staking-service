@@ -94,7 +94,7 @@ class StakeService:
             stake_window = StakeWindowRepository().get_stake_windows_for_given_blockchain_id(blockchain_id)
             if not stake_window:
                 raise StakeWindowNotFoundException()
-            if (stake_holder.amount_approved > 0 and stake_window.submission_end_period < current_utc_time_in_epoch
+            if (stake_holder.amount_approved > 0 and (stake_window.submission_end_period < current_utc_time_in_epoch < stake_window.end_period)
             ) or (stake_holder.amount_pending_for_approval > 0
                   and (stake_window.approval_end_period > current_utc_time_in_epoch >
                        stake_window.submission_end_period)):
