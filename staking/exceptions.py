@@ -11,18 +11,18 @@ class BadRequestException(CustomException):
         super().__init__({})
 
 
-class ActiveStakeWindowNotFound(CustomException):
+class ActiveStakeWindowNotFoundException(CustomException):
     error_message = "ACTIVE_STAKE_WINDOW_NOT_FOUND"
 
     def __init__(self):
         super().__init__({})
 
 
-class StakeWindowNotFound(CustomException):
+class StakeWindowNotFoundException(CustomException):
     error_message = "STAKE_WINDOW_NOT_FOUND"
 
     def __init__(self):
         super().__init__({})
 
 
-EXCEPTIONS = (BadRequestException, ActiveStakeWindowNotFound, StakeWindowNotFound)
+EXCEPTIONS = (BadRequestException, ActiveStakeWindowNotFoundException, StakeWindowNotFoundException)
