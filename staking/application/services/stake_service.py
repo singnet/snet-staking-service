@@ -37,54 +37,6 @@ class StakeService:
             })
         return list_of_stake_window
 
-    # @staticmethod
-    # def get_stake_holder_details_for_active_stake_window(address):
-    #     # ACTIVE stake window means current time stamp is between stake window start period and end period
-    #     active_stake_details = []
-    #     stake_holders = StakeHolderRepository().get_stake_holders_for_given_address(address=address)
-    #     for stake_holder in stake_holders:
-    #         blockchain_id = stake_holder.blockchain_id
-    #         stake_window = StakeWindowRepository().get_incubation_stake_window_for_given_blockchain_id(blockchain_id)
-    #         if stake_window is None:
-    #             stake_window_dict = {}
-    #         else:
-    #             no_of_stakers = StakeHolderRepository().get_total_no_of_stakers(stake_window.blockchain_id),
-    #             stake_window_dict = stake_window.to_dict()
-    #             total_stake_deposited = StakeHolderRepository().get_total_stake_deposited(
-    #                 stake_window_dict["blockchain_id"])
-    #             stake_window_dict.update(
-    #                 {"no_of_stakers": no_of_stakers, "total_stake_deposited": total_stake_deposited})
-    #         if stake_window is not None:
-    #             active_stake_details.append({
-    #                 "stake_holder": stake_holder.to_dict(),
-    #                 "stake_window": stake_window_dict
-    #             })
-    #     return active_stake_details
-    #
-    # @staticmethod
-    # def get_stake_holder_details_for_claim_stake_windows(address):
-    #     claims_details = []
-    #     stake_holders = StakeHolderRepository().get_stake_holders_for_given_address(address)
-    #     for stake_holder in stake_holders:
-    #         if stake_holder.amount_approved > 0 or stake_holder.amount_pending_for_approval > 0:
-    #             blockchain_id = stake_holder.blockchain_id
-    #             stake_window = StakeWindowRepository().get_claim_stake_windows_for_given_blockchain_id(blockchain_id)
-    #             if stake_window is None:
-    #                 stake_window_dict = {}
-    #             else:
-    #                 no_of_stakers = StakeHolderRepository().get_total_no_of_stakers(stake_window.blockchain_id)
-    #                 stake_window_dict = stake_window.to_dict()
-    #             total_stake_deposited = StakeHolderRepository().get_total_stake_deposited(
-    #                 stake_window_dict["blockchain_id"])
-    #             stake_window_dict.update(
-    #                 {"no_of_stakers": no_of_stakers, "total_stake_deposited": total_stake_deposited})
-    #             if stake_window is not None:
-    #                 claims_details.append({
-    #                     "stake_holder": stake_holder.to_dict(),
-    #                     "stake_window": stake_window_dict
-    #                 })
-    #     return claims_details
-
     @staticmethod
     def get_all_transactions_of_stake_holder_for_given_address(address):
         transactions_details = {}
