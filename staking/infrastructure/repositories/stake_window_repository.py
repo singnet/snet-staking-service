@@ -3,7 +3,7 @@ from staking.infrastructure.repositories.base_repository import BaseRepository
 from staking.infrastructure.models import StakeWindow as StakeWindowDBModel
 from staking.domain.factory.stake_factory import StakeFactory
 from sqlalchemy import or_
-from staking.exceptions import StakeWindowNotFound
+from staking.exceptions import StakeWindowNotFoundException
 
 
 class StakeWindowRepository(BaseRepository):
@@ -26,31 +26,6 @@ class StakeWindowRepository(BaseRepository):
                          for stake_window_db in stake_windows_raw_data]
         self.session.commit()
         return stake_windows
-
-    def get_incubation_stake_window_for_given_blockchain_id(self, blockchain_id):
-        current_time = dt.utcnow().timestamp()  # GMT Epoch
-        stake_windows_raw_data = self.session.query(StakeWindowDBModel).filter(
-            StakeWindowDBModel.blockchain_id == blockchain_id). \
-            filter(StakeWindowDBModel.submission_end_period < current_time).filter(
-            StakeWindowDBModel.end_period > current_time).all()
-        if not bool(stake_windows_raw_data):
-            self.session.commit()
-            return None
-        stake_window = StakeFactory.convert_stake_window_db_model_to_entity_model(stake_windows_raw_data[0])
-        self.session.commit()
-        return stake_window
-
-    def get_claim_stake_windows_for_given_blockchain_id(self, blockchain_id):
-        current_time = dt.utcnow().timestamp()  # GMT Epoch
-        stake_windows_raw_data = self.session.query(StakeWindowDBModel).filter(
-            StakeWindowDBModel.blockchain_id == blockchain_id).filter(
-            StakeWindowDBModel.end_period < current_time).all()
-        if not bool(stake_windows_raw_data):
-            self.session.commit()
-            return None
-        stake_window = StakeFactory.convert_stake_window_db_model_to_entity_model(stake_windows_raw_data[0])
-        self.session.commit()
-        return stake_window
 
     def get_stake_windows_for_given_blockchain_id(self, blockchain_id):
         current_time = dt.utcnow().timestamp()  # GMT Epoch
