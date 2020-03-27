@@ -28,7 +28,7 @@ class TokenStakeEventConsumer(object):
         base_contract_path = os.path.abspath(
             os.path.join(os.path.dirname(__file__), '..', '..', 'node_modules', 'singularitynet-stake-contracts'))
         logger.info(f"base_contract_path: {base_contract_path}")
-        token_stake_contract = self._blockchain_util.get_contract_instance(base_contract_path, "SingularityNetToken",
+        token_stake_contract = self._blockchain_util.get_contract_instance(base_contract_path, "TokenStake",
                                                                            self._net_id)
 
         return token_stake_contract
