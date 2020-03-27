@@ -51,7 +51,7 @@ package:
     - log_setup.py
     - node_modules/**
   include:
-    - node_modules/singularitynet-platform-contracts/**
+    - node_modules/singularitynet-stake-contracts/**
 
 functions:
   get-stake-window-details:
