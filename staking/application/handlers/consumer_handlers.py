@@ -26,7 +26,7 @@ def open_for_stake_consumer_handler(event, context):
 
 @exception_handler(SLACK_HOOK=SLACK_HOOK, NETWORK_ID=NETWORK_ID, logger=logger)
 def submit_stake_consumer_handler(event, context):
-    logger.info(f"Got OpenForStake Event {event}")
+    logger.info(f"Got SubmitStake Event {event}")
     SubmitStakeEventConsumer(net_id=NETWORK_ID, ws_provider=NETWORK['ws_provider']).on_event(
         event)
 
@@ -35,7 +35,7 @@ def submit_stake_consumer_handler(event, context):
 
 @exception_handler(SLACK_HOOK=SLACK_HOOK, NETWORK_ID=NETWORK_ID, logger=logger)
 def approve_stake_consumer_handler(event, context):
-    logger.info(f"Got OpenForStake Event {event}")
+    logger.info(f"Got ApproveStake Event {event}")
     ApproveStakeEventConsumer(net_id=NETWORK_ID, ws_provider=NETWORK['ws_provider']).on_event(
         event)
 
@@ -44,7 +44,7 @@ def approve_stake_consumer_handler(event, context):
 
 @exception_handler(SLACK_HOOK=SLACK_HOOK, NETWORK_ID=NETWORK_ID, logger=logger)
 def reject_stake_consumer_handler(event, context):
-    logger.info(f"Got OpenForStake Event {event}")
+    logger.info(f"Got RejectStake Event {event}")
     RejectStakeEventConsumer(net_id=NETWORK_ID, ws_provider=NETWORK['ws_provider']).on_event(
         event)
 
@@ -53,7 +53,7 @@ def reject_stake_consumer_handler(event, context):
 
 @exception_handler(SLACK_HOOK=SLACK_HOOK, NETWORK_ID=NETWORK_ID, logger=logger)
 def withdraw_stake_consumer_handler(event, context):
-    logger.info(f"Got OpenForStake Event {event}")
+    logger.info(f"Got WithdrawStake Event {event}")
     WithdrawStakeEventConsumer(net_id=NETWORK_ID, ws_provider=NETWORK['ws_provider']).on_event(
         event)
 
@@ -62,7 +62,7 @@ def withdraw_stake_consumer_handler(event, context):
 
 @exception_handler(SLACK_HOOK=SLACK_HOOK, NETWORK_ID=NETWORK_ID, logger=logger)
 def auto_renew_stake_consumer_handler(event, context):
-    logger.info(f"Got OpenForStake Event {event}")
+    logger.info(f"Got AutoRenewStake Event {event}")
     AutoRenewStakeEventConsumer(net_id=NETWORK_ID, ws_provider=NETWORK['ws_provider']).on_event(
         event)
 
@@ -71,7 +71,7 @@ def auto_renew_stake_consumer_handler(event, context):
 
 @exception_handler(SLACK_HOOK=SLACK_HOOK, NETWORK_ID=NETWORK_ID, logger=logger)
 def claim_stake_consumer_handler(event, context):
-    logger.info(f"Got OpenForStake Event {event}")
+    logger.info(f"Got ClaimStake Event {event}")
     ClaimStakeEventConsumer(net_id=NETWORK_ID, ws_provider=NETWORK['ws_provider']).on_event(
         event)
 
