@@ -25,6 +25,7 @@ class StakeWindow(Base):
     token_operator = Column("token_operator", VARCHAR(50), nullable=False)
     created_on = Column("created_on", TIMESTAMP(timezone=False), nullable=False)
     updated_on = Column("updated_on", TIMESTAMP(timezone=False), nullable=False, default=func.utc_timestamp())
+    UniqueConstraint(blockchain_id, name="uq_stake_window")
 
 
 class StakeHolder(Base):

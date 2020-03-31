@@ -1,8 +1,8 @@
 """baseline
 
-Revision ID: 6857c07119f5
+Revision ID: 4ce108ce2ebb
 Revises: 
-Create Date: 2020-03-06 14:40:11.116268
+Create Date: 2020-03-31 13:13:29.615450
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import mysql
 
 # revision identifiers, used by Alembic.
-revision = '6857c07119f5'
+revision = '4ce108ce2ebb'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -62,7 +62,8 @@ def upgrade():
     sa.Column('token_operator', mysql.VARCHAR(length=50), nullable=False),
     sa.Column('created_on', mysql.TIMESTAMP(), nullable=False),
     sa.Column('updated_on', mysql.TIMESTAMP(), nullable=False),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('blockchain_id', name='uq_stake_window')
     )
     # ### end Alembic commands ###
 

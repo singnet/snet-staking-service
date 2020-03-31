@@ -162,7 +162,7 @@ class TestStakeService(TestCase):
         )
         stake_window_repo.add_item(
             StakeWindow(
-                blockchain_id=100,
+                blockchain_id=101,
                 start_period=int(dt.utcnow().timestamp()) - 50000,
                 submission_end_period=int(dt.utcnow().timestamp()) + 50000,
                 approval_end_period=int(dt.utcnow().timestamp()) + 100000,
