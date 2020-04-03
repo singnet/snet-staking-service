@@ -1,0 +1,306 @@
+plugins:
+  - serverless-offline
+  - serverless-python-requirements
+  - serverless-plugin-tracing
+  - serverless-prune-plugin
+
+service: staking
+provider:
+  name: aws
+  runtime: python3.6
+  description: staking service.
+  memorySize: 512
+  timeout: 30
+  region: ${file(./config.${self:provider.stage}.json):REGION}
+  stage: ${opt:stage,'dev'}
+  deploymentBucket:
+    name: snet-serverless-artifacts
+    serverSideEncryption: AES256
+    tags:
+      key1: staking
+    deploymentPrefix: serverless
+    tracing: true
+
+custom:
+  pythonRequirements:
+    fileName: staking/requirement.txt
+    dockerizePip: true
+    useDownloadCache: true
+    useStaticCache: true
+    cacheLocation: "/var/cache/serverless"
+  prune:
+    automatic: true
+    includeLayers: true
+    number: 5
+
+package:
+  exclude:
+    - .circleci/**
+    - .gitignore/**
+    - .serverless/**
+    - requirement.txt
+    - venv/**
+    - config.ropsten.json
+    - sls_deploy.sh
+    - serverless.yml
+    - test/**
+    - Readme.md
+    - package.json
+    - Dockerfile
+    - License
+    - log_setup.py
+    - node_modules/**
+  include:
+    - node_modules/singularitynet-stake-contracts/**
+
+functions:
+  get-stake-window-details:
+    handler: staking.application.handlers.stake_handler.get_stake_window
+    role: ${file(./config.${self:provider.stage}.json):ROLE}
+    vpc:
+      securityGroupIds:
+        - ${file(./config.${self:provider.stage}.json):SG1}
+        - ${file(./config.${self:provider.stage}.json):SG2}
+      subnetIds:
+        - ${file(./config.${self:provider.stage}.json):VPC1}
+        - ${file(./config.${self:provider.stage}.json):VPC2}
+    events:
+      - http:
+          method: GET
+          path: /stake-window
+          authorizer:
+            name: user-authorizer
+            type: COGNITO_USER_POOLS
+            arn: ${file(./config.${self:provider.stage}.json):AUTHORIZER}
+            identitySource: method.request.header.Authorization
+          cors:
+            origin: ${file(./config.${self:provider.stage}.json):ORIGIN}
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - x-requested-with
+
+  get-stake-holder-details-for-active-stake-window:
+    handler: staking.application.handlers.stake_handler.get_stake_holder_details_for_active_stake_window
+    role: ${file(./config.${self:provider.stage}.json):ROLE}
+    vpc:
+      securityGroupIds:
+        - ${file(./config.${self:provider.stage}.json):SG1}
+        - ${file(./config.${self:provider.stage}.json):SG2}
+      subnetIds:
+        - ${file(./config.${self:provider.stage}.json):VPC1}
+        - ${file(./config.${self:provider.stage}.json):VPC2}
+    events:
+      - http:
+          method: GET
+          path: /stake-holder/active
+          authorizer:
+            name: user-authorizer
+            type: COGNITO_USER_POOLS
+            arn: ${file(./config.${self:provider.stage}.json):AUTHORIZER}
+            identitySource: method.request.header.Authorization
+          cors:
+            origin: ${file(./config.${self:provider.stage}.json):ORIGIN}
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - x-requested-with
+
+  get-stake-holders-for-claim-stake-windows:
+    handler: staking.application.handlers.stake_handler.get_stake_holder_details_for_claim_stake_windows
+    role: ${file(./config.${self:provider.stage}.json):ROLE}
+    vpc:
+      securityGroupIds:
+        - ${file(./config.${self:provider.stage}.json):SG1}
+        - ${file(./config.${self:provider.stage}.json):SG2}
+      subnetIds:
+        - ${file(./config.${self:provider.stage}.json):VPC1}
+        - ${file(./config.${self:provider.stage}.json):VPC2}
+    events:
+      - http:
+          method: GET
+          path: /stake-holder/claim
+          authorizer:
+            name: user-authorizer
+            type: COGNITO_USER_POOLS
+            arn: ${file(./config.${self:provider.stage}.json):AUTHORIZER}
+            identitySource: method.request.header.Authorization
+          cors:
+            origin: ${file(./config.${self:provider.stage}.json):ORIGIN}
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - x-requested-with
+
+  get-stake-holder-transaction-details:
+    handler: staking.application.handlers.stake_handler.get_all_transactions_of_stake_holder_for_given_address
+    role: ${file(./config.${self:provider.stage}.json):ROLE}
+    vpc:
+      securityGroupIds:
+        - ${file(./config.${self:provider.stage}.json):SG1}
+        - ${file(./config.${self:provider.stage}.json):SG2}
+      subnetIds:
+        - ${file(./config.${self:provider.stage}.json):VPC1}
+        - ${file(./config.${self:provider.stage}.json):VPC2}
+    events:
+      - http:
+          method: GET
+          path: /transactions
+          authorizer:
+            name: user-authorizer
+            type: COGNITO_USER_POOLS
+            arn: ${file(./config.${self:provider.stage}.json):AUTHORIZER}
+            identitySource: method.request.header.Authorization
+          cors:
+            origin: ${file(./config.${self:provider.stage}.json):ORIGIN}
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - x-requested-with
+
+  open-for-stake-consumer:
+    warmup: true
+    handler: staking.application.handlers.consumer_handlers.open_for_stake_consumer_handler
+    role: ${file(./config.${self:provider.stage}.json):ROLE}
+    tags:
+      Environment: ${file(./config.${self:provider.stage}.json):ENVIRONMENT}
+      Team: ${file(./config.${self:provider.stage}.json):TEAM}
+      Owner: ${file(./config.${self:provider.stage}.json):OWNER}
+    vpc:
+      securityGroupIds:
+        - ${file(./config.${self:provider.stage}.json):SG1}
+        - ${file(./config.${self:provider.stage}.json):SG2}
+      subnetIds:
+        - ${file(./config.${self:provider.stage}.json):VPC1}
+        - ${file(./config.${self:provider.stage}.json):VPC2}
+
+  submit-stake-consumer:
+    warmup: true
+    handler: staking.application.handlers.consumer_handlers.submit_stake_consumer_handler
+    role: ${file(./config.${self:provider.stage}.json):ROLE}
+    tags:
+      Environment: ${file(./config.${self:provider.stage}.json):ENVIRONMENT}
+      Team: ${file(./config.${self:provider.stage}.json):TEAM}
+      Owner: ${file(./config.${self:provider.stage}.json):OWNER}
+    vpc:
+      securityGroupIds:
+        - ${file(./config.${self:provider.stage}.json):SG1}
+        - ${file(./config.${self:provider.stage}.json):SG2}
+      subnetIds:
+        - ${file(./config.${self:provider.stage}.json):VPC1}
+        - ${file(./config.${self:provider.stage}.json):VPC2}
+
+  approved-stake-consumer:
+    warmup: true
+    handler: staking.application.handlers.consumer_handlers.approve_stake_consumer_handler
+    role: ${file(./config.${self:provider.stage}.json):ROLE}
+    tags:
+      Environment: ${file(./config.${self:provider.stage}.json):ENVIRONMENT}
+      Team: ${file(./config.${self:provider.stage}.json):TEAM}
+      Owner: ${file(./config.${self:provider.stage}.json):OWNER}
+    vpc:
+      securityGroupIds:
+        - ${file(./config.${self:provider.stage}.json):SG1}
+        - ${file(./config.${self:provider.stage}.json):SG2}
+      subnetIds:
+        - ${file(./config.${self:provider.stage}.json):VPC1}
+        - ${file(./config.${self:provider.stage}.json):VPC2}
+
+  reject-stake-consumer:
+    warmup: true
+    handler: staking.application.handlers.consumer_handlers.reject_stake_consumer_handler
+    role: ${file(./config.${self:provider.stage}.json):ROLE}
+    tags:
+      Environment: ${file(./config.${self:provider.stage}.json):ENVIRONMENT}
+      Team: ${file(./config.${self:provider.stage}.json):TEAM}
+      Owner: ${file(./config.${self:provider.stage}.json):OWNER}
+    vpc:
+      securityGroupIds:
+        - ${file(./config.${self:provider.stage}.json):SG1}
+        - ${file(./config.${self:provider.stage}.json):SG2}
+      subnetIds:
+        - ${file(./config.${self:provider.stage}.json):VPC1}
+        - ${file(./config.${self:provider.stage}.json):VPC2}
+
+  withdraw-stake-consumer:
+    warmup: true
+    handler: staking.application.handlers.consumer_handlers.withdraw_stake_consumer_handler
+    role: ${file(./config.${self:provider.stage}.json):ROLE}
+    tags:
+      Environment: ${file(./config.${self:provider.stage}.json):ENVIRONMENT}
+      Team: ${file(./config.${self:provider.stage}.json):TEAM}
+      Owner: ${file(./config.${self:provider.stage}.json):OWNER}
+    vpc:
+      securityGroupIds:
+        - ${file(./config.${self:provider.stage}.json):SG1}
+        - ${file(./config.${self:provider.stage}.json):SG2}
+      subnetIds:
+        - ${file(./config.${self:provider.stage}.json):VPC1}
+        - ${file(./config.${self:provider.stage}.json):VPC2}
+
+
+  auto-renew-stake-consumer:
+    warmup: true
+    handler: staking.application.handlers.consumer_handlers.auto_renew_stake_consumer_handler
+    role: ${file(./config.${self:provider.stage}.json):ROLE}
+    tags:
+      Environment: ${file(./config.${self:provider.stage}.json):ENVIRONMENT}
+      Team: ${file(./config.${self:provider.stage}.json):TEAM}
+      Owner: ${file(./config.${self:provider.stage}.json):OWNER}
+    vpc:
+      securityGroupIds:
+        - ${file(./config.${self:provider.stage}.json):SG1}
+        - ${file(./config.${self:provider.stage}.json):SG2}
+      subnetIds:
+        - ${file(./config.${self:provider.stage}.json):VPC1}
+        - ${file(./config.${self:provider.stage}.json):VPC2}
+
+
+  claim-stake-consumer:
+    warmup: true
+    handler: staking.application.handlers.consumer_handlers.claim_stake_consumer_handler
+    role: ${file(./config.${self:provider.stage}.json):ROLE}
+    tags:
+      Environment: ${file(./config.${self:provider.stage}.json):ENVIRONMENT}
+      Team: ${file(./config.${self:provider.stage}.json):TEAM}
+      Owner: ${file(./config.${self:provider.stage}.json):OWNER}
+    vpc:
+      securityGroupIds:
+        - ${file(./config.${self:provider.stage}.json):SG1}
+        - ${file(./config.${self:provider.stage}.json):SG2}
+      subnetIds:
+        - ${file(./config.${self:provider.stage}.json):VPC1}
+        - ${file(./config.${self:provider.stage}.json):VPC2}
+
+
+  update-auto-renewal-stake-consumer:
+    warmup: true
+    handler: staking.application.handlers.consumer_handlers.update_auto_renewal_consumer_handler
+    role: ${file(./config.${self:provider.stage}.json):ROLE}
+    tags:
+      Environment: ${file(./config.${self:provider.stage}.json):ENVIRONMENT}
+      Team: ${file(./config.${self:provider.stage}.json):TEAM}
+      Owner: ${file(./config.${self:provider.stage}.json):OWNER}
+    vpc:
+      securityGroupIds:
+        - ${file(./config.${self:provider.stage}.json):SG1}
+        - ${file(./config.${self:provider.stage}.json):SG2}
+      subnetIds:
+        - ${file(./config.${self:provider.stage}.json):VPC1}
+        - ${file(./config.${self:provider.stage}.json):VPC2}
