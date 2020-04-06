@@ -252,7 +252,7 @@ class AutoRenewStakeEventConsumer(TokenStakeEventConsumer):
         block_no_created = event["data"]["block_no"]
         new_stake_holder = StakeHolder(
             new_blockchain_id, event_data["staker"], new_stake_holder_data[1],
-            new_stake_holder_data[3], new_stake_holder_data[3], block_no_created, refund_amount
+            new_stake_holder_data[2], new_stake_holder_data[3], block_no_created, refund_amount
         )
         stake_holder_repo.add_or_update_stake_holder(new_stake_holder)
         self._add_stake_transaction(
