@@ -10,12 +10,32 @@ logger = get_logger(__name__)
 
 
 @exception_handler(SLACK_HOOK=SLACK_HOOK, NETWORK_ID=NETWORK_ID, logger=logger)
+def get_stake_summary(event, context):
+    response = StakeService.get_stake_summary()
+    return generate_lambda_response(
+        StatusCode.OK,
+        {"status": "success", "data": response, "error": {}}, cors_enabled=True
+    )
+
+
+@exception_handler(SLACK_HOOK=SLACK_HOOK, NETWORK_ID=NETWORK_ID, logger=logger)
+def get_all_stake_windows(event, context):
+    username = event["requestContext"]["authorizer"]["claims"]["email"]
+    response = StakeService.get_all_stake_windows()
+    return generate_lambda_response(
+        StatusCode.OK,
+        {"status": "success", "data": response, "error": {}}, cors_enabled=True
+    )
+
+
+@exception_handler(SLACK_HOOK=SLACK_HOOK, NETWORK_ID=NETWORK_ID, logger=logger)
 def get_stake_window(event, context):
     username = event["requestContext"]["authorizer"]["claims"]["email"]
     query_parameters = event["queryStringParameters"]
     if "status" not in query_parameters or "staker" not in query_parameters:
         raise BadRequestException()
-    response = StakeService.get_stake_window_based_on_status(status=query_parameters["status"], staker=query_parameters["staker"])
+    response = StakeService.get_stake_window_based_on_status(status=query_parameters["status"],
+                                                             staker=query_parameters["staker"])
     return generate_lambda_response(
         StatusCode.OK,
         {"status": "success", "data": response, "error": {}}, cors_enabled=True

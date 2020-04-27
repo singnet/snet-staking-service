@@ -2,11 +2,18 @@ from datetime import datetime as dt
 from staking.infrastructure.repositories.base_repository import BaseRepository
 from staking.infrastructure.models import StakeWindow as StakeWindowDBModel
 from staking.domain.factory.stake_factory import StakeFactory
-from sqlalchemy import or_
+from sqlalchemy import or_, func
 from staking.exceptions import StakeWindowNotFoundException
 
 
 class StakeWindowRepository(BaseRepository):
+
+    def get_stake_windows(self):
+        stake_windows_raw_data = self.session.query(StakeWindowDBModel).all()
+        stake_windows = [StakeFactory.convert_stake_window_db_model_to_entity_model(stake_window_db)
+                         for stake_window_db in stake_windows_raw_data]
+        self.session.commit()
+        return stake_windows
 
     def get_stake_window_open_for_submission(self):
         current_time = dt.utcnow().timestamp()  # GMT Epoch
@@ -27,7 +34,7 @@ class StakeWindowRepository(BaseRepository):
         self.session.commit()
         return stake_windows
 
-    def get_stake_windows_for_given_blockchain_id(self, blockchain_id):
+    def get_stake_window_for_given_blockchain_id(self, blockchain_id):
         current_time = dt.utcnow().timestamp()  # GMT Epoch
         stake_windows_raw_data = self.session.query(StakeWindowDBModel).filter(
             StakeWindowDBModel.blockchain_id == blockchain_id) \
@@ -81,3 +88,12 @@ class StakeWindowRepository(BaseRepository):
         except Exception as e:
             self.session.rollback()
             raise e
+
+    def get_total_reward_across_all_stake_window(self):
+        query_response = self.session.query(
+            func.sum(StakeWindowDBModel.reward_amount).label("total_reward_amount")).all()
+        self.session.commit()
+        total_reward_amount = query_response[0].total_reward_amount
+        if total_reward_amount is None:
+            return 0
+        return int(total_reward_amount)
