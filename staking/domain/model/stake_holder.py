@@ -1,6 +1,6 @@
 class StakeHolder:
     def __init__(self, blockchain_id, staker, amount_pending_for_approval, amount_approved, auto_renewal,
-                 block_no_created, refund_amount):
+                 block_no_created, refund_amount, new_staked_amount=None):
         self._blockchain_id = blockchain_id
         self._staker = staker
         self._amount_pending_for_approval = amount_pending_for_approval
@@ -8,6 +8,7 @@ class StakeHolder:
         self._auto_renewal = auto_renewal
         self._block_no_created = block_no_created
         self._refund_amount = refund_amount
+        self._new_staked_amount = new_staked_amount
 
     def to_dict(self):
         return {
@@ -55,3 +56,7 @@ class StakeHolder:
     @property
     def refund_amount(self):
         return self._refund_amount
+
+    @property
+    def new_staked_amount(self):
+        return self._new_staked_amount
