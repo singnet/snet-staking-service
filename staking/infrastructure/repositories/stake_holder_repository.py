@@ -57,6 +57,7 @@ class StakeHolderRepository(BaseRepository):
                 auto_renewal=stake_holder.auto_renewal,
                 block_no_created=stake_holder.block_no_created,
                 refund_amount=stake_holder.refund_amount,
+                new_staked_amount=stake_holder.new_staked_amount,
                 created_on=dt.utcnow(),
                 updated_on=dt.utcnow()
             ))
