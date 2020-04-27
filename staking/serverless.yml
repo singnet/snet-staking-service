@@ -3,6 +3,7 @@ plugins:
   - serverless-python-requirements
   - serverless-plugin-tracing
   - serverless-prune-plugin
+  - serverless-aws-documentation
 
 service: staking
 provider:
@@ -32,6 +33,36 @@ custom:
     automatic: true
     includeLayers: true
     number: 5
+  documentation:
+    models:
+      -
+        name: "ErrorResponse"
+        description: "Error Response"
+        contentType: "application/json"
+        schema:
+          type: "object"
+          properties:
+            error:
+              type: "object"
+              properties:
+                code:
+                  type: "integer"
+                message:
+                  type: "string"
+      -
+        name: "StakeSummary"
+        description: "Stake Summary"
+        contentType: "application/json"
+        schema:
+          type: "object"
+          properties:
+            no_of_stakers:
+              type: "integer"
+            total_reward:
+              type: "integer"
+            total_stake_deposited:
+              type: "integer"
+
 
 package:
   exclude:
@@ -78,6 +109,27 @@ functions:
               - X-Amz-Security-Token
               - X-Amz-User-Agent
               - x-requested-with
+          documentation:
+            summary: "Get stake summary"
+            description: "Get total staked amount, reward given and unique stakers across all stake window"
+            tags:
+              - "summary"
+            requestHeaders:
+              -
+                name: "Content-Type"
+                description: "application/json"
+
+            methodResponses:
+              -
+                statusCode: "200"
+                responseBody:
+                  description: "Stake Summary"
+                responseModels:
+                  "application/json": "StakeSummary"
+              -
+                statusCode: "400"
+                responseModels:
+                  "application/json": "ErrorResponse"
 
   get-all-stake-window-details:
     handler: staking.application.handlers.stake_handler.get_all_stake_windows
