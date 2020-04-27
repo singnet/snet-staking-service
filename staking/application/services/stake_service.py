@@ -13,6 +13,30 @@ class StakeService:
         pass
 
     @staticmethod
+    def get_stake_summary():
+        total_reward = StakeWindowRepository().get_total_reward_across_all_stake_window()
+        total_stake = StakeHolderRepository().get_total_stake_across_all_stake_window()
+        no_of_unique_stakers = StakeHolderRepository().get_unique_staker_across_all_stake_window()
+        return {
+            "no_of_stakers": no_of_unique_stakers,
+            "total_reward": total_reward,
+            "total_stake_deposited": total_stake
+        }
+
+    @staticmethod
+    def get_all_stake_windows():
+        stake_windows = StakeWindowRepository().get_stake_windows()
+        list_of_stake_window = [stake_window.to_dict() for stake_window in stake_windows]
+        for stake_window in list_of_stake_window:
+            stake_window.update({
+                "no_of_stakers": StakeHolderRepository().get_total_no_of_stakers(stake_window["blockchain_id"]),
+                "total_stake_deposited": StakeHolderRepository().get_total_stake_deposited(
+                    stake_window["blockchain_id"])
+
+            })
+        return list_of_stake_window
+
+    @staticmethod
     def get_stake_window_based_on_status(status, staker):
         stake_windows = []
         no_of_stakers = 0
@@ -45,7 +69,7 @@ class StakeService:
         for transaction in stake_transactions:
             blockchain_id = transaction.blockchain_id
             if transactions_details.get(blockchain_id, None) is None:
-                stake_window = StakeWindowRepository().get_stake_windows_for_given_blockchain_id(blockchain_id)
+                stake_window = StakeWindowRepository().get_stake_window_for_given_blockchain_id(blockchain_id)
                 if stake_window is None:
                     stake_window_dict = {}
                 else:
@@ -68,7 +92,7 @@ class StakeService:
         stake_holders = StakeHolderRepository().get_stake_holders_for_given_address(address)
         for stake_holder in stake_holders:
             blockchain_id = stake_holder.blockchain_id
-            stake_window = StakeWindowRepository().get_stake_windows_for_given_blockchain_id(blockchain_id)
+            stake_window = StakeWindowRepository().get_stake_window_for_given_blockchain_id(blockchain_id)
             if not stake_window:
                 raise StakeWindowNotFoundException()
             if (stake_holder.amount_approved > 0 and stake_window.end_period < current_utc_time_in_epoch) or (
@@ -91,10 +115,11 @@ class StakeService:
         stake_holders = StakeHolderRepository().get_stake_holders_for_given_address(address)
         for stake_holder in stake_holders:
             blockchain_id = stake_holder.blockchain_id
-            stake_window = StakeWindowRepository().get_stake_windows_for_given_blockchain_id(blockchain_id)
+            stake_window = StakeWindowRepository().get_stake_window_for_given_blockchain_id(blockchain_id)
             if not stake_window:
                 raise StakeWindowNotFoundException()
-            if (stake_holder.amount_approved > 0 and (stake_window.submission_end_period < current_utc_time_in_epoch < stake_window.end_period)
+            if (stake_holder.amount_approved > 0 and (
+                    stake_window.submission_end_period < current_utc_time_in_epoch < stake_window.end_period)
             ) or (stake_holder.amount_pending_for_approval > 0
                   and (stake_window.approval_end_period > current_utc_time_in_epoch >
                        stake_window.submission_end_period)):

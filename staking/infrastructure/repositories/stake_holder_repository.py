@@ -2,7 +2,7 @@ from datetime import datetime as dt
 from staking.infrastructure.repositories.base_repository import BaseRepository
 from staking.infrastructure.models import StakeHolder as StakeHolderDBModel
 from staking.domain.factory.stake_factory import StakeFactory
-from sqlalchemy import func
+from sqlalchemy import func, distinct
 from common.logger import get_logger
 
 logger = get_logger(__name__)
@@ -71,3 +71,22 @@ class StakeHolderRepository(BaseRepository):
             stake_holder_db.block_no_created = stake_holder.block_no_created
         self.session.commit()
         return stake_holder
+
+    def get_total_stake_across_all_stake_window(self):
+        query_response = self.session.query(
+            func.sum(StakeHolderDBModel.new_staked_amount).label("total_new_staked_amount")).all()
+        self.session.commit()
+        total_new_staked_amount = query_response[0].total_new_staked_amount
+        if total_new_staked_amount is None:
+            return 0
+        return int(total_new_staked_amount)
+
+    def get_unique_staker_across_all_stake_window(self):
+        query_response = self.session.query(
+            func.count(distinct(StakeHolderDBModel.staker)).label("no_of_unique_staker")).all()
+        self.session.commit()
+        no_of_unique_staker = query_response[0].no_of_unique_staker
+        if no_of_unique_staker is None:
+            return 0
+        return int(no_of_unique_staker)
+
