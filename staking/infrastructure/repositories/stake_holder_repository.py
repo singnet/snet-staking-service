@@ -70,6 +70,8 @@ class StakeHolderRepository(BaseRepository):
             stake_holder_db.auto_renewal = stake_holder.auto_renewal
             stake_holder_db.refund_amount = stake_holder_db.refund_amount + stake_holder.refund_amount
             stake_holder_db.block_no_created = stake_holder.block_no_created
+            if stake_holder_db.new_staked_amount == 0:
+                stake_holder_db.new_staked_amount = stake_holder.new_staked_amount
         self.session.commit()
         return stake_holder
 
@@ -90,4 +92,3 @@ class StakeHolderRepository(BaseRepository):
         if no_of_unique_staker is None:
             return 0
         return int(no_of_unique_staker)
-
