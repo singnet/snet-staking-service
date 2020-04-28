@@ -36,8 +36,7 @@ custom:
   documentation:
     models:
       -
-        name: "ErrorResponse"
-        description: "Error Response"
+        name: "Error"
         contentType: "application/json"
         schema:
           type: "object"
@@ -50,19 +49,37 @@ custom:
                 message:
                   type: "string"
       -
-        name: "StakeSummary"
-        description: "Stake Summary"
+        name: "ErrorResponse"
         contentType: "application/json"
         schema:
           type: "object"
           properties:
-            no_of_stakers:
-              type: "integer"
-            total_reward:
-              type: "integer"
-            total_stake_deposited:
-              type: "integer"
-
+            status:
+              type: "string"
+            data:
+              type: "object"
+              properties:
+                error:
+                  $ref: "{{model: Error}}"
+      -
+        name: "StakeSummary"
+        contentType: "application/json"
+        schema:
+          type: "object"
+          properties:
+            status:
+              type: "string"
+            data:
+              type: "object"
+              properties:
+                no_of_stakers:
+                  type: "integer"
+                total_reward:
+                  type: "integer"
+                total_stake_deposited:
+                  type: "integer"
+                error:
+                  $ref: "{{model: Error}}"
 
 package:
   exclude:
@@ -127,7 +144,7 @@ functions:
                 responseModels:
                   "application/json": "StakeSummary"
               -
-                statusCode: "400"
+                statusCode: "500"
                 responseModels:
                   "application/json": "ErrorResponse"
 
