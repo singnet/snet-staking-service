@@ -36,7 +36,7 @@ custom:
   documentation:
     models:
       -
-        name: "Error"
+        name: "ErrorStatus"
         contentType: "application/json"
         schema:
           type: "object"
@@ -60,7 +60,7 @@ custom:
               type: "object"
               properties:
                 error:
-                  $ref: "{{model: Error}}"
+                  $ref: "{{model: ErrorStatus}}"
       -
         name: "StakeSummary"
         contentType: "application/json"
@@ -79,7 +79,7 @@ custom:
                 total_stake_deposited:
                   type: "integer"
                 error:
-                  $ref: "{{model: Error}}"
+                  $ref: "{{model: ErrorStatus}}"
 
 package:
   exclude:
