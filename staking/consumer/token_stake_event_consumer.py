@@ -146,7 +146,7 @@ class ApproveStakeEventConsumer(TokenStakeEventConsumer):
         refund_amount = event_data["returnAmount"]
         stake_holder = StakeHolder(
             blockchain_id, event_data["staker"], amount_pending_for_approval, amount_approved, auto_renewal,
-            block_no_created, refund_amount, new_staked_amount=amount_approved
+            block_no_created, refund_amount, new_staked_amount=event_data["approvedStakeAmount"]
         )
         stake_holder_repo.add_or_update_stake_holder(stake_holder)
 

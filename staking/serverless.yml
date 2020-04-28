@@ -36,6 +36,19 @@ custom:
   documentation:
     models:
       -
+        name: "Error"
+        contentType: "application/json"
+        schema:
+          type: "object"
+          properties:
+            error:
+              type: "object"
+              properties:
+                code:
+                  type: "integer"
+                message:
+                  type: "string"
+      -
         name: "ErrorResponse"
         contentType: "application/json"
         schema:
@@ -47,12 +60,7 @@ custom:
               type: "object"
               properties:
                 error:
-                  type: "object"
-                  properties:
-                    code:
-                      type: "integer"
-                    message:
-                      type: "string"
+                  $ref: "{{model: Error}}"
       -
         name: "StakeSummary"
         contentType: "application/json"
@@ -71,12 +79,7 @@ custom:
                 total_stake_deposited:
                   type: "integer"
                 error:
-                  type: "object"
-                  properties:
-                    code:
-                      type: "integer"
-                    message:
-                      type: "string"
+                  $ref: "{{model: Error}}"
 
 package:
   exclude:
