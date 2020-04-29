@@ -87,8 +87,24 @@ class StakeHolderRepository(BaseRepository):
     def get_unique_staker_across_all_stake_window(self):
         query_response = self.session.query(
             func.count(distinct(StakeHolderDBModel.staker)).label("no_of_unique_staker")).all()
-        self.session.commit()
         no_of_unique_staker = query_response[0].no_of_unique_staker
+        self.session.commit()
         if no_of_unique_staker is None:
             return 0
         return int(no_of_unique_staker)
+
+    def get_auto_renew_amount_for_given_stake_window(self, blockchain_id, staker=None):
+        query = self.session.query(
+            func.SUM(StakeHolderDBModel.amount_approved).label("auto_renewed_amount")).\
+            filter(StakeHolderDBModel.blockchain_id < blockchain_id). \
+            filter(StakeHolderDBModel.auto_renewal == 1)
+        if staker is not None:
+            query = query.filter(StakeHolderDBModel.staker == staker)
+        query_response = query.all()
+        auto_renew_amount = query_response[0].auto_renewed_amount
+        self.session.commit()
+        if auto_renew_amount is None:
+            return 0
+        return int(auto_renew_amount)
+
+
