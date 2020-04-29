@@ -13,7 +13,7 @@ class StakeWindowRepository(BaseRepository):
         current_time = dt.utcnow().timestamp()  # GMT Epoch
         stake_windows_raw_data = self.session.query(StakeWindowDBModel).\
             filter(StakeWindowDBModel.submission_end_period <= current_time). \
-            order_by(StakeWindowRepository.blockchain_id.desc()).all()
+            order_by(StakeWindowDBModel.blockchain_id.desc()).all()
         stake_windows = [StakeFactory.convert_stake_window_db_model_to_entity_model(stake_window_db)
                          for stake_window_db in stake_windows_raw_data]
         self.session.commit()
