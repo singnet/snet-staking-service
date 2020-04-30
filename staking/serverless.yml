@@ -83,11 +83,11 @@ custom:
       -
         name: "Request"
         contentType: "application/json"
-        schema: ${file(/staking/documentation/models/request.json)}
+        schema: ${file(./staking/documentation/models/request.json)}
       -
         name: "Response"
         contentType: "application/json"
-        schema: ${file(/staking/documentation/models/response.json)}
+        schema: ${file(./staking/documentation/models/response.json)}
 
 package:
   exclude:
