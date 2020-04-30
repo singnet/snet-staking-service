@@ -151,7 +151,7 @@ class TestStakeService(TestCase):
                 blockchain_id=100,
                 staker="0xq2w3e4r5t6y7u8e3r45ty6u78i",
                 amount_pending_for_approval=100000,
-                amount_approved=50000,
+                amount_approved=0,
                 auto_renewal=False,
                 block_no_created=12345678,
                 refund_amount=0,
@@ -177,7 +177,8 @@ class TestStakeService(TestCase):
         assert (response_body["status"] == "success")
         assert (response_body["data"][0]["blockchain_id"] == 100)
         assert (response_body["data"][0]["no_of_stakers"] == 1)
-        assert (response_body["data"][0]["stake_amount_for_given_staker_address"] == 100000)
+        assert (response_body["data"][0]["pending_stake_amount_for_staker"] == 100000)
+        assert (response_body["data"][0]["approved_stake_amount_for_staker"] == 0)
         assert (response_body["data"][0]["total_stake_deposited"] == 100000)
 
     def test_get_staker_details_for_active_window(self):
