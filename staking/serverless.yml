@@ -80,6 +80,14 @@ custom:
                   type: "integer"
                 error:
                   $ref: "{{model: ErrorStatus}}"
+      -
+        name: "Request"
+        contentType: "application/json"
+        schema: ${file(./staking/documentation/models/request.json)}
+      -
+        name: "Response"
+        contentType: "application/json"
+        schema: ${file(./staking/documentation/models/response.json)}
 
 package:
   exclude:
@@ -128,7 +136,7 @@ functions:
               - x-requested-with
           documentation:
             summary: "Get stake summary"
-            description: "Get total staked amount, reward given and unique stakers across all stake window"
+            description: "Get total staked amount, reward given and unique stakers across all stake window."
             tags:
               - "summary"
             requestHeaders:
@@ -177,6 +185,27 @@ functions:
               - X-Amz-Security-Token
               - X-Amz-User-Agent
               - x-requested-with
+          documentation:
+            summary: "Get stake windows"
+            description: "Get all stake windows for which stake approval is started or completed sorted by blockchain_id in descending order."
+            tags:
+              - "summary"
+            requestHeaders:
+              -
+                name: "Content-Type"
+                description: "application/json"
+
+            methodResponses:
+              -
+                statusCode: "200"
+                responseBody:
+                  description: "Stake Windows"
+                responseModels:
+                  "application/json": "Response"
+              -
+                statusCode: "500"
+                responseModels:
+                  "application/json": "ErrorResponse"
 
   get-stake-window-details:
     handler: staking.application.handlers.stake_handler.get_stake_window
@@ -207,6 +236,27 @@ functions:
               - X-Amz-Security-Token
               - X-Amz-User-Agent
               - x-requested-with
+          documentation:
+            summary: "Get stake windows"
+            description: "Get all stake windows details"
+            tags:
+              - "summary"
+            requestHeaders:
+              -
+                name: "Content-Type"
+                description: "application/json"
+
+            methodResponses:
+              -
+                statusCode: "200"
+                responseBody:
+                  description: "Stake Windows"
+                responseModels:
+                  "application/json": "StakeWindows"
+              -
+                statusCode: "500"
+                responseModels:
+                  "application/json": "ErrorResponse"
 
   get-stake-holder-details-for-active-stake-window:
     handler: staking.application.handlers.stake_handler.get_stake_holder_details_for_active_stake_window
@@ -237,6 +287,30 @@ functions:
               - X-Amz-Security-Token
               - X-Amz-User-Agent
               - x-requested-with
+          documentation:
+            summary: "Get stake holder"
+            description: "Get stake holder details for active stake window and given stake address."
+            tags:
+              - "summary"
+            requestHeaders:
+              -
+                name: "Content-Type"
+                description: "application/json"
+          queryParams:
+            -
+              name: "staker"
+              description: "Staker Address(Ethereum Address)"
+            methodResponses:
+              -
+                statusCode: "200"
+                responseBody:
+                  description: "Stake Holder"
+                responseModels:
+                  "application/json": "Response"
+              -
+                statusCode: "500"
+                responseModels:
+                  "application/json": "ErrorResponse"
 
   get-stake-holders-for-claim-stake-windows:
     handler: staking.application.handlers.stake_handler.get_stake_holder_details_for_claim_stake_windows
@@ -267,6 +341,30 @@ functions:
               - X-Amz-Security-Token
               - X-Amz-User-Agent
               - x-requested-with
+          documentation:
+            summary: "Get stake holder"
+            description: "Get stake holder details for claim stake window and given stake address."
+            tags:
+              - "summary"
+            requestHeaders:
+              -
+                name: "Content-Type"
+                description: "application/json"
+          queryParams:
+            -
+              name: "staker"
+              description: "Staker Address(Ethereum Address)"
+            methodResponses:
+              -
+                statusCode: "200"
+                responseBody:
+                  description: "Stake Holder"
+                responseModels:
+                  "application/json": "Response"
+              -
+                statusCode: "500"
+                responseModels:
+                  "application/json": "ErrorResponse"
 
   get-stake-holder-transaction-details:
     handler: staking.application.handlers.stake_handler.get_all_transactions_of_stake_holder_for_given_address
@@ -297,7 +395,30 @@ functions:
               - X-Amz-Security-Token
               - X-Amz-User-Agent
               - x-requested-with
-
+          documentation:
+            summary: "Get staker transactions"
+            description: "Get staker transactions for given staker address."
+            tags:
+              - "summary"
+            requestHeaders:
+              -
+                name: "Content-Type"
+                description: "application/json"
+          queryParams:
+            -
+              name: "staker"
+              description: "Staker Address(Ethereum Address)"
+            methodResponses:
+              -
+                statusCode: "200"
+                responseBody:
+                  description: "Stake Holder"
+                responseModels:
+                  "application/json": "Response"
+              -
+                statusCode: "500"
+                responseModels:
+                  "application/json": "ErrorResponse"
   open-for-stake-consumer:
     warmup: true
     handler: staking.application.handlers.consumer_handlers.open_for_stake_consumer_handler
