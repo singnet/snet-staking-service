@@ -1,0 +1,38 @@
+{
+  "GetStakeSummaryInput": {},
+  "GetStakeSummaryOutput": {
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "GetStakeSummaryOutputModel",
+    "type": "object",
+    "properties": {
+      "status": {
+        "type": "string"
+      },
+      "data": {
+        "type": "object",
+        "properties": {
+          "no_of_stakers": {
+            "type": "integer"
+          },
+          "total_reward": {
+            "type": "integer"
+          },
+          "total_stake_deposited": {
+            "type": "integer"
+          }
+        }
+      },
+      "error": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
