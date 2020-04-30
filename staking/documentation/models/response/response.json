@@ -1,5 +1,5 @@
 {
-  "STAKE_WINDOWS": {
+  "StakeWindows": {
     "status": "string",
     "data": "string",
     "error": "string"
