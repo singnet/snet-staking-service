@@ -85,7 +85,7 @@ class StakeService:
                 "pending_stake_amount_for_staker": pending_stake_amount_for_staker,
                 "approved_stake_amount_for_staker": approved_stake_amount_for_staker,
                 "total_stake_deposited": total_stake_deposited,
-                "auto_renew_amount_for_given_staker_address": auto_renew_amount_for_staker,
+                "auto_renew_amount_for_staker": auto_renew_amount_for_staker,
                 "total_auto_renew_amount": total_auto_renew_amount
 
             })

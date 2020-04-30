@@ -16,13 +16,16 @@
             "no_of_stakers": {
               "type": "integer"
             },
-            "stake_amount_for_given_staker_address": {
+            "pending_stake_amount_for_staker": {
+              "type": "integer"
+            },
+            "approved_stake_amount_for_staker": {
               "type": "integer"
             },
             "total_stake_deposited": {
               "type": "integer"
             },
-            "auto_renew_amount_for_given_staker_address": {
+            "auto_renew_amount_for_staker": {
               "type": "integer"
             },
             "total_auto_renew_amount": {
