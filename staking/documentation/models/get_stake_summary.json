@@ -1,6 +1,4 @@
 {
-  "GetStakeSummaryInput": {},
-  "GetStakeSummaryOutput": {
     "$schema": "http://json-schema.org/draft-04/schema#",
     "title": "GetStakeSummaryOutput",
     "type": "object",
@@ -35,4 +33,3 @@
       }
     }
   }
-}

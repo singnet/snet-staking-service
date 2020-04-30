@@ -1,5 +1,4 @@
 {
-  "ErrorMessage": {
     "$schema": "http://json-schema.org/draft-04/schema#",
     "title": "ErrorMessage",
     "type": "object",
@@ -17,4 +16,3 @@
       }
     }
   }
-}
