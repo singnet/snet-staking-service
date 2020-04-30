@@ -36,62 +36,33 @@ custom:
   documentation:
     models:
       -
-        name: "ErrorStatus"
+        name: "ErrorMessage"
         contentType: "application/json"
-        schema:
-          type: "object"
-          properties:
-            error:
-              type: "object"
-              properties:
-                code:
-                  type: "integer"
-                message:
-                  type: "string"
+        schema: ${file(./staking/documentation/models/error.json):ErrorMessage}
       -
-        name: "ErrorResponse"
+        name: "getStakeSummaryOutput"
         contentType: "application/json"
-        schema:
-          type: "object"
-          properties:
-            status:
-              type: "string"
-            data:
-              type: "object"
-              properties:
-                error:
-                  $ref: "{{model: ErrorStatus}}"
+        schema: ${file(./staking/documentation/models/get_stake_summary.json):GetStakeSummaryOutput}
       -
-        name: "StakeSummary"
+        name: "GetAllStakeWindowDetailsOutput"
         contentType: "application/json"
-        schema:
-          type: "object"
-          properties:
-            status:
-              type: "string"
-            data:
-              type: "object"
-              properties:
-                no_of_stakers:
-                  type: "integer"
-                total_reward:
-                  type: "integer"
-                total_stake_deposited:
-                  type: "integer"
-                error:
-                  $ref: "{{model: ErrorStatus}}"
+        schema: ${file(./staking/documentation/models/get_all_stake_window_details.json):GetAllStakeWindowDetailsOutput}
       -
-        name: "Request"
+        name: "GetStakeWindowDetailsOutput"
         contentType: "application/json"
-        schema: ${file(./staking/documentation/models/request.json)}
+        schema: ${file(./staking/documentation/models/get_stake_window_details.json):GetStakeWindowDetailsOutput}
       -
-        name: "Response"
+        name: "GetStakeHolderDetailsForActiveStakeWindowOutput"
         contentType: "application/json"
-        schema: ${file(./staking/documentation/models/response.json)}
+        schema: ${file(./staking/documentation/models/response/get_stake_holder_details_for_active_stake_window.json):GetStakeHolderDetailsForActiveStakeWindowOutput)}
       -
-        name: "StakeWindows"
+        name: "GetStakeHolderDetailsForClaimStakeWindowOutput"
         contentType: "application/json"
-        schema: ${file(./staking/documentation/models/response/response.json):StakeWindows)}
+        schema: ${file(./staking/documentation/models/response/get_stake_holders_for_claim_stake_windows.json):GetStakeHolderDetailsForClaimStakeWindowOutput)}
+      -
+        name: "GetStakeHolderTransactionDetailsOutput"
+        contentType: "application/json"
+        schema: ${file(./staking/documentation/models/response/get_stake_holder_transaction_details.json):GetStakeHolderTransactionDetailsOutput)}
 
 package:
   exclude:
@@ -154,11 +125,11 @@ functions:
                 responseBody:
                   description: "Stake Summary"
                 responseModels:
-                  "application/json": "StakeSummary"
+                  "application/json": "GetStakeSummaryOutput"
               -
                 statusCode: "500"
                 responseModels:
-                  "application/json": "ErrorResponse"
+                  "application/json": "ErrorMessage"
 
   get-all-stake-window-details:
     handler: staking.application.handlers.stake_handler.get_all_stake_windows
@@ -203,13 +174,13 @@ functions:
               -
                 statusCode: "200"
                 responseBody:
-                  description: "Stake Windows"
+                  description: "All stake window details."
                 responseModels:
-                  "application/json": "StakeWindows"
+                  "application/json": "GetAllStakeWindowDetailsOutput"
               -
                 statusCode: "500"
                 responseModels:
-                  "application/json": "ErrorResponse"
+                  "application/json": "ErrorMessage"
 
   get-stake-window-details:
     handler: staking.application.handlers.stake_handler.get_stake_window
@@ -241,8 +212,8 @@ functions:
               - X-Amz-User-Agent
               - x-requested-with
           documentation:
-            summary: "Get stake windows"
-            description: "Get all stake windows details"
+            summary: "Get stake window"
+            description: "Get stake window details"
             tags:
               - "summary"
             requestHeaders:
@@ -254,13 +225,13 @@ functions:
               -
                 statusCode: "200"
                 responseBody:
-                  description: "Stake Windows"
+                  description: "Stake windows details"
                 responseModels:
-                  "application/json": "Response"
+                  "application/json": "GetStakeWindowDetailsOutput"
               -
                 statusCode: "500"
                 responseModels:
-                  "application/json": "ErrorResponse"
+                  "application/json": "ErrorMessage"
 
   get-stake-holder-details-for-active-stake-window:
     handler: staking.application.handlers.stake_handler.get_stake_holder_details_for_active_stake_window
@@ -308,13 +279,13 @@ functions:
               -
                 statusCode: "200"
                 responseBody:
-                  description: "Stake Holder"
+                  description: "Stake holder active stake details."
                 responseModels:
-                  "application/json": "Response"
+                  "application/json": "GetStakeHolderDetailsForActiveStakeWindowOutput"
               -
                 statusCode: "500"
                 responseModels:
-                  "application/json": "ErrorResponse"
+                  "application/json": "ErrorMessage"
 
   get-stake-holders-for-claim-stake-windows:
     handler: staking.application.handlers.stake_handler.get_stake_holder_details_for_claim_stake_windows
@@ -362,13 +333,13 @@ functions:
               -
                 statusCode: "200"
                 responseBody:
-                  description: "Stake Holder"
+                  description: "Stake holder claims details."
                 responseModels:
-                  "application/json": "Response"
+                  "application/json": "GetStakeHolderDetailsForClaimStakeWindowOutput"
               -
                 statusCode: "500"
                 responseModels:
-                  "application/json": "ErrorResponse"
+                  "application/json": "ErrorMessage"
 
   get-stake-holder-transaction-details:
     handler: staking.application.handlers.stake_handler.get_all_transactions_of_stake_holder_for_given_address
@@ -416,13 +387,13 @@ functions:
               -
                 statusCode: "200"
                 responseBody:
-                  description: "Stake Holder"
+                  description: "Stake holder transaction details."
                 responseModels:
-                  "application/json": "Response"
+                  "application/json": "GetStakeHolderTransactionDetailsOutput"
               -
                 statusCode: "500"
                 responseModels:
-                  "application/json": "ErrorResponse"
+                  "application/json": "ErrorMessage"
   open-for-stake-consumer:
     warmup: true
     handler: staking.application.handlers.consumer_handlers.open_for_stake_consumer_handler
