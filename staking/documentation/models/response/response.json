@@ -1,0 +1,7 @@
+{
+  "STAKE_WINDOWS": {
+    "status": "string",
+    "data": "string",
+    "error": "string"
+  }
+}

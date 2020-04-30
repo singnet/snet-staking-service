@@ -88,6 +88,10 @@ custom:
         name: "Response"
         contentType: "application/json"
         schema: ${file(./staking/documentation/models/response.json)}
+      -
+        name: "STAKE_WINDOWS"
+        contentType: "application/json"
+        schema: ${file(./staking/documentation/models/response/response.json):STAKE_WINDOWS)}
 
 package:
   exclude:
@@ -201,7 +205,7 @@ functions:
                 responseBody:
                   description: "Stake Windows"
                 responseModels:
-                  "application/json": "Response"
+                  "application/json": "STAKE_WINDOWS"
               -
                 statusCode: "500"
                 responseModels:
@@ -252,7 +256,7 @@ functions:
                 responseBody:
                   description: "Stake Windows"
                 responseModels:
-                  "application/json": "StakeWindows"
+                  "application/json": "Response"
               -
                 statusCode: "500"
                 responseModels:
