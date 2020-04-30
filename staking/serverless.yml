@@ -296,10 +296,10 @@ functions:
               -
                 name: "Content-Type"
                 description: "application/json"
-          queryParams:
-            -
-              name: "staker"
-              description: "Staker Address(Ethereum Address)"
+            queryParams:
+              -
+                name: "staker"
+                description: "Staker Address(Ethereum Address)"
             methodResponses:
               -
                 statusCode: "200"
@@ -350,10 +350,10 @@ functions:
               -
                 name: "Content-Type"
                 description: "application/json"
-          queryParams:
-            -
-              name: "staker"
-              description: "Staker Address(Ethereum Address)"
+            queryParams:
+              -
+                name: "staker"
+                description: "Staker Address(Ethereum Address)"
             methodResponses:
               -
                 statusCode: "200"
@@ -404,10 +404,10 @@ functions:
               -
                 name: "Content-Type"
                 description: "application/json"
-          queryParams:
-            -
-              name: "staker"
-              description: "Staker Address(Ethereum Address)"
+            queryParams:
+              -
+                name: "staker"
+                description: "Staker Address(Ethereum Address)"
             methodResponses:
               -
                 statusCode: "200"
