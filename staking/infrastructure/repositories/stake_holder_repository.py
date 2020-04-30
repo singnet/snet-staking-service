@@ -107,4 +107,14 @@ class StakeHolderRepository(BaseRepository):
             return 0
         return int(auto_renew_amount)
 
+    def get_stakers_opted_for_auto_renew(self, blockchain_id):
+        query_response = self.session.query(StakeHolderDBModel.staker). \
+            filter(StakeHolderDBModel.blockchain_id == (blockchain_id-1)). \
+            filter(StakeHolderDBModel.auto_renewal == 1).all()
+        stakers = [record.staker for record in query_response]
+        self.session.commit()
+        if stakers is None:
+            return []
+        return stakers
+
 

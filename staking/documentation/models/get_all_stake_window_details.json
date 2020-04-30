@@ -2,7 +2,7 @@
   "GetAllStakeWindowDetailsInput": {},
   "GetAllStakeWindowDetailsOutput": {
     "$schema": "http://json-schema.org/draft-04/schema#",
-    "title": "GetAllStakeWindowDetailsOutputModel",
+    "title": "GetAllStakeWindowDetailsOutput",
     "type": "object",
     "properties": {
       "status": {
