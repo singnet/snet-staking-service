@@ -49,8 +49,10 @@ class StakeService:
         list_of_stake_window = [stake_window.to_dict() for stake_window in stake_windows]
         for stake_window in list_of_stake_window:
             blockchain_id = stake_window["blockchain_id"]
+            no_of_stakers_opted_for_auto_renewal = len(StakeHolderRepository().get_stakers_opted_for_auto_renew(blockchain_id=blockchain_id))
             stake_window.update({
-                "no_of_stakers": StakeHolderRepository().get_total_no_of_stakers(blockchain_id=blockchain_id),
+                "no_of_stakers": StakeHolderRepository().get_total_no_of_stakers(blockchain_id=blockchain_id) +
+                                 no_of_stakers_opted_for_auto_renewal,
                 "stake_amount_for_given_staker_address": sum(
                     [stake_holder.amount_pending_for_approval for stake_holder in
                      StakeHolderRepository().get_stake_holder_for_given_blockchain_index_and_address(

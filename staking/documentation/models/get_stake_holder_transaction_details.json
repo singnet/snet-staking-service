@@ -2,7 +2,7 @@
   "GetStakeHolderTransactionDetailsInput": {},
   "GetStakeHolderTransactionDetailsOutput": {
     "$schema": "http://json-schema.org/draft-04/schema#",
-    "title": "GetStakeHolderTransactionDetailsOutputModel",
+    "title": "GetStakeHolderTransactionDetailsOutput",
     "type": "object",
     "properties": {
       "status": {

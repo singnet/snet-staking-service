@@ -2,7 +2,7 @@
   "GetStakeHolderDetailsForActiveStakeWindowInput": {},
   "GetStakeHolderDetailsForActiveStakeWindowOutput": {
     "$schema": "http://json-schema.org/draft-04/schema#",
-    "title": "GetStakeHolderDetailsForActiveStakeWindowOutputModel",
+    "title": "GetStakeHolderDetailsForActiveStakeWindowOutput",
     "type": "object",
     "properties": {
       "status": {

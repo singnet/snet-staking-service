@@ -2,7 +2,7 @@
   "GetStakeHolderDetailsForClaimStakeWindowInput": {},
   "GetStakeHolderDetailsForClaimStakeWindowOutput": {
     "$schema": "http://json-schema.org/draft-04/schema#",
-    "title": "GetStakeHolderDetailsForClaimStakeWindowOutputModel",
+    "title": "GetStakeHolderDetailsForClaimStakeWindowOutput",
     "type": "object",
     "properties": {
       "status": {
