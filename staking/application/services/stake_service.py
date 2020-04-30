@@ -1,4 +1,5 @@
 import time
+import math
 from staking.infrastructure.repositories.stake_window_repository import StakeWindowRepository
 from staking.infrastructure.repositories.stake_holder_repository import StakeHolderRepository
 from staking.infrastructure.repositories.stake_transaction_respository import StakeTransactionRepository
@@ -49,22 +50,43 @@ class StakeService:
         list_of_stake_window = [stake_window.to_dict() for stake_window in stake_windows]
         for stake_window in list_of_stake_window:
             blockchain_id = stake_window["blockchain_id"]
-            no_of_stakers_opted_for_auto_renewal = len(StakeHolderRepository().get_stakers_opted_for_auto_renew(blockchain_id=blockchain_id))
+
+            no_of_stakers_opted_for_auto_renewal = len(
+                StakeHolderRepository().get_stakers_opted_for_auto_renew(blockchain_id=blockchain_id))
+            new_stakers = StakeHolderRepository().get_total_no_of_stakers(blockchain_id=blockchain_id)
+            no_of_stakers = no_of_stakers_opted_for_auto_renewal + new_stakers
+
+            pending_stake_amount_for_staker = \
+                sum([stake_holder.amount_pending_for_approval for stake_holder in StakeHolderRepository().
+                    get_stake_holder_for_given_blockchain_index_and_address(blockchain_id=blockchain_id,
+                                                                            address=staker)
+                     ]
+                    )
+            approved_stake_amount_for_staker = \
+                sum([stake_holder.amount_approved for stake_holder in StakeHolderRepository().
+                    get_stake_holder_for_given_blockchain_index_and_address(blockchain_id=blockchain_id,
+                                                                            address=staker)
+                     ]
+                    )
+
+            total_stake_deposited = StakeHolderRepository().get_total_stake_deposited(blockchain_id=blockchain_id)
+
+            principal_auto_renew_amount_for_staker = StakeHolderRepository().get_auto_renew_amount_for_given_stake_window(
+                blockchain_id=blockchain_id, staker=staker)
+            total_principal_auto_renew_amount = StakeHolderRepository().get_auto_renew_amount_for_given_stake_window(
+                blockchain_id=blockchain_id, staker=staker)
+            total_auto_renew_amount = math.floor(
+                (total_principal_auto_renew_amount * stake_window["reward_amount"]) / stake_window["total_stake"])
+            auto_renew_amount_for_staker = math.floor(
+                (principal_auto_renew_amount_for_staker * stake_window["reward_amount"]) / stake_window["total_stake"])
+
             stake_window.update({
-                "no_of_stakers": StakeHolderRepository().get_total_no_of_stakers(blockchain_id=blockchain_id) +
-                                 no_of_stakers_opted_for_auto_renewal,
-                "stake_amount_for_given_staker_address": sum(
-                    [stake_holder.amount_pending_for_approval for stake_holder in
-                     StakeHolderRepository().get_stake_holder_for_given_blockchain_index_and_address(
-                         blockchain_id=blockchain_id,
-                         address=staker)]),
-                "total_stake_deposited": StakeHolderRepository().get_total_stake_deposited(
-                    blockchain_id=blockchain_id
-                ),
-                "auto_renew_amount_for_given_staker_address": StakeHolderRepository().
-                    get_auto_renew_amount_for_given_stake_window(blockchain_id=blockchain_id, staker=staker),
-                "total_auto_renew_amount": StakeHolderRepository().
-                    get_auto_renew_amount_for_given_stake_window(blockchain_id=blockchain_id)
+                "no_of_stakers": no_of_stakers,
+                "pending_stake_amount_for_staker": pending_stake_amount_for_staker,
+                "approved_stake_amount_for_staker": approved_stake_amount_for_staker,
+                "total_stake_deposited": total_stake_deposited,
+                "auto_renew_amount_for_given_staker_address": auto_renew_amount_for_staker,
+                "total_auto_renew_amount": total_auto_renew_amount
 
             })
         return list_of_stake_window
