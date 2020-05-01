@@ -131,6 +131,25 @@ class TestStakeService(TestCase):
             StakeWindow(
                 blockchain_id=100,
                 start_period=int(dt.utcnow().timestamp()) - 50000,
+                submission_end_period=int(dt.utcnow().timestamp()) - 50000,
+                approval_end_period=int(dt.utcnow().timestamp()) - 100000,
+                request_withdraw_start_period=int(dt.utcnow().timestamp()) - 200000,
+                end_period=int(dt.utcnow().timestamp()) - 300000,
+                min_stake=10000,
+                max_stake=100000,
+                window_max_cap=500000,
+                open_for_external=True,
+                total_stake=70000,
+                reward_amount=5000,
+                token_operator="0xq23we4r5t6y7u8i9o0w2e3r4t5y6u7i89o",
+                created_on=dt.utcnow(),
+                updated_on=dt.utcnow()
+            )
+        )
+        stake_window_repo.add_item(
+            StakeWindow(
+                blockchain_id=101,
+                start_period=int(dt.utcnow().timestamp()) - 50000,
                 submission_end_period=int(dt.utcnow().timestamp()) + 50000,
                 approval_end_period=int(dt.utcnow().timestamp()) + 100000,
                 request_withdraw_start_period=int(dt.utcnow().timestamp()) + 200000,
@@ -150,10 +169,23 @@ class TestStakeService(TestCase):
             StakeHolder(
                 blockchain_id=100,
                 staker="0xq2w3e4r5t6y7u8e3r45ty6u78i",
+                amount_pending_for_approval=0,
+                amount_approved=100000,
+                auto_renewal=True,
+                block_no_created=12345678,
+                refund_amount=0,
+                created_on=dt.utcnow(),
+                updated_on=dt.utcnow()
+            )
+        )
+        stake_holder_repo.add_item(
+            StakeHolder(
+                blockchain_id=101,
+                staker="0xq2w3e4r5t6y7u8e3r45ty6u78i",
                 amount_pending_for_approval=100000,
                 amount_approved=0,
                 auto_renewal=False,
-                block_no_created=12345678,
+                block_no_created=12345679,
                 refund_amount=0,
                 created_on=dt.utcnow(),
                 updated_on=dt.utcnow()
@@ -175,7 +207,8 @@ class TestStakeService(TestCase):
         assert (response["statusCode"] == 200)
         response_body = json.loads(response["body"])
         assert (response_body["status"] == "success")
-        assert (response_body["data"][0]["blockchain_id"] == 100)
+        assert (response_body["data"][0]["blockchain_id"] == 101)
+        print(response)
         assert (response_body["data"][0]["no_of_stakers"] == 1)
         assert (response_body["data"][0]["pending_stake_amount_for_staker"] == 100000)
         assert (response_body["data"][0]["approved_stake_amount_for_staker"] == 0)
