@@ -46,7 +46,7 @@ class StakeService:
             return 0
         total_principal_auto_renew_amount = StakeHolderRepository().get_auto_renew_amount_for_given_stake_window(
             blockchain_id=blockchain_id)
-        total_auto_renew_amount = math.floor(
+        total_auto_renew_amount = total_principal_auto_renew_amount + math.floor(
             (total_principal_auto_renew_amount * stake_window.reward_amount) / stake_window.total_stake)
         return total_auto_renew_amount
 
@@ -59,7 +59,7 @@ class StakeService:
             return 0
         principal_auto_renew_amount_for_staker = StakeHolderRepository().get_auto_renew_amount_for_given_stake_window(
             blockchain_id=blockchain_id, staker=staker)
-        auto_renew_amount_for_staker = math.floor(
+        auto_renew_amount_for_staker = principal_auto_renew_amount_for_staker + math.floor(
             (principal_auto_renew_amount_for_staker * stake_window.reward_amount) / stake_window.total_stake)
         return auto_renew_amount_for_staker
 
