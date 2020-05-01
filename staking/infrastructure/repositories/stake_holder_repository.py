@@ -2,7 +2,7 @@ from datetime import datetime as dt
 from staking.infrastructure.repositories.base_repository import BaseRepository
 from staking.infrastructure.models import StakeHolder as StakeHolderDBModel
 from staking.domain.factory.stake_factory import StakeFactory
-from sqlalchemy import func, distinct
+from sqlalchemy import func, distinct, or_, and_
 from common.logger import get_logger
 
 logger = get_logger(__name__)
@@ -107,10 +107,17 @@ class StakeHolderRepository(BaseRepository):
             return 0
         return int(auto_renew_amount)
 
-    def get_stakers_opted_for_auto_renew(self, blockchain_id):
-        query_response = self.session.query(StakeHolderDBModel.staker). \
-            filter(StakeHolderDBModel.blockchain_id == (blockchain_id-1)). \
-            filter(StakeHolderDBModel.auto_renewal == 1).all()
+    def get_stakers_for_stake_window(self, blockchain_id):
+        # includes new stakers and stakers who has opted for auto renewal
+        query_response = self.session.query(distinct(StakeHolderDBModel.staker).label("staker")).filter(
+            or_(
+                and_(
+                    StakeHolderDBModel.blockchain_id == blockchain_id-1,
+                    StakeHolderDBModel.auto_renewal == 1
+                ),
+                StakeHolderDBModel.blockchain_id == blockchain_id
+            )
+        ).all()
         stakers = [record.staker for record in query_response]
         self.session.commit()
         if stakers is None:

@@ -38,6 +38,32 @@ class StakeService:
         return list_of_stake_window
 
     @staticmethod
+    def compute_auto_renewal_for_stake_window(blockchain_id):
+        if blockchain_id < 1:
+            return 0
+        stake_window = StakeWindowRepository().get_stake_window_for_given_blockchain_id(blockchain_id-1)
+        if stake_window is None or (not bool(stake_window.total_stake)):
+            return 0
+        total_principal_auto_renew_amount = StakeHolderRepository().get_auto_renew_amount_for_given_stake_window(
+            blockchain_id=blockchain_id)
+        total_auto_renew_amount = math.floor(
+            (total_principal_auto_renew_amount * stake_window.reward_amount) / stake_window.total_stake)
+        return total_auto_renew_amount
+
+    @staticmethod
+    def compute_auto_renewal_for_staker(blockchain_id, staker):
+        if blockchain_id < 1:
+            return 0
+        stake_window = StakeWindowRepository().get_stake_window_for_given_blockchain_id(blockchain_id-1)
+        if stake_window is None or (not bool(stake_window.total_stake)):
+            return 0
+        principal_auto_renew_amount_for_staker = StakeHolderRepository().get_auto_renew_amount_for_given_stake_window(
+            blockchain_id=blockchain_id, staker=staker)
+        auto_renew_amount_for_staker = math.floor(
+            (principal_auto_renew_amount_for_staker * stake_window.reward_amount) / stake_window.total_stake)
+        return auto_renew_amount_for_staker
+
+    @staticmethod
     def get_stake_window_based_on_status(status, staker):
         stake_windows = []
         no_of_stakers = 0
@@ -51,10 +77,7 @@ class StakeService:
         for stake_window in list_of_stake_window:
             blockchain_id = stake_window["blockchain_id"]
 
-            no_of_stakers_opted_for_auto_renewal = len(
-                StakeHolderRepository().get_stakers_opted_for_auto_renew(blockchain_id=blockchain_id))
-            new_stakers = StakeHolderRepository().get_total_no_of_stakers(blockchain_id=blockchain_id)
-            no_of_stakers = no_of_stakers_opted_for_auto_renewal + new_stakers
+            no_of_stakers = len(StakeHolderRepository().get_stakers_for_stake_window(blockchain_id=blockchain_id))
 
             pending_stake_amount_for_staker = \
                 sum([stake_holder.amount_pending_for_approval for stake_holder in StakeHolderRepository().
@@ -71,14 +94,9 @@ class StakeService:
 
             total_stake_deposited = StakeHolderRepository().get_total_stake_deposited(blockchain_id=blockchain_id)
 
-            principal_auto_renew_amount_for_staker = StakeHolderRepository().get_auto_renew_amount_for_given_stake_window(
-                blockchain_id=blockchain_id, staker=staker)
-            total_principal_auto_renew_amount = StakeHolderRepository().get_auto_renew_amount_for_given_stake_window(
-                blockchain_id=blockchain_id, staker=staker)
-            total_auto_renew_amount = math.floor(
-                (total_principal_auto_renew_amount * stake_window["reward_amount"]) / stake_window["total_stake"])
-            auto_renew_amount_for_staker = math.floor(
-                (principal_auto_renew_amount_for_staker * stake_window["reward_amount"]) / stake_window["total_stake"])
+            total_auto_renew_amount = StakeService.compute_auto_renewal_for_stake_window(blockchain_id=blockchain_id)
+            auto_renew_amount_for_staker = \
+                StakeService.compute_auto_renewal_for_staker(blockchain_id=blockchain_id, staker=staker)
 
             stake_window.update({
                 "no_of_stakers": no_of_stakers,
