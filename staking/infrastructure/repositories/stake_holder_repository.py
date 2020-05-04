@@ -2,7 +2,7 @@ from datetime import datetime as dt
 from staking.infrastructure.repositories.base_repository import BaseRepository
 from staking.infrastructure.models import StakeHolder as StakeHolderDBModel
 from staking.domain.factory.stake_factory import StakeFactory
-from sqlalchemy import func
+from sqlalchemy import func, distinct, or_, and_
 from common.logger import get_logger
 
 logger = get_logger(__name__)
@@ -57,6 +57,7 @@ class StakeHolderRepository(BaseRepository):
                 auto_renewal=stake_holder.auto_renewal,
                 block_no_created=stake_holder.block_no_created,
                 refund_amount=stake_holder.refund_amount,
+                new_staked_amount=stake_holder.new_staked_amount,
                 created_on=dt.utcnow(),
                 updated_on=dt.utcnow()
             ))
@@ -69,5 +70,58 @@ class StakeHolderRepository(BaseRepository):
             stake_holder_db.auto_renewal = stake_holder.auto_renewal
             stake_holder_db.refund_amount = stake_holder_db.refund_amount + stake_holder.refund_amount
             stake_holder_db.block_no_created = stake_holder.block_no_created
+            if stake_holder_db.new_staked_amount == 0:
+                stake_holder_db.new_staked_amount = stake_holder.new_staked_amount
         self.session.commit()
         return stake_holder
+
+    def get_total_stake_across_all_stake_window(self):
+        query_response = self.session.query(
+            func.sum(StakeHolderDBModel.new_staked_amount).label("total_new_staked_amount")).all()
+        self.session.commit()
+        total_new_staked_amount = query_response[0].total_new_staked_amount
+        if total_new_staked_amount is None:
+            return 0
+        return int(total_new_staked_amount)
+
+    def get_unique_staker_across_all_stake_window(self):
+        query_response = self.session.query(
+            func.count(distinct(StakeHolderDBModel.staker)).label("no_of_unique_staker")).all()
+        no_of_unique_staker = query_response[0].no_of_unique_staker
+        self.session.commit()
+        if no_of_unique_staker is None:
+            return 0
+        return int(no_of_unique_staker)
+
+    def get_auto_renew_amount_for_given_stake_window(self, blockchain_id, staker=None):
+        query = self.session.query(
+            func.SUM(StakeHolderDBModel.amount_approved).label("auto_renewed_amount")).\
+            filter(StakeHolderDBModel.blockchain_id < blockchain_id). \
+            filter(StakeHolderDBModel.auto_renewal == 1)
+        if staker is not None:
+            query = query.filter(StakeHolderDBModel.staker == staker)
+        query_response = query.all()
+        auto_renew_amount = query_response[0].auto_renewed_amount
+        self.session.commit()
+        if auto_renew_amount is None:
+            return 0
+        return int(auto_renew_amount)
+
+    def get_stakers_for_stake_window(self, blockchain_id):
+        # includes new stakers and stakers who has opted for auto renewal
+        query_response = self.session.query(distinct(StakeHolderDBModel.staker).label("staker")).filter(
+            or_(
+                and_(
+                    StakeHolderDBModel.blockchain_id == blockchain_id-1,
+                    StakeHolderDBModel.auto_renewal == 1
+                ),
+                StakeHolderDBModel.blockchain_id == blockchain_id
+            )
+        ).all()
+        stakers = [record.staker for record in query_response]
+        self.session.commit()
+        if stakers is None:
+            return []
+        return stakers
+
+

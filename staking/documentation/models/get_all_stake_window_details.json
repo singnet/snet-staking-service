@@ -1,0 +1,77 @@
+{
+  "GetAllStakeWindowDetailsInput": {},
+  "GetAllStakeWindowDetailsOutput": {
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "GetAllStakeWindowDetailsOutput",
+    "type": "object",
+    "properties": {
+      "status": {
+        "type": "string"
+      },
+      "data": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "no_of_stakers": {
+              "type": "integer"
+            },
+            "total_stake_deposited": {
+              "type": "integer"
+            },
+            "blockchain_id": {
+              "type": "integer"
+            },
+            "start_period": {
+              "type": "integer"
+            },
+            "submission_end_period": {
+              "type": "integer"
+            },
+            "approval_end_period": {
+              "type": "integer"
+            },
+            "request_withdraw_start_period": {
+              "type": "integer"
+            },
+            "end_period": {
+              "type": "integer"
+            },
+            "min_stake": {
+              "type": "integer"
+            },
+            "max_stake": {
+              "type": "integer"
+            },
+            "window_max_cap": {
+              "type": "integer"
+            },
+            "open_for_external": {
+              "type": "boolean"
+            },
+            "total_stake": {
+              "type": "integer"
+            },
+            "reward_amount": {
+              "type": "integer"
+            },
+            "token_operator": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "error": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

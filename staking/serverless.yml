@@ -3,6 +3,7 @@ plugins:
   - serverless-python-requirements
   - serverless-plugin-tracing
   - serverless-prune-plugin
+  - serverless-aws-documentation
 
 service: staking
 provider:
@@ -32,6 +33,36 @@ custom:
     automatic: true
     includeLayers: true
     number: 5
+  documentation:
+    models:
+      -
+        name: "ErrorMessage"
+        contentType: "application/json"
+        schema: ${file(staking/documentation/models/error.json)}
+      -
+        name: "GetStakeSummaryOutput"
+        contentType: "application/json"
+        schema: ${file(staking/documentation/models/get_stake_summary.json)}
+      -
+        name: "GetAllStakeWindowDetailsOutput"
+        contentType: "application/json"
+        schema: ${file(staking/documentation/models/get_all_stake_window_details.json):GetAllStakeWindowDetailsOutput}
+      -
+        name: "GetStakeWindowDetailsOutput"
+        contentType: "application/json"
+        schema: ${file(staking/documentation/models/get_stake_window_details.json):GetStakeWindowDetailsOutput}
+      -
+        name: "GetStakeHolderDetailsForActiveStakeWindowOutput"
+        contentType: "application/json"
+        schema: ${file(staking/documentation/models/get_stake_holder_details_for_active_stake_window.json):GetStakeHolderDetailsForActiveStakeWindowOutput)}
+      -
+        name: "GetStakeHolderDetailsForClaimStakeWindowOutput"
+        contentType: "application/json"
+        schema: ${file(staking/documentation/models/get_stake_holders_for_claim_stake_windows.json):GetStakeHolderDetailsForClaimStakeWindowOutput)}
+      -
+        name: "GetStakeHolderTransactionDetailsOutput"
+        contentType: "application/json"
+        schema: ${file(staking/documentation/models/get_stake_holder_transaction_details.json):GetStakeHolderTransactionDetailsOutput)}
 
 package:
   exclude:
@@ -54,6 +85,103 @@ package:
     - node_modules/singularitynet-stake-contracts/**
 
 functions:
+  get-stake-summary:
+    handler: staking.application.handlers.stake_handler.get_stake_summary
+    role: ${file(./config.${self:provider.stage}.json):ROLE}
+    vpc:
+      securityGroupIds:
+        - ${file(./config.${self:provider.stage}.json):SG1}
+        - ${file(./config.${self:provider.stage}.json):SG2}
+      subnetIds:
+        - ${file(./config.${self:provider.stage}.json):VPC1}
+        - ${file(./config.${self:provider.stage}.json):VPC2}
+    events:
+      - http:
+          method: GET
+          path: /stake-summary
+          cors:
+            origin: ${file(./config.${self:provider.stage}.json):ORIGIN}
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - x-requested-with
+          documentation:
+            summary: "Get stake summary"
+            description: "Get total staked amount, reward given and unique stakers across all stake window."
+            tags:
+              - "summary"
+            requestHeaders:
+              -
+                name: "Content-Type"
+                description: "application/json"
+
+            methodResponses:
+              -
+                statusCode: "200"
+                responseBody:
+                  description: "Stake Summary"
+                responseModels:
+                  "application/json": "GetStakeSummaryOutput"
+              -
+                statusCode: "500"
+                responseModels:
+                  "application/json": "ErrorMessage"
+
+  get-all-stake-window-details:
+    handler: staking.application.handlers.stake_handler.get_all_stake_windows
+    role: ${file(./config.${self:provider.stage}.json):ROLE}
+    vpc:
+      securityGroupIds:
+        - ${file(./config.${self:provider.stage}.json):SG1}
+        - ${file(./config.${self:provider.stage}.json):SG2}
+      subnetIds:
+        - ${file(./config.${self:provider.stage}.json):VPC1}
+        - ${file(./config.${self:provider.stage}.json):VPC2}
+    events:
+      - http:
+          method: GET
+          path: /stake-windows
+          authorizer:
+            name: user-authorizer
+            type: COGNITO_USER_POOLS
+            arn: ${file(./config.${self:provider.stage}.json):AUTHORIZER}
+            identitySource: method.request.header.Authorization
+          cors:
+            origin: ${file(./config.${self:provider.stage}.json):ORIGIN}
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - x-requested-with
+          documentation:
+            summary: "Get stake windows"
+            description: "Get all stake windows for which stake approval is started or completed sorted by blockchain_id in descending order."
+            tags:
+              - "summary"
+            requestHeaders:
+              -
+                name: "Content-Type"
+                description: "application/json"
+
+            methodResponses:
+              -
+                statusCode: "200"
+                responseBody:
+                  description: "All stake window details."
+                responseModels:
+                  "application/json": "GetAllStakeWindowDetailsOutput"
+              -
+                statusCode: "500"
+                responseModels:
+                  "application/json": "ErrorMessage"
+
   get-stake-window-details:
     handler: staking.application.handlers.stake_handler.get_stake_window
     role: ${file(./config.${self:provider.stage}.json):ROLE}
@@ -83,6 +211,27 @@ functions:
               - X-Amz-Security-Token
               - X-Amz-User-Agent
               - x-requested-with
+          documentation:
+            summary: "Get stake window"
+            description: "Get stake window details"
+            tags:
+              - "summary"
+            requestHeaders:
+              -
+                name: "Content-Type"
+                description: "application/json"
+
+            methodResponses:
+              -
+                statusCode: "200"
+                responseBody:
+                  description: "Stake windows details"
+                responseModels:
+                  "application/json": "GetStakeWindowDetailsOutput"
+              -
+                statusCode: "500"
+                responseModels:
+                  "application/json": "ErrorMessage"
 
   get-stake-holder-details-for-active-stake-window:
     handler: staking.application.handlers.stake_handler.get_stake_holder_details_for_active_stake_window
@@ -113,6 +262,30 @@ functions:
               - X-Amz-Security-Token
               - X-Amz-User-Agent
               - x-requested-with
+          documentation:
+            summary: "Get stake holder"
+            description: "Get stake holder details for active stake window and given stake address."
+            tags:
+              - "summary"
+            requestHeaders:
+              -
+                name: "Content-Type"
+                description: "application/json"
+            queryParams:
+              -
+                name: "staker"
+                description: "Staker Address(Ethereum Address)"
+            methodResponses:
+              -
+                statusCode: "200"
+                responseBody:
+                  description: "Stake holder active stake details."
+                responseModels:
+                  "application/json": "GetStakeHolderDetailsForActiveStakeWindowOutput"
+              -
+                statusCode: "500"
+                responseModels:
+                  "application/json": "ErrorMessage"
 
   get-stake-holders-for-claim-stake-windows:
     handler: staking.application.handlers.stake_handler.get_stake_holder_details_for_claim_stake_windows
@@ -143,6 +316,30 @@ functions:
               - X-Amz-Security-Token
               - X-Amz-User-Agent
               - x-requested-with
+          documentation:
+            summary: "Get stake holder"
+            description: "Get stake holder details for claim stake window and given stake address."
+            tags:
+              - "summary"
+            requestHeaders:
+              -
+                name: "Content-Type"
+                description: "application/json"
+            queryParams:
+              -
+                name: "staker"
+                description: "Staker Address(Ethereum Address)"
+            methodResponses:
+              -
+                statusCode: "200"
+                responseBody:
+                  description: "Stake holder claims details."
+                responseModels:
+                  "application/json": "GetStakeHolderDetailsForClaimStakeWindowOutput"
+              -
+                statusCode: "500"
+                responseModels:
+                  "application/json": "ErrorMessage"
 
   get-stake-holder-transaction-details:
     handler: staking.application.handlers.stake_handler.get_all_transactions_of_stake_holder_for_given_address
@@ -173,7 +370,30 @@ functions:
               - X-Amz-Security-Token
               - X-Amz-User-Agent
               - x-requested-with
-
+          documentation:
+            summary: "Get staker transactions"
+            description: "Get staker transactions for given staker address."
+            tags:
+              - "summary"
+            requestHeaders:
+              -
+                name: "Content-Type"
+                description: "application/json"
+            queryParams:
+              -
+                name: "staker"
+                description: "Staker Address(Ethereum Address)"
+            methodResponses:
+              -
+                statusCode: "200"
+                responseBody:
+                  description: "Stake holder transaction details."
+                responseModels:
+                  "application/json": "GetStakeHolderTransactionDetailsOutput"
+              -
+                statusCode: "500"
+                responseModels:
+                  "application/json": "ErrorMessage"
   open-for-stake-consumer:
     warmup: true
     handler: staking.application.handlers.consumer_handlers.open_for_stake_consumer_handler

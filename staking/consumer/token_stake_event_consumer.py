@@ -146,11 +146,11 @@ class ApproveStakeEventConsumer(TokenStakeEventConsumer):
         refund_amount = event_data["returnAmount"]
         stake_holder = StakeHolder(
             blockchain_id, event_data["staker"], amount_pending_for_approval, amount_approved, auto_renewal,
-            block_no_created, refund_amount
+            block_no_created, refund_amount, new_staked_amount=event_data["approvedStakeAmount"]
         )
         stake_holder_repo.add_or_update_stake_holder(stake_holder)
 
-        stake_window = stake_window_repo.get_stake_windows_for_given_blockchain_id(blockchain_id=blockchain_id)
+        stake_window = stake_window_repo.get_stake_window_for_given_blockchain_id(blockchain_id=blockchain_id)
         stake_window.total_stake = total_stake
         stake_window_repo.update_stake_window(stake_window)
 
@@ -259,7 +259,7 @@ class AutoRenewStakeEventConsumer(TokenStakeEventConsumer):
             block_no=block_no_created, blockchain_id=new_blockchain_id,
             transaction_hash=event["data"]["transactionHash"],
             event_name=event["data"]["event"], event_data=event["data"], staker=staker)
-        stake_window = stake_window_repo.get_stake_windows_for_given_blockchain_id(blockchain_id=new_blockchain_id)
+        stake_window = stake_window_repo.get_stake_window_for_given_blockchain_id(blockchain_id=new_blockchain_id)
         stake_window.total_stake = total_stake_for_new_blockchain_id
         stake_window_repo.update_stake_window(stake_window)
 

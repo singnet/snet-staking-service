@@ -38,6 +38,7 @@ class StakeHolder(Base):
     auto_renewal = Column("auto_renewal", BOOLEAN, nullable=False)
     block_no_created = Column("block_no_created", Integer, nullable=False)
     refund_amount = Column("refund_amount", BIGINT, nullable=False)
+    new_staked_amount = Column("new_staked_amount", BIGINT, nullable=False, default=0)
     created_on = Column("created_on", TIMESTAMP(timezone=False), nullable=False)
     updated_on = Column("updated_on", TIMESTAMP(timezone=False), nullable=False, default=func.utc_timestamp())
     UniqueConstraint(blockchain_id, staker, name="uq_stake_holder")
