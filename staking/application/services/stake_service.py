@@ -1,5 +1,7 @@
 import time
 import math
+from typing import Dict, Any, Union
+
 from staking.infrastructure.repositories.stake_window_repository import StakeWindowRepository
 from staking.infrastructure.repositories.stake_holder_repository import StakeHolderRepository
 from staking.infrastructure.repositories.stake_transaction_respository import StakeTransactionRepository
@@ -183,3 +185,21 @@ class StakeService:
                     "stake_window": stake_window_dict
                 })
         return active_stake_details
+
+    @staticmethod
+    def get_stake_calculator_details():
+        latest_stake_window = StakeWindowRepository().get_latest_stake_window()
+        blockchain_id = latest_stake_window.blockchain_id
+
+        total_stake_approved = StakeHolderRepository().get_total_stake_approved_for_given_blockchain_id(blockchain_id=blockchain_id)
+        total_stake_pending_for_approval = StakeHolderRepository().get_total_stake_deposited(blockchain_id=blockchain_id)
+
+        total_auto_renew_amount = StakeService.compute_auto_renewal_for_stake_window(blockchain_id=blockchain_id)
+        stake_calculator_details: Dict[Union[str, Any], Any] = latest_stake_window.to_dict()
+
+        stake_calculator_details.update({
+            "total_stake_pending_for_approval": total_stake_pending_for_approval,
+            "total_stake_approved": total_stake_approved,
+            "total_auto_renew_amount": total_auto_renew_amount
+        })
+        return stake_calculator_details

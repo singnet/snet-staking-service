@@ -24,7 +24,7 @@ provider:
 
 custom:
   pythonRequirements:
-    fileName: staking/requirement.txt
+    fileName: staking/requirements.txt
     dockerizePip: true
     useDownloadCache: true
     useStaticCache: true
@@ -42,34 +42,34 @@ custom:
       -
         name: "GetStakeSummaryOutput"
         contentType: "application/json"
-        schema: ${file(staking/documentation/models/get_stake_summary.json)}
+        schema: ${file(staking/documentation/models/get_service_get.json)}
       -
         name: "GetAllStakeWindowDetailsOutput"
         contentType: "application/json"
-        schema: ${file(staking/documentation/models/get_all_stake_window_details.json):GetAllStakeWindowDetailsOutput}
+        schema: ${file(staking/documentation/models/get_all_org.json):GetAllStakeWindowDetailsOutput}
       -
         name: "GetStakeWindowDetailsOutput"
         contentType: "application/json"
-        schema: ${file(staking/documentation/models/get_stake_window_details.json):GetStakeWindowDetailsOutput}
+        schema: ${file(staking/documentation/models/get_service_post.json):GetStakeWindowDetailsOutput}
       -
         name: "GetStakeHolderDetailsForActiveStakeWindowOutput"
         contentType: "application/json"
-        schema: ${file(staking/documentation/models/get_stake_holder_details_for_active_stake_window.json):GetStakeHolderDetailsForActiveStakeWindowOutput)}
+        schema: ${file(staking/documentation/models/get_org_for_org_id.json):GetStakeHolderDetailsForActiveStakeWindowOutput)}
       -
         name: "GetStakeHolderDetailsForClaimStakeWindowOutput"
         contentType: "application/json"
-        schema: ${file(staking/documentation/models/get_stake_holders_for_claim_stake_windows.json):GetStakeHolderDetailsForClaimStakeWindowOutput)}
+        schema: ${file(staking/documentation/models/get_group_for_org_id.json):GetStakeHolderDetailsForClaimStakeWindowOutput)}
       -
         name: "GetStakeHolderTransactionDetailsOutput"
         contentType: "application/json"
-        schema: ${file(staking/documentation/models/get_stake_holder_transaction_details.json):GetStakeHolderTransactionDetailsOutput)}
+        schema: ${file(staking/documentation/models/get_all_group_for_org.json):GetStakeHolderTransactionDetailsOutput)}
 
 package:
   exclude:
     - .circleci/**
     - .gitignore/**
     - .serverless/**
-    - requirement.txt
+    - requirements.txt
     - venv/**
     - config.ropsten.json
     - sls_deploy.sh
@@ -394,6 +394,33 @@ functions:
                 statusCode: "500"
                 responseModels:
                   "application/json": "ErrorMessage"
+
+
+  get_stake_calculator_details:
+    handler: staking.application.handlers.stake_handler.get_stake_calculator_details
+    role: ${file(./config.${self:provider.stage}.json):ROLE}
+    vpc:
+      securityGroupIds:
+        - ${file(./config.${self:provider.stage}.json):SG1}
+        - ${file(./config.${self:provider.stage}.json):SG2}
+      subnetIds:
+        - ${file(./config.${self:provider.stage}.json):VPC1}
+        - ${file(./config.${self:provider.stage}.json):VPC2}
+    events:
+      - http:
+          method: GET
+          path: /stake_calculator
+          cors:
+            origin: ${file(./config.${self:provider.stage}.json):ORIGIN}
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - x-requested-with
+
   open-for-stake-consumer:
     warmup: true
     handler: staking.application.handlers.consumer_handlers.open_for_stake_consumer_handler
