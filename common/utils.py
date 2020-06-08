@@ -16,14 +16,14 @@ class Utils:
             1: 'Err:: '
         }
 
-    def report_slack(self, type, slack_msg, slack_config):
+    def report_slack(self, type, slack_message, slack_config):
         url = slack_config['hostname'] + slack_config['path']
         prefix = self.msg_type.get(type, "")
         slack_channel = slack_config.get("channel", "contract-index-alerts")
         print(url)
         payload = {"channel": f"#{slack_channel}",
                    "username": "webhookbot",
-                   "text": prefix + slack_msg,
+                   "text": prefix + slack_message,
                    "icon_emoji": ":ghost:"
                    }
 
