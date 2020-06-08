@@ -42,6 +42,16 @@ class StakeHolderRepository(BaseRepository):
             return 0
         return int(total_stake_deposit)
 
+    def get_total_stake_approved_for_given_blockchain_id(self, blockchain_id):
+        total_stake_approved = self.session.query(
+            func.sum(StakeHolderDBModel.amount_approved).label("total_stake_approved")).filter(
+            StakeHolderDBModel.blockchain_id == blockchain_id).all()
+        self.session.commit()
+        total_stake_approved = total_stake_approved[0].total_stake_approved
+        if total_stake_approved is None:
+            return 0
+        return int(total_stake_approved)
+
     def add_or_update_stake_holder(self, stake_holder):
         logger.info(f"add_or_update_stake_holder::stake_holder {stake_holder}")
         blockchain_id = stake_holder.blockchain_id
