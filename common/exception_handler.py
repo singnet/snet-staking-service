@@ -41,7 +41,7 @@ def exception_handler(*decorator_args, **decorator_kwargs):
                 for exc_lines in exc_tb_lines:
                     slack_message = slack_message + exc_lines
                 slack_message = f"```{slack_message}```"
-                Utils().report_slack(type=0, slack_msg=slack_message, SLACK_HOOK=SLACK_HOOK)
+                Utils().report_slack(type=0, slack_message=slack_message, slack_config=SLACK_HOOK)
 
                 return generate_lambda_response(
                     StatusCode.INTERNAL_SERVER_ERROR,
@@ -64,7 +64,7 @@ def exception_handler(*decorator_args, **decorator_kwargs):
                 for exc_lines in exc_tb_lines:
                     slack_message = slack_message + exc_lines
                 slack_message = f"```{slack_message}```"
-                Utils().report_slack(type=0, slack_msg=slack_message, SLACK_HOOK=SLACK_HOOK)
+                Utils().report_slack(type=0, slack_message=slack_message, slack_config=SLACK_HOOK)
 
                 return generate_lambda_response(
                     StatusCode.INTERNAL_SERVER_ERROR,

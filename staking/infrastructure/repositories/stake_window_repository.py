@@ -2,7 +2,7 @@ from datetime import datetime as dt
 from staking.infrastructure.repositories.base_repository import BaseRepository
 from staking.infrastructure.models import StakeWindow as StakeWindowDBModel
 from staking.domain.factory.stake_factory import StakeFactory
-from sqlalchemy import or_, func
+from sqlalchemy import or_, func, desc
 from staking.exceptions import StakeWindowNotFoundException
 
 
@@ -11,7 +11,7 @@ class StakeWindowRepository(BaseRepository):
     def get_stake_windows(self):
         # Get all stake windows for which stake approval should be done or started.
         current_time = dt.utcnow().timestamp()  # GMT Epoch
-        stake_windows_raw_data = self.session.query(StakeWindowDBModel).\
+        stake_windows_raw_data = self.session.query(StakeWindowDBModel). \
             filter(StakeWindowDBModel.submission_end_period <= current_time). \
             order_by(StakeWindowDBModel.blockchain_id.desc()).all()
         stake_windows = [StakeFactory.convert_stake_window_db_model_to_entity_model(stake_window_db)
@@ -39,10 +39,19 @@ class StakeWindowRepository(BaseRepository):
         return stake_windows
 
     def get_stake_window_for_given_blockchain_id(self, blockchain_id):
-        current_time = dt.utcnow().timestamp()  # GMT Epoch
         stake_windows_raw_data = self.session.query(StakeWindowDBModel).filter(
             StakeWindowDBModel.blockchain_id == blockchain_id) \
             .all()
+        if not bool(stake_windows_raw_data):
+            self.session.commit()
+            return None
+        stake_window = StakeFactory.convert_stake_window_db_model_to_entity_model(stake_windows_raw_data[0])
+        self.session.commit()
+        return stake_window
+
+    def get_latest_stake_window(self):
+        stake_windows_raw_data = self.session.query(StakeWindowDBModel).\
+            order_by(StakeWindowDBModel.blockchain_id.desc()).limit(1)
         if not bool(stake_windows_raw_data):
             self.session.commit()
             return None

@@ -79,3 +79,12 @@ def get_all_transactions_of_stake_holder_for_given_address(event, context):
         StatusCode.OK,
         {"status": "success", "data": response, "error": {}}, cors_enabled=True
     )
+
+
+@exception_handler(SLACK_HOOK=SLACK_HOOK, NETWORK_ID=NETWORK_ID, logger=logger)
+def get_stake_calculator_details(event, context):
+    response = StakeService.get_stake_calculator_details()
+    return generate_lambda_response(
+        StatusCode.OK,
+        {"status": "success", "data": response, "error": {}}, cors_enabled=True
+    )
