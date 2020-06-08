@@ -42,27 +42,27 @@ custom:
       -
         name: "GetStakeSummaryOutput"
         contentType: "application/json"
-        schema: ${file(staking/documentation/models/get_service_get.json)}
+        schema: ${file(staking/documentation/models/get_stake_summary.json)}
       -
         name: "GetAllStakeWindowDetailsOutput"
         contentType: "application/json"
-        schema: ${file(staking/documentation/models/get_all_org.json):GetAllStakeWindowDetailsOutput}
+        schema: ${file(staking/documentation/models/get_all_stake_window_details.json):GetAllStakeWindowDetailsOutput}
       -
         name: "GetStakeWindowDetailsOutput"
         contentType: "application/json"
-        schema: ${file(staking/documentation/models/get_service_post.json):GetStakeWindowDetailsOutput}
+        schema: ${file(staking/documentation/models/get_stake_window_details.json):GetStakeWindowDetailsOutput}
       -
         name: "GetStakeHolderDetailsForActiveStakeWindowOutput"
         contentType: "application/json"
-        schema: ${file(staking/documentation/models/get_org_for_org_id.json):GetStakeHolderDetailsForActiveStakeWindowOutput)}
+        schema: ${file(staking/documentation/models/get_stake_holder_details_for_active_stake_window.json):GetStakeHolderDetailsForActiveStakeWindowOutput)}
       -
         name: "GetStakeHolderDetailsForClaimStakeWindowOutput"
         contentType: "application/json"
-        schema: ${file(staking/documentation/models/get_group_for_org_id.json):GetStakeHolderDetailsForClaimStakeWindowOutput)}
+        schema: ${file(staking/documentation/models/get_stake_holders_for_claim_stake_windows.json):GetStakeHolderDetailsForClaimStakeWindowOutput)}
       -
         name: "GetStakeHolderTransactionDetailsOutput"
         contentType: "application/json"
-        schema: ${file(staking/documentation/models/get_all_group_for_org.json):GetStakeHolderTransactionDetailsOutput)}
+        schema: ${file(staking/documentation/models/get_stake_holder_transaction_details.json):GetStakeHolderTransactionDetailsOutput)}
       -
         name: "GetStakeCalculatorDetailsOutput"
         contentType: "application/json"
