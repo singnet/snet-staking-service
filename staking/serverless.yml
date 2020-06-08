@@ -63,6 +63,10 @@ custom:
         name: "GetStakeHolderTransactionDetailsOutput"
         contentType: "application/json"
         schema: ${file(staking/documentation/models/get_all_group_for_org.json):GetStakeHolderTransactionDetailsOutput)}
+      -
+        name: "GetStakeCalculatorDetailsOutput"
+        contentType: "application/json"
+        schema: ${file(staking/documentation/models/get_stake_calculator_details.json):GetStakeCalculatorDetailsOutput)}
 
 package:
   exclude:
@@ -409,7 +413,7 @@ functions:
     events:
       - http:
           method: GET
-          path: /stake_calculator
+          path: /stake-calculator
           cors:
             origin: ${file(./config.${self:provider.stage}.json):ORIGIN}
             headers:
@@ -420,6 +424,26 @@ functions:
               - X-Amz-Security-Token
               - X-Amz-User-Agent
               - x-requested-with
+          documentation:
+            summary: "Get stake calculator details"
+            description: "Get stake calculator details for last stake window."
+            tags:
+              - "calculator"
+            requestHeaders:
+              -
+                name: "Content-Type"
+                description: "application/json"
+            methodResponses:
+              -
+                statusCode: "200"
+                responseBody:
+                  description: "Stake Calculator details."
+                responseModels:
+                  "application/json": "GetStakeCalculatorDetailsOutput"
+              -
+                statusCode: "500"
+                responseModels:
+                  "application/json": "ErrorMessage"
 
   open-for-stake-consumer:
     warmup: true

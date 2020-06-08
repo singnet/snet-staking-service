@@ -13,10 +13,10 @@
         "items": {
           "type": "object",
           "properties": {
-            "no_of_stakers": {
+            "total_stake_pending_for_approval": {
               "type": "integer"
             },
-            "total_stake_deposited": {
+            "total_stake_approved": {
               "type": "integer"
             },
             "blockchain_id": {
