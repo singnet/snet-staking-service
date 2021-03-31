@@ -17,10 +17,8 @@ class StakeFactory:
             request_withdraw_start_period=stake_window_db.request_withdraw_start_period,
             end_period=stake_window_db.end_period,
             min_stake=stake_window_db.min_stake,
-            max_stake=stake_window_db.max_stake,
-            window_max_cap=stake_window_db.window_max_cap,
-            open_for_external=stake_window_db.open_for_external,
             total_stake=stake_window_db.total_stake,
+            open_for_external=stake_window_db.open_for_external,
             reward_amount=stake_window_db.reward_amount,
             token_operator=stake_window_db.token_operator
         )
@@ -28,13 +26,10 @@ class StakeFactory:
     @staticmethod
     def convert_stake_holder_db_model_to_entity_model(stake_holder_db):
         return StakeHolder(
-            blockchain_id=stake_holder_db.blockchain_id,
             staker=stake_holder_db.staker,
             amount_pending_for_approval=stake_holder_db.amount_pending_for_approval,
             amount_approved=stake_holder_db.amount_approved,
-            auto_renewal=stake_holder_db.auto_renewal,
-            block_no_created=stake_holder_db.block_no_created,
-            refund_amount=stake_holder_db.refund_amount
+            block_no_created=stake_holder_db.block_no_created
         )
 
     @staticmethod

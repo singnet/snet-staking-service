@@ -1,7 +1,7 @@
 class StakeWindow:
     def __init__(self, blockchain_id, start_period, submission_end_period, approval_end_period,
-                 request_withdraw_start_period, end_period, min_stake, max_stake, window_max_cap, open_for_external,
-                 total_stake, reward_amount, token_operator):
+                 request_withdraw_start_period, end_period, min_stake, total_stake, open_for_external, reward_amount,
+                 token_operator):
         self._blockchain_id = blockchain_id
         self._start_period = start_period
         self._submission_end_period = submission_end_period
@@ -9,10 +9,8 @@ class StakeWindow:
         self._request_withdraw_start_period = request_withdraw_start_period
         self._end_period = end_period
         self._min_stake = min_stake
-        self._max_stake = max_stake
-        self._window_max_cap = window_max_cap
-        self._open_for_external = open_for_external
         self._total_stake = total_stake
+        self._open_for_external = open_for_external
         self._reward_amount = reward_amount
         self._token_operator = token_operator
 
@@ -25,10 +23,8 @@ class StakeWindow:
             "request_withdraw_start_period": self._request_withdraw_start_period,
             "end_period": self._end_period,
             "min_stake": self._min_stake,
-            "max_stake": self._max_stake,
-            "window_max_cap": self._window_max_cap,
-            "open_for_external": self._open_for_external,
             "total_stake": self._total_stake,
+            "open_for_external": self._open_for_external,
             "reward_amount": self._reward_amount,
             "token_operator": self._token_operator
         }
@@ -62,24 +58,12 @@ class StakeWindow:
         return self._min_stake
 
     @property
-    def max_stake(self):
-        return self._max_stake
-
-    @property
-    def window_max_cap(self):
-        return self._window_max_cap
+    def total_stake(self):
+        return self._total_stake
 
     @property
     def open_for_external(self):
         return self._open_for_external
-
-    @property
-    def total_stake(self):
-        return self._total_stake
-
-    @total_stake.setter
-    def total_stake(self, total_stake):
-        self._total_stake = total_stake
 
     @property
     def reward_amount(self):
