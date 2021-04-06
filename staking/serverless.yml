@@ -35,36 +35,28 @@ custom:
     number: 5
   documentation:
     models:
-      -
-        name: "ErrorMessage"
+      - name: "ErrorMessage"
         contentType: "application/json"
         schema: ${file(staking/documentation/models/error.json)}
-      -
-        name: "GetStakeSummaryOutput"
+      - name: "GetStakeSummaryOutput"
         contentType: "application/json"
         schema: ${file(staking/documentation/models/get_stake_summary.json)}
-      -
-        name: "GetAllStakeWindowDetailsOutput"
+      - name: "GetAllStakeWindowDetailsOutput"
         contentType: "application/json"
         schema: ${file(staking/documentation/models/get_all_stake_window_details.json):GetAllStakeWindowDetailsOutput}
-      -
-        name: "GetStakeWindowDetailsOutput"
+      - name: "GetStakeWindowDetailsOutput"
         contentType: "application/json"
         schema: ${file(staking/documentation/models/get_stake_window_details.json):GetStakeWindowDetailsOutput}
-      -
-        name: "GetStakeHolderDetailsForActiveStakeWindowOutput"
+      - name: "GetStakeHolderDetailsForActiveStakeWindowOutput"
         contentType: "application/json"
         schema: ${file(staking/documentation/models/get_stake_holder_details_for_active_stake_window.json):GetStakeHolderDetailsForActiveStakeWindowOutput)}
-      -
-        name: "GetStakeHolderDetailsForClaimStakeWindowOutput"
+      - name: "GetStakeHolderDetailsForClaimStakeWindowOutput"
         contentType: "application/json"
         schema: ${file(staking/documentation/models/get_stake_holders_for_claim_stake_windows.json):GetStakeHolderDetailsForClaimStakeWindowOutput)}
-      -
-        name: "GetStakeHolderTransactionDetailsOutput"
+      - name: "GetStakeHolderTransactionDetailsOutput"
         contentType: "application/json"
         schema: ${file(staking/documentation/models/get_stake_holder_transaction_details.json):GetStakeHolderTransactionDetailsOutput)}
-      -
-        name: "GetStakeCalculatorDetailsOutput"
+      - name: "GetStakeCalculatorDetailsOutput"
         contentType: "application/json"
         schema: ${file(staking/documentation/models/get_stake_calculator_details.json):GetStakeCalculatorDetailsOutput)}
 
@@ -119,21 +111,19 @@ functions:
             tags:
               - "summary"
             requestHeaders:
-              -
-                name: "Content-Type"
+              - name: "Content-Type"
                 description: "application/json"
 
             methodResponses:
-              -
-                statusCode: "200"
+              - statusCode: "200"
                 responseBody:
                   description: "Stake Summary"
                 responseModels:
                   "application/json": "GetStakeSummaryOutput"
-              -
-                statusCode: "500"
+              - statusCode: "500"
                 responseModels:
                   "application/json": "ErrorMessage"
+
 
   get-all-stake-window-details:
     handler: staking.application.handlers.stake_handler.get_all_stake_windows
@@ -170,21 +160,19 @@ functions:
             tags:
               - "summary"
             requestHeaders:
-              -
-                name: "Content-Type"
+              - name: "Content-Type"
                 description: "application/json"
 
             methodResponses:
-              -
-                statusCode: "200"
+              - statusCode: "200"
                 responseBody:
                   description: "All stake window details."
                 responseModels:
                   "application/json": "GetAllStakeWindowDetailsOutput"
-              -
-                statusCode: "500"
+              - statusCode: "500"
                 responseModels:
                   "application/json": "ErrorMessage"
+
 
   get-stake-window-details:
     handler: staking.application.handlers.stake_handler.get_stake_window
@@ -221,21 +209,19 @@ functions:
             tags:
               - "summary"
             requestHeaders:
-              -
-                name: "Content-Type"
+              - name: "Content-Type"
                 description: "application/json"
 
             methodResponses:
-              -
-                statusCode: "200"
+              - statusCode: "200"
                 responseBody:
                   description: "Stake windows details"
                 responseModels:
                   "application/json": "GetStakeWindowDetailsOutput"
-              -
-                statusCode: "500"
+              - statusCode: "500"
                 responseModels:
                   "application/json": "ErrorMessage"
+
 
   get-stake-holder-details-for-active-stake-window:
     handler: staking.application.handlers.stake_handler.get_stake_holder_details_for_active_stake_window
@@ -272,24 +258,21 @@ functions:
             tags:
               - "summary"
             requestHeaders:
-              -
-                name: "Content-Type"
+              - name: "Content-Type"
                 description: "application/json"
             queryParams:
-              -
-                name: "staker"
+              - name: "staker"
                 description: "Staker Address(Ethereum Address)"
             methodResponses:
-              -
-                statusCode: "200"
+              - statusCode: "200"
                 responseBody:
                   description: "Stake holder active stake details."
                 responseModels:
                   "application/json": "GetStakeHolderDetailsForActiveStakeWindowOutput"
-              -
-                statusCode: "500"
+              - statusCode: "500"
                 responseModels:
                   "application/json": "ErrorMessage"
+
 
   get-stake-holders-for-claim-stake-windows:
     handler: staking.application.handlers.stake_handler.get_stake_holder_details_for_claim_stake_windows
@@ -326,24 +309,21 @@ functions:
             tags:
               - "summary"
             requestHeaders:
-              -
-                name: "Content-Type"
+              - name: "Content-Type"
                 description: "application/json"
             queryParams:
-              -
-                name: "staker"
+              - name: "staker"
                 description: "Staker Address(Ethereum Address)"
             methodResponses:
-              -
-                statusCode: "200"
+              - statusCode: "200"
                 responseBody:
                   description: "Stake holder claims details."
                 responseModels:
                   "application/json": "GetStakeHolderDetailsForClaimStakeWindowOutput"
-              -
-                statusCode: "500"
+              - statusCode: "500"
                 responseModels:
                   "application/json": "ErrorMessage"
+
 
   get-stake-holder-transaction-details:
     handler: staking.application.handlers.stake_handler.get_all_transactions_of_stake_holder_for_given_address
@@ -380,22 +360,18 @@ functions:
             tags:
               - "summary"
             requestHeaders:
-              -
-                name: "Content-Type"
+              - name: "Content-Type"
                 description: "application/json"
             queryParams:
-              -
-                name: "staker"
+              - name: "staker"
                 description: "Staker Address(Ethereum Address)"
             methodResponses:
-              -
-                statusCode: "200"
+              - statusCode: "200"
                 responseBody:
                   description: "Stake holder transaction details."
                 responseModels:
                   "application/json": "GetStakeHolderTransactionDetailsOutput"
-              -
-                statusCode: "500"
+              - statusCode: "500"
                 responseModels:
                   "application/json": "ErrorMessage"
 
@@ -430,20 +406,18 @@ functions:
             tags:
               - "calculator"
             requestHeaders:
-              -
-                name: "Content-Type"
+              - name: "Content-Type"
                 description: "application/json"
             methodResponses:
-              -
-                statusCode: "200"
+              - statusCode: "200"
                 responseBody:
                   description: "Stake Calculator details."
                 responseModels:
                   "application/json": "GetStakeCalculatorDetailsOutput"
-              -
-                statusCode: "500"
+              - statusCode: "500"
                 responseModels:
                   "application/json": "ErrorMessage"
+
 
   open-for-stake-consumer:
     warmup: true
@@ -461,6 +435,7 @@ functions:
         - ${file(./config.${self:provider.stage}.json):VPC1}
         - ${file(./config.${self:provider.stage}.json):VPC2}
 
+
   submit-stake-consumer:
     warmup: true
     handler: staking.application.handlers.consumer_handlers.submit_stake_consumer_handler
@@ -477,58 +452,10 @@ functions:
         - ${file(./config.${self:provider.stage}.json):VPC1}
         - ${file(./config.${self:provider.stage}.json):VPC2}
 
-  approved-stake-consumer:
-    warmup: true
-    handler: staking.application.handlers.consumer_handlers.approve_stake_consumer_handler
-    role: ${file(./config.${self:provider.stage}.json):ROLE}
-    tags:
-      Environment: ${file(./config.${self:provider.stage}.json):ENVIRONMENT}
-      Team: ${file(./config.${self:provider.stage}.json):TEAM}
-      Owner: ${file(./config.${self:provider.stage}.json):OWNER}
-    vpc:
-      securityGroupIds:
-        - ${file(./config.${self:provider.stage}.json):SG1}
-        - ${file(./config.${self:provider.stage}.json):SG2}
-      subnetIds:
-        - ${file(./config.${self:provider.stage}.json):VPC1}
-        - ${file(./config.${self:provider.stage}.json):VPC2}
 
-  reject-stake-consumer:
+  update-auto-renewal-stake-consumer:
     warmup: true
-    handler: staking.application.handlers.consumer_handlers.reject_stake_consumer_handler
-    role: ${file(./config.${self:provider.stage}.json):ROLE}
-    tags:
-      Environment: ${file(./config.${self:provider.stage}.json):ENVIRONMENT}
-      Team: ${file(./config.${self:provider.stage}.json):TEAM}
-      Owner: ${file(./config.${self:provider.stage}.json):OWNER}
-    vpc:
-      securityGroupIds:
-        - ${file(./config.${self:provider.stage}.json):SG1}
-        - ${file(./config.${self:provider.stage}.json):SG2}
-      subnetIds:
-        - ${file(./config.${self:provider.stage}.json):VPC1}
-        - ${file(./config.${self:provider.stage}.json):VPC2}
-
-  withdraw-stake-consumer:
-    warmup: true
-    handler: staking.application.handlers.consumer_handlers.withdraw_stake_consumer_handler
-    role: ${file(./config.${self:provider.stage}.json):ROLE}
-    tags:
-      Environment: ${file(./config.${self:provider.stage}.json):ENVIRONMENT}
-      Team: ${file(./config.${self:provider.stage}.json):TEAM}
-      Owner: ${file(./config.${self:provider.stage}.json):OWNER}
-    vpc:
-      securityGroupIds:
-        - ${file(./config.${self:provider.stage}.json):SG1}
-        - ${file(./config.${self:provider.stage}.json):SG2}
-      subnetIds:
-        - ${file(./config.${self:provider.stage}.json):VPC1}
-        - ${file(./config.${self:provider.stage}.json):VPC2}
-
-
-  auto-renew-stake-consumer:
-    warmup: true
-    handler: staking.application.handlers.consumer_handlers.auto_renew_stake_consumer_handler
+    handler: staking.application.handlers.consumer_handlers.update_auto_renewal_consumer_handler
     role: ${file(./config.${self:provider.stage}.json):ROLE}
     tags:
       Environment: ${file(./config.${self:provider.stage}.json):ENVIRONMENT}
@@ -560,9 +487,41 @@ functions:
         - ${file(./config.${self:provider.stage}.json):VPC2}
 
 
-  update-auto-renewal-stake-consumer:
+  reject-stake-consumer:
     warmup: true
-    handler: staking.application.handlers.consumer_handlers.update_auto_renewal_consumer_handler
+    handler: staking.application.handlers.consumer_handlers.reject_stake_consumer_handler
+    role: ${file(./config.${self:provider.stage}.json):ROLE}
+    tags:
+      Environment: ${file(./config.${self:provider.stage}.json):ENVIRONMENT}
+      Team: ${file(./config.${self:provider.stage}.json):TEAM}
+      Owner: ${file(./config.${self:provider.stage}.json):OWNER}
+    vpc:
+      securityGroupIds:
+        - ${file(./config.${self:provider.stage}.json):SG1}
+        - ${file(./config.${self:provider.stage}.json):SG2}
+      subnetIds:
+        - ${file(./config.${self:provider.stage}.json):VPC1}
+        - ${file(./config.${self:provider.stage}.json):VPC2}
+
+  add-reward-consumer:
+    warmup: true
+    handler: staking.application.handlers.consumer_handlers.add_reward_consumer_handler
+    role: ${file(./config.${self:provider.stage}.json):ROLE}
+    tags:
+      Environment: ${file(./config.${self:provider.stage}.json):ENVIRONMENT}
+      Team: ${file(./config.${self:provider.stage}.json):TEAM}
+      Owner: ${file(./config.${self:provider.stage}.json):OWNER}
+    vpc:
+      securityGroupIds:
+        - ${file(./config.${self:provider.stage}.json):SG1}
+        - ${file(./config.${self:provider.stage}.json):SG2}
+      subnetIds:
+        - ${file(./config.${self:provider.stage}.json):VPC1}
+        - ${file(./config.${self:provider.stage}.json):VPC2}
+
+  withdraw-stake-consumer:
+    warmup: true
+    handler: staking.application.handlers.consumer_handlers.withdraw_stake_consumer_handler
     role: ${file(./config.${self:provider.stage}.json):ROLE}
     tags:
       Environment: ${file(./config.${self:provider.stage}.json):ENVIRONMENT}
