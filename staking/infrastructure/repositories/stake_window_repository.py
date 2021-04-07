@@ -57,3 +57,21 @@ class StakeWindowRepository(BaseRepository):
         if stake_window_db is not None:
             stake_window = StakeFactory.convert_stake_window_db_model_to_entity_model(stake_window_db)
         return stake_window
+
+    def add_stake_window(self, stake_window):
+        self.add_item(StakeWindowDBModel(
+            blockchain_id=stake_window.blockchain_id,
+            start_period=stake_window.start_period,
+            submission_end_period=stake_window.submission_end_period,
+            approval_end_period=stake_window.approval_end_period,
+            request_withdraw_start_period=stake_window.request_withdraw_start_period,
+            end_period=stake_window.end_period,
+            min_stake=stake_window.min_stake,
+            open_for_external=stake_window.open_for_external,
+            total_stake=stake_window.total_stake,
+            reward_amount=stake_window.reward_amount,
+            token_operator=stake_window.token_operator,
+            created_on=dt.utcnow(),
+            updated_on=dt.utcnow()
+        ))
+        return stake_window
