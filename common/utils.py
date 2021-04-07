@@ -1,5 +1,4 @@
 import datetime
-import decimal
 import json
 import sys
 import traceback
@@ -7,6 +6,10 @@ import traceback
 import requests
 import web3
 from web3 import Web3
+
+from common.logger import get_logger
+
+logger = get_logger(__name__)
 
 
 class Utils:
@@ -175,3 +178,13 @@ def datetime_to_string(given_time):
 
 def date_time_for_filename():
     return datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S")
+
+
+def send_slack_notification(slack_message, slack_url, slack_channel):
+    payload = {"channel": f"#{slack_channel}",
+               "username": "webhookbot",
+               "text": slack_message,
+               "icon_emoji": ":ghost:"
+               }
+    slack_response = requests.post(url=slack_url, data=json.dumps(payload))
+    logger.info(f"slack response :: {slack_response.status_code}, {slack_response.text}")
