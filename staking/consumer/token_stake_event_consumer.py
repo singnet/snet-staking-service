@@ -41,7 +41,7 @@ class TokenStakeEventConsumer(object):
 
     @staticmethod
     def _get_event_data(event):
-        return json.loads(event['data']['json_str'])
+        return eval(event['data']['json_str'])
 
     @staticmethod
     def _get_metadata_hash(metadata_uri):
