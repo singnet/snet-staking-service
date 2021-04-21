@@ -48,7 +48,7 @@ class StakeWindowRepository(BaseRepository):
 
     def get_latest_stake_window(self):
         try:
-            stake_window_db = self.session.query(StakeWindowDBModel).order_by(StakeWindowDBModel.blockchain_id.desc()).one()
+            stake_window_db = self.session.query(StakeWindowDBModel).order_by(StakeWindowDBModel.blockchain_id.desc()).first()
             self.session.commit()
         except SQLAlchemyError as e:
             self.session.rollback()
