@@ -90,3 +90,52 @@ class StakeWindowRepository(BaseRepository):
             updated_on=dt.utcnow()
         ))
         return stake_window
+
+    def get_stake_window_open_for_submission(self):
+        current_time = dt.utcnow().timestamp()  # GMT Epoch
+        try:
+            stake_windows_db = self.session.query(StakeWindowDBModel).filter(
+                StakeWindowDBModel.start_period <= current_time) \
+                .filter(StakeWindowDBModel.submission_end_period >= current_time).all()
+            self.session.commit()
+        except SQLAlchemyError as e:
+            self.session.rollback()
+            raise e
+        stake_windows = [StakeFactory.convert_stake_window_db_model_to_entity_model(stake_window_db)
+                         for stake_window_db in stake_windows_db]
+        return stake_windows
+
+    def get_upcoming_stake_window(self):
+        current_time = dt.utcnow().timestamp()  # GMT Epoch
+        try:
+            stake_windows_db = self.session.query(StakeWindowDBModel).filter(
+                StakeWindowDBModel.start_period >= current_time).all()
+            self.session.commit()
+        except SQLAlchemyError as e:
+            self.session.rollback()
+            raise e
+        stake_windows = [StakeFactory.convert_stake_window_db_model_to_entity_model(stake_window_db)
+                         for stake_window_db in stake_windows_db]
+        return stake_windows
+
+    def update_stake_window(self, stake_window):
+        try:
+            stake_window_db = self.session.query(
+                StakeWindowDBModel).filter(StakeWindowDBModel.blockchain_id == stake_window.blockchain_id).one()
+            if stake_window_db:
+                stake_window_db.start_period = stake_window.start_period,
+                stake_window_db.submission_end_period = stake_window.submission_end_period,
+                stake_window_db.approval_end_period = stake_window.approval_end_period,
+                stake_window_db.request_withdraw_start_period = stake_window.request_withdraw_start_period,
+                stake_window_db.end_period = stake_window.end_period,
+                stake_window_db.min_stake = stake_window.min_stake,
+                stake_window_db.total_stake = stake_window.total_stake,
+                stake_window_db.reward_amount = stake_window.reward_amount,
+                stake_window_db.token_operator = stake_window.token_operator,
+                stake_window_db.updated_on = dt.utcnow()
+            self.session.commit()
+        except Exception as e:
+            self.session.rollback()
+            raise e
+        stake_window = StakeFactory.convert_stake_window_db_model_to_entity_model(stake_window_db)
+        return stake_window
