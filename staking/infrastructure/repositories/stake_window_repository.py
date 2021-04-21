@@ -48,13 +48,28 @@ class StakeWindowRepository(BaseRepository):
 
     def get_latest_stake_window(self):
         try:
-            stake_window_db = self.session.query(StakeWindowDBModel).order_by(StakeWindowDBModel.blockchain_id.desc()).first()
+            stake_window_db = self.session.query(StakeWindowDBModel).order_by(
+                StakeWindowDBModel.blockchain_id.desc()).first()
             self.session.commit()
         except SQLAlchemyError as e:
             self.session.rollback()
             raise e
         stake_window = None
         if stake_window_db is not None:
+            stake_window = StakeFactory.convert_stake_window_db_model_to_entity_model(stake_window_db)
+        return stake_window
+
+    def get_stake_window_for_given_blockchain_id(self, blockchain_id):
+        try:
+            stake_window_db = self.session.query(StakeWindowDBModel).filter(
+                StakeWindowDBModel.blockchain_id == blockchain_id) \
+                .one()
+            self.session.commit()
+        except SQLAlchemyError as e:
+            self.session.rollback()
+            raise e
+        stake_window = None
+        if stake_window_db:
             stake_window = StakeFactory.convert_stake_window_db_model_to_entity_model(stake_window_db)
         return stake_window
 
