@@ -95,7 +95,8 @@ class StakeHolderDetailsRepository(BaseRepository):
             self.session.rollback()
             raise e
         total_stake_deposited = 0
-        if response:
+        logger.info(f"get_total_stake_deposited::response {response}")
+        if response and response.total_stake_deposited:
             total_stake_deposited = int(response.total_stake_deposited)
         return total_stake_deposited
 
