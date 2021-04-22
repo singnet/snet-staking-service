@@ -87,14 +87,17 @@ class StakeHolderDetailsRepository(BaseRepository):
 
     def get_total_stake_deposited(self, blockchain_id):
         try:
-            total_stake_deposited = self.session.query(
-                func.sum(StakeHolderDetailsDBModel.amount_staked).label("amount_staked")).filter(
-                StakeHolderDetailsDBModel.blockchain_id == blockchain_id).one()
+            response = self.session.query(
+                func.sum(StakeHolderDetailsDBModel.amount_staked).label("total_stake_deposited")).filter(
+                StakeHolderDetailsDBModel.blockchain_id == blockchain_id).first()
             self.session.commit()
         except SQLAlchemyError as e:
             self.session.rollback()
             raise e
-        return int(total_stake_deposited.amount_staked)
+        total_stake_deposited = 0
+        if response:
+            total_stake_deposited = int(response.total_stake_deposited)
+        return total_stake_deposited
 
     def get_auto_renew_amount_for_given_stake_window(self, blockchain_id, staker=None):
         try:
