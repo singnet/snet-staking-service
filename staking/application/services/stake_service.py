@@ -94,7 +94,7 @@ class StakeService:
 
             })
         return {
-            "stake_holder": stake_holder.to_dict(),
+            "stake_holder": stake_holder.to_dict() if stake_holder else {},
             "stake_windows": list_of_stake_window
         }
 
