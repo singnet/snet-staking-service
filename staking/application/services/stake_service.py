@@ -57,10 +57,7 @@ class StakeService:
 
     @staticmethod
     def compute_auto_renewal_for_staker(blockchain_id, staker):
-        if blockchain_id < 1:
-            return 0
-        stake_window = StakeWindowRepository().get_stake_window_for_given_blockchain_id(blockchain_id - 1)
-        if stake_window is None or (not bool(stake_window.total_stake)):
+        if blockchain_id < 1 or blockchain_id == 1:
             return 0
         auto_renew_amount_for_staker = StakeHolderDetailsRepository().get_auto_renew_amount_for_given_stake_window(
             blockchain_id=blockchain_id, staker=staker)
@@ -77,15 +74,14 @@ class StakeService:
         if not stake_windows:
             stake_windows = StakeWindowRepository().get_upcoming_stake_window()
         list_of_stake_window = [stake_window.to_dict() for stake_window in stake_windows]
-        stake_holder = StakeHolderRepository().get_stake_holder_balance(staker=staker)
+        stake_holder = StakeHolderRepository().get_stake_holder(staker=staker)
         for stake_window in list_of_stake_window:
             blockchain_id = stake_window["blockchain_id"]
-
-            no_of_stakers = len(StakeHolderDetailsRepository().get_unique_staker(blockchain_id=blockchain_id))
-
-            pending_stake_amount_for_staker = stake_holder.amount_pending_for_approval
-            approved_stake_amount_for_staker = stake_holder.amount_approved
-            total_stake_deposited = StakeHolderDetailsRepository().get_total_stake_deposited(blockchain_id=blockchain_id)
+            no_of_stakers = StakeHolderDetailsRepository().get_unique_staker(blockchain_id=blockchain_id)
+            # pending_stake_amount_for_staker = stake_holder.amount_pending_for_approval
+            # approved_stake_amount_for_staker = stake_holder.amount_approved
+            total_stake_deposited = StakeHolderDetailsRepository().get_total_stake_deposited(
+                blockchain_id=blockchain_id)
             total_auto_renew_amount = StakeService.compute_auto_renewal_for_stake_window(blockchain_id=blockchain_id)
             auto_renew_amount_for_staker = \
                 StakeService.compute_auto_renewal_for_staker(blockchain_id=blockchain_id, staker=staker)
@@ -101,7 +97,10 @@ class StakeService:
                 "stake_amount_for_given_staker_address": pending_stake_amount_for_staker
 
             })
-        return list_of_stake_window
+        return {
+            "stake_holder": stake_holder.to_dict(),
+            "stake_windows": list_of_stake_window
+        }
 
     @staticmethod
     def get_all_transactions_of_stake_holder_for_given_address(address):
