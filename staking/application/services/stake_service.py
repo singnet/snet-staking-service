@@ -46,7 +46,7 @@ class StakeService:
 
     @staticmethod
     def compute_auto_renewal_for_stake_window(blockchain_id):
-        if blockchain_id < 1:
+        if blockchain_id < 1 or blockchain_id == 1:
             return 0
         stake_window = StakeWindowRepository().get_stake_window_for_given_blockchain_id(blockchain_id - 1)
         if stake_window is None or (not bool(stake_window.total_stake)):
