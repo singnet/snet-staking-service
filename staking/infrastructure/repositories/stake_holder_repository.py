@@ -12,17 +12,17 @@ logger = get_logger(__name__)
 
 
 class StakeHolderRepository(BaseRepository):
-    def get_stake_holder_balance(self, staker):
+    def get_stake_holder(self, staker):
         try:
-            staker_balance_db = self.session.query(StakeHolderDBModel).filter(StakeHolderDBModel.staker == staker).one()
+            staker_holder_db = self.session.query(StakeHolderDBModel).filter(StakeHolderDBModel.staker == staker).first()
             self.session.commit()
         except SQLAlchemyError as e:
             self.session.rollback()
             raise e
-        staker_balance = None
-        if staker_balance_db is not None:
-            staker_balance = StakeFactory.convert_stake_holder_db_model_to_entity_model(staker_balance_db)
-        return staker_balance
+        staker_holder = None
+        if staker_holder_db:
+            staker_holder = StakeFactory.convert_stake_holder_db_model_to_entity_model(staker_holder_db)
+        return staker_holder
 
     def add_or_update_stake_holder(self, stake_holder):
         staker = stake_holder.staker
