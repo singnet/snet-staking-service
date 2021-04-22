@@ -112,3 +112,13 @@ class StakeHolderDetailsRepository(BaseRepository):
             raise e
         auto_renew_amount = int(query_response.principal_renewed) + int(query_response.reward_renewed)
         return auto_renew_amount
+
+    def get_total_no_of_stakers(self, blockchain_id):
+        try:
+            total_no_of_stakers = self.session.query(StakeHolderDetailsDBModel).filter(
+                StakeHolderDetailsDBModel.blockchain_id == blockchain_id).count()
+            self.session.commit()
+        except SQLAlchemyError as e:
+            self.session.rollback()
+            raise e
+        return total_no_of_stakers

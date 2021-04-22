@@ -132,14 +132,14 @@ class SubmitStakeEventConsumer(TokenStakeEventConsumer):
             raise Exception(f"Record not found for given blockchain_id {blockchain_id} and staker {staker}")
 
 
-class UpdateAutoRenewalEventConsumer(TokenStakeEventConsumer):
+class RequestForClaim(TokenStakeEventConsumer):
 
     def __init__(self, net_id, ws_provider):
         super().__init__(net_id=net_id, ws_provider=ws_provider)
 
     def on_event(self, event):
         event_data = self._get_event_data(event)
-        logger.info(f"UpdateAutoRenewal event data : {event_data}")
+        logger.info(f"RequestForClaim event data : {event_data}")
         blockchain_id = event_data["stakeIndex"]
         staker = event_data["staker"]
         stake_holder_data = self._get_stake_holder_for_given_stake_index_and_address(blockchain_id, staker)
