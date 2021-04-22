@@ -34,8 +34,8 @@ def submit_stake_consumer_handler(event, context):
 
 
 @exception_handler(SLACK_HOOK=SLACK_HOOK, NETWORK_ID=NETWORK_ID, logger=logger)
-def update_auto_renewal_consumer_handler(event, context):
-    logger.info(f"Got UpdateAutoRenewal Event {event}")
+def request_for_claim_handler(event, context):
+    logger.info(f"Got RequestForClaim Event {event}")
     UpdateAutoRenewalEventConsumer(net_id=NETWORK_ID, ws_provider=NETWORK['ws_provider']).on_event(
         event)
 

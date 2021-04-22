@@ -115,8 +115,8 @@ class StakeService:
                 if stake_window is None:
                     stake_window_dict = {}
                 else:
-                    no_of_stakers = StakeHolderRepository().get_total_no_of_stakers(stake_window.blockchain_id)
-                total_stake_deposited = StakeHolderRepository().get_total_stake_deposited(blockchain_id)
+                    no_of_stakers = StakeHolderDetailsRepository().get_total_no_of_stakers(stake_window.blockchain_id)
+                total_stake_deposited = stake_window.total_stake
                 stake_window_dict = stake_window.to_dict()
                 stake_window_dict.update(
                     {"no_of_stakers": no_of_stakers, "total_stake_deposited": total_stake_deposited})
