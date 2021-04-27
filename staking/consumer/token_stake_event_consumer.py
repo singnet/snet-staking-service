@@ -132,7 +132,7 @@ class SubmitStakeEventConsumer(TokenStakeEventConsumer):
             raise Exception(f"Record not found for given blockchain_id {blockchain_id} and staker {staker}")
 
 
-class RequestForClaim(TokenStakeEventConsumer):
+class RequestForClaimEventConsumer(TokenStakeEventConsumer):
 
     def __init__(self, net_id, ws_provider):
         super().__init__(net_id=net_id, ws_provider=ws_provider)

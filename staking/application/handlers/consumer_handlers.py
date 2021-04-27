@@ -4,7 +4,7 @@ from common.logger import get_logger
 from common.utils import generate_lambda_response
 from staking.config import NETWORK, NETWORK_ID, SLACK_HOOK
 from staking.consumer.token_stake_event_consumer import OpenForStakeEventConsumer, SubmitStakeEventConsumer, \
-    RejectStakeEventConsumer, WithdrawStakeEventConsumer, ClaimStakeEventConsumer, UpdateAutoRenewalEventConsumer, \
+    RejectStakeEventConsumer, WithdrawStakeEventConsumer, ClaimStakeEventConsumer, RequestForClaimEventConsumer, \
     AddRewardEventConsumer
 from staking.infrastructure.repositories.stake_holder_repository import StakeHolderRepository
 from staking.infrastructure.repositories.stake_window_repository import StakeWindowRepository
@@ -36,7 +36,7 @@ def submit_stake_consumer_handler(event, context):
 @exception_handler(SLACK_HOOK=SLACK_HOOK, NETWORK_ID=NETWORK_ID, logger=logger)
 def request_for_claim_handler(event, context):
     logger.info(f"Got RequestForClaim Event {event}")
-    UpdateAutoRenewalEventConsumer(net_id=NETWORK_ID, ws_provider=NETWORK['ws_provider']).on_event(
+    RequestForClaimEventConsumer(net_id=NETWORK_ID, ws_provider=NETWORK['ws_provider']).on_event(
         event)
 
     return generate_lambda_response(200, StatusCode.OK)
