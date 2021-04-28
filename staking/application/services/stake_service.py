@@ -110,11 +110,9 @@ class StakeService:
                 if stake_window is None:
                     stake_window_dict = {}
                 else:
-                    no_of_stakers = StakeHolderDetailsRepository().get_total_no_of_stakers(stake_window.blockchain_id)
-                total_stake_deposited = stake_window.total_stake
+                    no_of_stakers = StakeHolderDetailsRepository().get_unique_staker(stake_window.blockchain_id)
                 stake_window_dict = stake_window.to_dict()
-                stake_window_dict.update(
-                    {"no_of_stakers": no_of_stakers, "total_stake_deposited": total_stake_deposited})
+                stake_window_dict.update({"no_of_stakers": no_of_stakers})
                 transactions_details[blockchain_id] = {
                     "stake_window": stake_window_dict,
                     "transactions": []
@@ -125,50 +123,46 @@ class StakeService:
     @staticmethod
     def get_stake_holder_details_for_claim_stake_windows(address):
         claims_details = []
-        # current_utc_time_in_epoch = time.time()
-        # stake_holders = StakeHolderRepository().get_stake_holder_balance(address)
-        # for stake_holder in stake_holders:
-        #     blockchain_id = stake_holder.blockchain_id
-        #     stake_window = StakeWindowRepository().get_stake_window_for_given_blockchain_id(blockchain_id)
-        #     if not stake_window:
-        #         raise StakeWindowNotFoundException()
-        #     if (stake_holder.amount_approved > 0 and stake_window.end_period < current_utc_time_in_epoch) or (
-        #             stake_holder.amount_pending_for_approval > 0 and stake_window.approval_end_period < current_utc_time_in_epoch):
-        #         no_of_stakers = StakeHolderRepository().get_total_no_of_stakers(blockchain_id)
-        #         total_stake_deposited = StakeHolderRepository().get_total_stake_deposited(blockchain_id)
-        #         stake_window_dict = stake_window.to_dict()
-        #         stake_window_dict.update(
-        #             {"no_of_stakers": no_of_stakers, "total_stake_deposited": total_stake_deposited})
-        #         claims_details.append({
-        #             "stake_holder": stake_holder.to_dict(),
-        #             "stake_window": stake_window_dict
-        #         })
+        current_utc_time_in_epoch = time.time()
+        stake_holder = StakeHolderRepository().get_stake_holder(staker=address)
+        stake_window = StakeWindowRepository().get_latest_stake_window()
+        blockchain_id = stake_window.blockchain_id
+        if not stake_window:
+            raise StakeWindowNotFoundException()
+        if (stake_holder.amount_approved > 0 and stake_window.end_period < current_utc_time_in_epoch) or (
+                stake_holder.amount_pending_for_approval > 0 and stake_window.approval_end_period < current_utc_time_in_epoch):
+            no_of_stakers = StakeHolderDetailsRepository().get_unique_staker(blockchain_id)
+            stake_window_dict = stake_window.to_dict()
+            stake_window_dict.update(
+                {"no_of_stakers": no_of_stakers, "total_stake_deposited": stake_window.total_stake})
+            claims_details.append({
+                "stake_holder": stake_holder.to_dict(),
+                "stake_window": stake_window_dict
+            })
         return claims_details
 
     @staticmethod
     def get_stake_holder_details_for_active_stake_window(address):
         active_stake_details = []
-        # current_utc_time_in_epoch = time.time()
-        # stake_holders = StakeHolderRepository().get_stake_holders_for_given_address(address)
-        # for stake_holder in stake_holders:
-        #     blockchain_id = stake_holder.blockchain_id
-        #     stake_window = StakeWindowRepository().get_stake_window_for_given_blockchain_id(blockchain_id)
-        #     if not stake_window:
-        #         raise StakeWindowNotFoundException()
-        #     if (stake_holder.amount_approved > 0 and (
-        #             stake_window.submission_end_period < current_utc_time_in_epoch < stake_window.end_period)
-        #     ) or (stake_holder.amount_pending_for_approval > 0
-        #           and (stake_window.approval_end_period > current_utc_time_in_epoch >
-        #                stake_window.submission_end_period)):
-        #         no_of_stakers = StakeHolderRepository().get_total_no_of_stakers(blockchain_id)
-        #         total_stake_deposited = StakeHolderRepository().get_total_stake_deposited(blockchain_id)
-        #         stake_window_dict = stake_window.to_dict()
-        #         stake_window_dict.update(
-        #             {"no_of_stakers": no_of_stakers, "total_stake_deposited": total_stake_deposited})
-        #         active_stake_details.append({
-        #             "stake_holder": stake_holder.to_dict(),
-        #             "stake_window": stake_window_dict
-        #         })
+        current_utc_time_in_epoch = time.time()
+        stake_holder = StakeHolderRepository().get_stake_holder(staker=address)
+        stake_window = StakeWindowRepository().get_latest_stake_window()
+        blockchain_id = stake_window.blockchain_id
+        if not stake_window:
+            raise StakeWindowNotFoundException()
+        if (stake_holder.amount_approved > 0 and (
+                stake_window.submission_end_period < current_utc_time_in_epoch < stake_window.end_period)
+        ) or (stake_holder.amount_pending_for_approval > 0
+              and (stake_window.approval_end_period > current_utc_time_in_epoch >
+                   stake_window.submission_end_period)):
+            no_of_stakers = StakeHolderDetailsRepository().get_unique_staker(blockchain_id)
+            stake_window_dict = stake_window.to_dict()
+            stake_window_dict.update(
+                {"no_of_stakers": no_of_stakers, "total_stake_deposited": stake_window.total_stake})
+            active_stake_details.append({
+                "stake_holder": stake_holder.to_dict(),
+                "stake_window": stake_window_dict
+            })
         return active_stake_details
 
     @staticmethod
