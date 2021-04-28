@@ -264,6 +264,10 @@ class AddRewardEventConsumer(TokenStakeEventConsumer):
             stake_holder_details = stake_holder_details_repo.get_stake_holder_details(blockchain_id, staker)
             stake_holder_details.reward_amount = event_data["rewardAmount"]
             stake_holder_details_repo.add_or_update_stake_holder_details(stake_holder_details)
+            # update total stake
+            stake_window = StakeWindowRepository().get_stake_window_for_given_blockchain_id(blockchain_id=blockchain_id)
+            stake_window.total_stake = event_data["windowTotalStake"]
+            stake_window_repo.update_stake_window(stake_window=stake_window)
             # update stake transactions
             self._add_stake_transaction(
                 block_no=block_no_created, blockchain_id=blockchain_id,
