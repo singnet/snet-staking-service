@@ -122,13 +122,16 @@ class StakeService:
 
     @staticmethod
     def get_stake_holder_details_for_claim_stake_windows(address):
-        claims_details = []
+        claims_details = [{
+                "stake_holder": {},
+                "stake_window": {}
+        }]
         current_utc_time_in_epoch = time.time()
         stake_holder = StakeHolderRepository().get_stake_holder(staker=address)
         stake_window = StakeWindowRepository().get_latest_stake_window()
         blockchain_id = stake_window.blockchain_id
-        if not stake_window:
-            raise StakeWindowNotFoundException()
+        if not stake_window or not stake_holder:
+            return claims_details
         if (stake_holder.amount_approved > 0 and stake_window.end_period < current_utc_time_in_epoch) or (
                 stake_holder.amount_pending_for_approval > 0 and stake_window.approval_end_period < current_utc_time_in_epoch):
             no_of_stakers = StakeHolderDetailsRepository().get_unique_staker(blockchain_id)
@@ -143,13 +146,16 @@ class StakeService:
 
     @staticmethod
     def get_stake_holder_details_for_active_stake_window(address):
-        active_stake_details = []
+        active_stake_details = [{
+                "stake_holder": {},
+                "stake_window": {}
+        }]
         current_utc_time_in_epoch = time.time()
         stake_holder = StakeHolderRepository().get_stake_holder(staker=address)
         stake_window = StakeWindowRepository().get_latest_stake_window()
         blockchain_id = stake_window.blockchain_id
-        if not stake_window:
-            raise StakeWindowNotFoundException()
+        if not stake_window or not stake_holder:
+            return active_stake_details
         if (stake_holder.amount_approved > 0 and (
                 stake_window.submission_end_period < current_utc_time_in_epoch < stake_window.end_period)
         ) or (stake_holder.amount_pending_for_approval > 0
