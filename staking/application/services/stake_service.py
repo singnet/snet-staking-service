@@ -118,7 +118,8 @@ class StakeService:
             claims_detail = last_stake_window.to_dict()
             claims_detail.update({"no_of_stakers": no_of_stakers})
             claims_detail.update(stake_holder.to_dict())
-            claims_detail.update(stake_holder_detail.to_dict())
+            if stake_holder_detail:
+                claims_detail.update(stake_holder_detail.to_dict())
             claims_details.append(claims_detail)
         stake_holder_details = StakeHolderDetailsRepository().get_stake_holder_claims_details(staker=address)
         for stake_holder_detail in stake_holder_details:
