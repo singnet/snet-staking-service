@@ -126,3 +126,18 @@ class StakeHolderDetailsRepository(BaseRepository):
             self.session.rollback()
             raise e
         return total_no_of_stakers
+
+    def get_stake_holder_claims_details(self, staker):
+        try:
+            stake_holder_details_db = self.session.query(StakeHolderDetailsDBModel).filter(
+                StakeHolderDetailsDBModel.staker == staker) \
+                .filter(StakeHolderDetailsDBModel.claimable_amount > 0).all()
+            self.session.commit()
+        except SQLAlchemyError as e:
+            self.session.rollback()
+            raise e
+        stake_holder_details = []
+        for stake_holder_detail_db in stake_holder_details_db:
+            stake_holder_detail = StakeFactory.convert_stake_holder_details_db_model_to_entity_model(stake_holder_detail_db)
+            stake_holder_details.append(stake_holder_detail)
+        return stake_holder_details
