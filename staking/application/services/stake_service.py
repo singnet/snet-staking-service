@@ -76,7 +76,7 @@ class StakeService:
         no_of_stakers = StakeHolderDetailsRepository().get_unique_staker(blockchain_id=stake_window.blockchain_id)
         total_amount_staked = StakeHolderRepository().get_total_amount_staked()
         stake_window_details = stake_window.to_dict()
-        if not stake_holder:
+        if stake_holder:
             stake_window_details.update(stake_holder.to_dict())
         stake_window_details.update({"no_of_stakers": no_of_stakers, "total_amount_staked": total_amount_staked})
         return stake_window_details
