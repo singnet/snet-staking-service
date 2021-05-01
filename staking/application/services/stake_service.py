@@ -65,30 +65,21 @@ class StakeService:
 
     @staticmethod
     def get_stake_window_based_on_status(status, staker):
-        stake_windows = []
-        no_of_stakers = 0
-        stake_amount_for_given_staker_address = 0
-        total_stake_deposited_for_given_staker_address = 0
+        stake_window_details = {}
         if status == "OPEN":
-            stake_windows = StakeWindowRepository().get_stake_window_open_for_submission()
-        if not stake_windows:
-            stake_windows = StakeWindowRepository().get_upcoming_stake_window()
-        list_of_stake_window = [stake_window.to_dict() for stake_window in stake_windows]
+            stake_window = StakeWindowRepository().get_stake_window_open_for_submission()
+        if not stake_window:
+            stake_window = StakeWindowRepository().get_upcoming_stake_window()
+        if not stake_window:
+            return stake_window_details
         stake_holder = StakeHolderRepository().get_stake_holder(staker=staker)
-        for stake_window in list_of_stake_window:
-            blockchain_id = stake_window["blockchain_id"]
-            no_of_stakers = StakeHolderDetailsRepository().get_unique_staker(blockchain_id=blockchain_id)
-            total_amount_staked = StakeHolderRepository().get_total_amount_staked()
-
-            stake_window.update({
-                "no_of_stakers": no_of_stakers,
-                "total_amount_staked": total_amount_staked,
-
-            })
-        return {
-            "stake_holder": stake_holder.to_dict() if stake_holder else {},
-            "stake_windows": list_of_stake_window
-        }
+        no_of_stakers = StakeHolderDetailsRepository().get_unique_staker(blockchain_id=stake_window.blockchain_id)
+        total_amount_staked = StakeHolderRepository().get_total_amount_staked()
+        stake_window_details = stake_window.to_dict()
+        if not stake_holder:
+            stake_window_details.update(stake_holder.to_dict())
+        stake_window_details.update({"no_of_stakers": no_of_stakers, "total_amount_staked": total_amount_staked})
+        return stake_window_details
 
     @staticmethod
     def get_all_transactions_of_stake_holder_for_given_address(address):
