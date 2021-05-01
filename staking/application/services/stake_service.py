@@ -122,53 +122,49 @@ class StakeService:
 
     @staticmethod
     def get_stake_holder_details_for_claim_stake_windows(address):
-        claims_details = [{
-                "stake_holder": {},
-                "stake_window": {}
-        }]
+        claims_details = []
         current_utc_time_in_epoch = time.time()
         stake_holder = StakeHolderRepository().get_stake_holder(staker=address)
         stake_window = StakeWindowRepository().get_latest_stake_window()
         blockchain_id = stake_window.blockchain_id
         if not stake_window or not stake_holder:
             return claims_details
-        if (stake_holder.amount_approved > 0 and stake_window.end_period < current_utc_time_in_epoch) or (
-                stake_holder.amount_pending_for_approval > 0 and stake_window.approval_end_period < current_utc_time_in_epoch):
+        stake_holder_detail = StakeHolderDetailsRepository().get_stake_holder_details(blockchain_id=stake_window.blockchain_id, staker=address)
+        if stake_holder.amount_approved > 0 and stake_window.end_period < current_utc_time_in_epoch:
             no_of_stakers = StakeHolderDetailsRepository().get_unique_staker(blockchain_id)
-            stake_window_dict = stake_window.to_dict()
-            stake_window_dict.update(
-                {"no_of_stakers": no_of_stakers, "total_stake_deposited": stake_window.total_stake})
-            claims_details.append({
-                "stake_holder": stake_holder.to_dict(),
-                "stake_window": stake_window_dict
-            })
+            claims_detail = stake_window.to_dict()
+            claims_detail.update({"no_of_stakers": no_of_stakers})
+            claims_detail.update(stake_holder.to_dict())
+            claims_detail.update(stake_holder_detail.to_dict())
+            claims_details.append(claims_detail)
+        stake_holder_details = StakeHolderDetailsRepository().get_stake_holder_claims_details(staker=address)
+        for stake_holder_detail in stake_holder_details:
+            blockchain_id = stake_holder_detail.blockchain_id
+            stake_window = StakeWindowRepository().get_stake_window_for_given_blockchain_id(blockchain_id)
+            no_of_stakers = StakeHolderDetailsRepository().get_unique_staker(blockchain_id)
+            claims_detail = stake_window.to_dict()
+            claims_detail.update({"no_of_stakers": no_of_stakers})
+            claims_detail.update(stake_holder.to_dict())
+            claims_detail.update(stake_holder_detail.to_dict())
+            claims_details.append(claims_detail)
         return claims_details
 
     @staticmethod
     def get_stake_holder_details_for_active_stake_window(address):
-        active_stake_details = [{
-                "stake_holder": {},
-                "stake_window": {}
-        }]
+        active_stake_details = {}
         current_utc_time_in_epoch = time.time()
         stake_holder = StakeHolderRepository().get_stake_holder(staker=address)
         stake_window = StakeWindowRepository().get_latest_stake_window()
         blockchain_id = stake_window.blockchain_id
         if not stake_window or not stake_holder:
             return active_stake_details
-        if (stake_holder.amount_approved > 0 and (
-                stake_window.submission_end_period < current_utc_time_in_epoch < stake_window.end_period)
-        ) or (stake_holder.amount_pending_for_approval > 0
-              and (stake_window.approval_end_period > current_utc_time_in_epoch >
-                   stake_window.submission_end_period)):
+        stake_holder_detail = StakeHolderDetailsRepository().get_stake_holder_details(blockchain_id=stake_window.blockchain_id, staker=address)
+        if (stake_holder.amount_approved > 0 or stake_holder.amount_pending_for_approval > 0) and (stake_window.submission_end_period < current_utc_time_in_epoch < stake_window.end_period):
             no_of_stakers = StakeHolderDetailsRepository().get_unique_staker(blockchain_id)
-            stake_window_dict = stake_window.to_dict()
-            stake_window_dict.update(
-                {"no_of_stakers": no_of_stakers, "total_stake_deposited": stake_window.total_stake})
-            active_stake_details.append({
-                "stake_holder": stake_holder.to_dict(),
-                "stake_window": stake_window_dict
-            })
+            active_stake_details = stake_window.to_dict()
+            active_stake_details.update({"no_of_stakers": no_of_stakers})
+            active_stake_details.update(stake_holder.to_dict())
+            active_stake_details.update(stake_holder_detail.to_dict())
         return active_stake_details
 
     @staticmethod
