@@ -122,14 +122,12 @@ class StakeService:
         if not last_stake_window or not stake_holder:
             return claims_details
         stake_holder_detail = StakeHolderDetailsRepository().get_stake_holder_details(blockchain_id=last_stake_window.blockchain_id, staker=address)
-        total_amount_staked = StakeHolderRepository().get_total_amount_staked()
         if stake_holder.amount_approved > 0 and last_stake_window.end_period < current_utc_time_in_epoch:
             no_of_stakers = StakeHolderDetailsRepository().get_unique_staker(blockchain_id)
             claims_detail = last_stake_window.to_dict()
             claims_detail.update({"no_of_stakers": no_of_stakers})
             claims_detail.update(stake_holder.to_dict())
             claims_detail.update(stake_holder_detail.to_dict())
-            claims_detail.update({"total_amount_staked": total_amount_staked})
             claims_details.append(claims_detail)
         stake_holder_details = StakeHolderDetailsRepository().get_stake_holder_claims_details(staker=address)
         for stake_holder_detail in stake_holder_details:
@@ -140,7 +138,6 @@ class StakeService:
             claims_detail.update({"no_of_stakers": no_of_stakers})
             claims_detail.update(stake_holder.to_dict())
             claims_detail.update(stake_holder_detail.to_dict())
-            claims_detail.update({"total_amount_staked": stake_window.total_stake})
             claims_details.append(claims_detail)
         return claims_details
 
