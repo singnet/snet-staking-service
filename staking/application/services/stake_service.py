@@ -82,7 +82,6 @@ class StakeService:
 
             stake_window.update({
                 "no_of_stakers": no_of_stakers,
-                "total_amount_staked_by_staker": stake_holder.amount_pending_for_approval+stake_holder.amount_pending_for_approval if stake_holder else 0,
                 "total_amount_staked": total_amount_staked,
 
             })
