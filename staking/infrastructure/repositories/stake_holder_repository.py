@@ -14,7 +14,8 @@ logger = get_logger(__name__)
 class StakeHolderRepository(BaseRepository):
     def get_stake_holder(self, staker):
         try:
-            staker_holder_db = self.session.query(StakeHolderDBModel).filter(StakeHolderDBModel.staker == staker).first()
+            staker_holder_db = self.session.query(StakeHolderDBModel).filter(
+                StakeHolderDBModel.staker == staker).first()
             self.session.commit()
         except SQLAlchemyError as e:
             self.session.rollback()
@@ -47,3 +48,20 @@ class StakeHolderRepository(BaseRepository):
             ))
         return stake_holder
 
+    def get_total_amount_staked(self):
+        try:
+            query_response = self.session.query(
+                func.SUM(StakeHolderDBModel.amount_approved).label("total_amount_approved"),
+                func.SUM(StakeHolderDBModel.amount_pending_for_approval).label(
+                    "total_amount_pending_for_approval")).one()
+            self.session.commit()
+        except Exception as e:
+            self.session.rollback()
+            raise e
+        total_amount_approved = 0
+        total_amount_pending_for_approval = 0
+        if query_response.total_amount_approved or query_response.total_amount_pending_for_approval:
+            total_amount_approved = int(query_response.total_amount_approved)
+            total_amount_pending_for_approval = int(query_response.total_amount_pending_for_approval)
+        total_amount_staked = total_amount_approved + total_amount_pending_for_approval
+        return total_amount_staked

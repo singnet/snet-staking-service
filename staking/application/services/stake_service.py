@@ -44,24 +44,24 @@ class StakeService:
             })
         return list_of_stake_window
 
-    @staticmethod
-    def compute_auto_renewal_for_stake_window(blockchain_id):
-        if blockchain_id < 1 or blockchain_id == 1:
-            return 0
-        stake_window = StakeWindowRepository().get_stake_window_for_given_blockchain_id(blockchain_id - 1)
-        if stake_window is None or (not bool(stake_window.total_stake)):
-            return 0
-        total_auto_renew_amount = StakeHolderDetailsRepository().get_auto_renew_amount_for_given_stake_window(
-            blockchain_id=blockchain_id)
-        return total_auto_renew_amount
+    # @staticmethod
+    # def compute_auto_renewal_for_stake_window(blockchain_id):
+    #     if blockchain_id < 1 or blockchain_id == 1:
+    #         return 0
+    #     stake_window = StakeWindowRepository().get_stake_window_for_given_blockchain_id(blockchain_id - 1)
+    #     if stake_window is None or (not bool(stake_window.total_stake)):
+    #         return 0
+    #     total_auto_renew_amount = StakeHolderDetailsRepository().get_auto_renew_amount_for_given_stake_window(
+    #         blockchain_id=blockchain_id)
+    #     return total_auto_renew_amount
 
-    @staticmethod
-    def compute_auto_renewal_for_staker(blockchain_id, staker):
-        if blockchain_id < 1 or blockchain_id == 1:
-            return 0
-        auto_renew_amount_for_staker = StakeHolderDetailsRepository().get_auto_renew_amount_for_given_stake_window(
-            blockchain_id=blockchain_id, staker=staker)
-        return auto_renew_amount_for_staker
+    # @staticmethod
+    # def compute_auto_renewal_for_staker(blockchain_id, staker):
+    #     if blockchain_id < 1 or blockchain_id == 1:
+    #         return 0
+    #     auto_renew_amount_for_staker = StakeHolderDetailsRepository().get_auto_renew_amount_for_given_stake_window(
+    #         blockchain_id=blockchain_id, staker=staker)
+    #     return auto_renew_amount_for_staker
 
     @staticmethod
     def get_stake_window_based_on_status(status, staker):
@@ -78,19 +78,12 @@ class StakeService:
         for stake_window in list_of_stake_window:
             blockchain_id = stake_window["blockchain_id"]
             no_of_stakers = StakeHolderDetailsRepository().get_unique_staker(blockchain_id=blockchain_id)
-            # pending_stake_amount_for_staker = stake_holder.amount_pending_for_approval
-            # approved_stake_amount_for_staker = stake_holder.amount_approved
-            total_stake_deposited = StakeHolderDetailsRepository().get_total_stake_deposited(
-                blockchain_id=blockchain_id)
-            total_auto_renew_amount = StakeService.compute_auto_renewal_for_stake_window(blockchain_id=blockchain_id)
-            auto_renew_amount_for_staker = \
-                StakeService.compute_auto_renewal_for_staker(blockchain_id=blockchain_id, staker=staker)
+            total_amount_staked = StakeHolderRepository().get_total_amount_staked()
 
             stake_window.update({
                 "no_of_stakers": no_of_stakers,
-                "total_stake_deposited": total_stake_deposited,
-                "auto_renew_amount_for_staker": auto_renew_amount_for_staker,
-                "total_auto_renew_amount": total_auto_renew_amount,
+                "total_amount_staked_by_staker": stake_holder.amount_pending_for_approval+stake_holder.amount_pending_for_approval if stake_holder else 0,
+                "total_amount_staked": total_amount_staked,
 
             })
         return {
@@ -125,17 +118,19 @@ class StakeService:
         claims_details = []
         current_utc_time_in_epoch = time.time()
         stake_holder = StakeHolderRepository().get_stake_holder(staker=address)
-        stake_window = StakeWindowRepository().get_latest_stake_window()
-        blockchain_id = stake_window.blockchain_id
-        if not stake_window or not stake_holder:
+        last_stake_window = StakeWindowRepository().get_latest_stake_window()
+        blockchain_id = last_stake_window.blockchain_id
+        if not last_stake_window or not stake_holder:
             return claims_details
-        stake_holder_detail = StakeHolderDetailsRepository().get_stake_holder_details(blockchain_id=stake_window.blockchain_id, staker=address)
-        if stake_holder.amount_approved > 0 and stake_window.end_period < current_utc_time_in_epoch:
+        stake_holder_detail = StakeHolderDetailsRepository().get_stake_holder_details(blockchain_id=last_stake_window.blockchain_id, staker=address)
+        total_amount_staked = StakeHolderRepository().get_total_amount_staked()
+        if stake_holder.amount_approved > 0 and last_stake_window.end_period < current_utc_time_in_epoch:
             no_of_stakers = StakeHolderDetailsRepository().get_unique_staker(blockchain_id)
-            claims_detail = stake_window.to_dict()
+            claims_detail = last_stake_window.to_dict()
             claims_detail.update({"no_of_stakers": no_of_stakers})
             claims_detail.update(stake_holder.to_dict())
             claims_detail.update(stake_holder_detail.to_dict())
+            claims_detail.update({"total_amount_staked": total_amount_staked})
             claims_details.append(claims_detail)
         stake_holder_details = StakeHolderDetailsRepository().get_stake_holder_claims_details(staker=address)
         for stake_holder_detail in stake_holder_details:
@@ -146,6 +141,7 @@ class StakeService:
             claims_detail.update({"no_of_stakers": no_of_stakers})
             claims_detail.update(stake_holder.to_dict())
             claims_detail.update(stake_holder_detail.to_dict())
+            claims_detail.update({"total_amount_staked": stake_window.total_stake})
             claims_details.append(claims_detail)
         return claims_details
 
@@ -159,12 +155,14 @@ class StakeService:
         if not stake_window or not stake_holder:
             return active_stake_details
         stake_holder_detail = StakeHolderDetailsRepository().get_stake_holder_details(blockchain_id=stake_window.blockchain_id, staker=address)
+        total_amount_staked = StakeHolderRepository().get_total_amount_staked()
         if (stake_holder.amount_approved > 0 or stake_holder.amount_pending_for_approval > 0) and (stake_window.submission_end_period < current_utc_time_in_epoch < stake_window.end_period):
             no_of_stakers = StakeHolderDetailsRepository().get_unique_staker(blockchain_id)
             active_stake_details = stake_window.to_dict()
             active_stake_details.update({"no_of_stakers": no_of_stakers})
             active_stake_details.update(stake_holder.to_dict())
             active_stake_details.update(stake_holder_detail.to_dict())
+            active_stake_details.update({"total_amount_staked": total_amount_staked})
         return active_stake_details
 
     @staticmethod
@@ -176,12 +174,12 @@ class StakeService:
         total_stake_pending_for_approval = StakeHolderDetailsRepository().get_total_stake_deposited(
             blockchain_id=blockchain_id)
 
-        total_auto_renew_amount = StakeService.compute_auto_renewal_for_stake_window(blockchain_id=blockchain_id)
+        total_amount_staked = StakeHolderRepository().get_total_amount_staked()
         stake_calculator_details: Dict[Union[str, Any], Any] = latest_stake_window.to_dict()
 
         stake_calculator_details.update({
             "total_stake_pending_for_approval": total_stake_pending_for_approval,
             "total_stake_approved": total_stake_approved,
-            "total_auto_renew_amount": total_auto_renew_amount
+            "total_amount_staked": total_amount_staked
         })
         return stake_calculator_details

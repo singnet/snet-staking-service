@@ -100,28 +100,28 @@ class StakeHolderDetailsRepository(BaseRepository):
             total_stake_deposited = int(response.total_stake_deposited)
         return total_stake_deposited
 
-    def get_auto_renew_amount_for_given_stake_window(self, blockchain_id, staker=None):
-        try:
-            query = self.session.query(
-                func.SUM(StakeHolderDetailsDBModel.amount_staked).label("principal_renewed"),
-                func.SUM(StakeHolderDetailsDBModel.amount_staked).label("reward_renewed")). \
-                filter(StakeHolderDetailsDBModel.blockchain_id < blockchain_id). \
-                filter(StakeHolderDetailsDBModel.auto_renewal == 1)
-            if staker is not None:
-                query = query.filter(StakeHolderDetailsDBModel.staker == staker)
-            query_response = query.one()
-            self.session.commit()
-        except SQLAlchemyError as e:
-            self.session.rollback()
-            raise e
-        principal_renewed = 0
-        reward_renewed = 0
-        if query_response.principal_renewed:
-            principal_renewed = int(query_response.principal_renewed)
-        if query_response.reward_renewed:
-            reward_renewed = int(query_response.reward_renewed)
-        auto_renew_amount = principal_renewed + reward_renewed
-        return auto_renew_amount
+    # def get_auto_renew_amount_for_given_stake_window(self, blockchain_id, staker=None):
+    #     try:
+    #         query = self.session.query(
+    #             func.SUM(StakeHolderDetailsDBModel.amount_staked).label("principal_renewed"),
+    #             func.SUM(StakeHolderDetailsDBModel.reward_amount).label("reward_renewed")). \
+    #             filter(StakeHolderDetailsDBModel.blockchain_id < blockchain_id). \
+    #             filter(StakeHolderDetailsDBModel.auto_renewal == 1)
+    #         if staker is not None:
+    #             query = query.filter(StakeHolderDetailsDBModel.staker == staker)
+    #         query_response = query.one()
+    #         self.session.commit()
+    #     except SQLAlchemyError as e:
+    #         self.session.rollback()
+    #         raise e
+    #     principal_renewed = 0
+    #     reward_renewed = 0
+    #     if query_response.principal_renewed:
+    #         principal_renewed = int(query_response.principal_renewed)
+    #     if query_response.reward_renewed:
+    #         reward_renewed = int(query_response.reward_renewed)
+    #     auto_renew_amount = principal_renewed + reward_renewed
+    #     return auto_renew_amount
 
     def get_total_no_of_stakers(self, blockchain_id):
         try:
