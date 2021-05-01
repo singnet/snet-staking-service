@@ -148,7 +148,8 @@ class StakeService:
             active_stake_details = stake_window.to_dict()
             active_stake_details.update({"no_of_stakers": no_of_stakers})
             active_stake_details.update(stake_holder.to_dict())
-            active_stake_details.update(stake_holder_detail.to_dict())
+            if stake_holder_detail:
+                active_stake_details.update(stake_holder_detail.to_dict())
             active_stake_details.update({"total_amount_staked": total_amount_staked})
         return active_stake_details
 
