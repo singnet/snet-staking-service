@@ -94,29 +94,31 @@ class StakeWindowRepository(BaseRepository):
     def get_stake_window_open_for_submission(self):
         current_time = dt.utcnow().timestamp()  # GMT Epoch
         try:
-            stake_windows_db = self.session.query(StakeWindowDBModel).filter(
+            stake_window_db = self.session.query(StakeWindowDBModel).filter(
                 StakeWindowDBModel.start_period <= current_time) \
-                .filter(StakeWindowDBModel.submission_end_period >= current_time).all()
+                .filter(StakeWindowDBModel.submission_end_period >= current_time).first()
             self.session.commit()
         except SQLAlchemyError as e:
             self.session.rollback()
             raise e
-        stake_windows = [StakeFactory.convert_stake_window_db_model_to_entity_model(stake_window_db)
-                         for stake_window_db in stake_windows_db]
-        return stake_windows
+        stake_window = None
+        if stake_window_db:
+            stake_window = StakeFactory.convert_stake_window_db_model_to_entity_model(stake_window_db)
+        return stake_window
 
     def get_upcoming_stake_window(self):
         current_time = dt.utcnow().timestamp()  # GMT Epoch
         try:
-            stake_windows_db = self.session.query(StakeWindowDBModel).filter(
-                StakeWindowDBModel.start_period >= current_time).all()
+            stake_window_db = self.session.query(StakeWindowDBModel).filter(
+                StakeWindowDBModel.start_period >= current_time).first()
             self.session.commit()
         except SQLAlchemyError as e:
             self.session.rollback()
             raise e
-        stake_windows = [StakeFactory.convert_stake_window_db_model_to_entity_model(stake_window_db)
-                         for stake_window_db in stake_windows_db]
-        return stake_windows
+        stake_window = None
+        if stake_window_db:
+            stake_window = StakeFactory.convert_stake_window_db_model_to_entity_model(stake_window_db)
+        return stake_window
 
     def update_stake_window(self, stake_window):
         try:
