@@ -112,8 +112,8 @@ class SubmitStakeEventConsumer(TokenStakeEventConsumer):
         logger.info(
             f"stake_holder_data {stake_holder_data} from blockchain for given blockchain_id {blockchain_id} and staker {staker}")
         if stake_holder_data[0]:
-            amount_pending_for_approval = stake_holder_data[1]
-            amount_approved = stake_holder_data[2]
+            amount_approved = stake_holder_data[1]
+            amount_pending_for_approval = stake_holder_data[2]
             reward_computed_index = stake_holder_data[3]
             claimable_amount = stake_holder_data[4]
             block_no_created = event["data"]["block_no"]
@@ -148,8 +148,8 @@ class RequestForClaimEventConsumer(TokenStakeEventConsumer):
             f"staker {staker}")
         print(stake_holder_data)
         if stake_holder_data[0]:
-            amount_pending_for_approval = stake_holder_data[1]
-            amount_approved = stake_holder_data[2]
+            amount_approved = stake_holder_data[1]
+            amount_pending_for_approval = stake_holder_data[2]
             reward_computed_index = stake_holder_data[3]
             claimable_amount = stake_holder_data[4]
             block_no_created = event["data"]["block_no"]
@@ -185,8 +185,8 @@ class ClaimStakeEventConsumer(TokenStakeEventConsumer):
             f"staker {staker}")
         print(stake_holder_data)
         if stake_holder_data[0]:
-            amount_pending_for_approval = stake_holder_data[1]
-            amount_approved = stake_holder_data[2]
+            amount_approved = stake_holder_data[1]
+            amount_pending_for_approval = stake_holder_data[2]
             reward_computed_index = stake_holder_data[3]
             block_no_created = event["data"]["block_no"]
             # update stake holder details
@@ -219,8 +219,8 @@ class RejectStakeEventConsumer(TokenStakeEventConsumer):
             f"staker {staker}")
         print(stake_holder_data)
         if stake_holder_data[0]:
-            amount_pending_for_approval = stake_holder_data[1]
-            amount_approved = stake_holder_data[2]
+            amount_approved = stake_holder_data[1]
+            amount_pending_for_approval = stake_holder_data[2]
             reward_computed_index = stake_holder_data[3]
             block_no_created = event["data"]["block_no"]
             # update stake holder details
@@ -253,8 +253,8 @@ class AddRewardEventConsumer(TokenStakeEventConsumer):
             f"staker {staker}")
         print(stake_holder_data)
         if stake_holder_data[0]:
-            amount_pending_for_approval = stake_holder_data[1]
-            amount_approved = stake_holder_data[2]
+            amount_approved = stake_holder_data[1]
+            amount_pending_for_approval = stake_holder_data[2]
             reward_computed_index = stake_holder_data[3]
             block_no_created = event["data"]["block_no"]
             # update stake holder details
@@ -291,8 +291,8 @@ class WithdrawStakeEventConsumer(TokenStakeEventConsumer):
             f"staker {staker}")
         print(stake_holder_data)
         if stake_holder_data[0]:
-            amount_pending_for_approval = stake_holder_data[1]
-            amount_approved = stake_holder_data[2]
+            amount_approved = stake_holder_data[1]
+            amount_pending_for_approval = stake_holder_data[2]
             reward_computed_index = stake_holder_data[3]
             block_no_created = event["data"]["block_no"]
             # update stake holder details

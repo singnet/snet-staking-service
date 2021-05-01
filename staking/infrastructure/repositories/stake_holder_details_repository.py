@@ -114,7 +114,13 @@ class StakeHolderDetailsRepository(BaseRepository):
         except SQLAlchemyError as e:
             self.session.rollback()
             raise e
-        auto_renew_amount = int(query_response.principal_renewed) + int(query_response.reward_renewed)
+        principal_renewed = 0
+        reward_renewed = 0
+        if query_response.principal_renewed:
+            principal_renewed = int(query_response.principal_renewed)
+        if query_response.reward_renewed:
+            reward_renewed = int(query_response.reward_renewed)
+        auto_renew_amount = principal_renewed + reward_renewed
         return auto_renew_amount
 
     def get_total_no_of_stakers(self, blockchain_id):
@@ -138,6 +144,7 @@ class StakeHolderDetailsRepository(BaseRepository):
             raise e
         stake_holder_details = []
         for stake_holder_detail_db in stake_holder_details_db:
-            stake_holder_detail = StakeFactory.convert_stake_holder_details_db_model_to_entity_model(stake_holder_detail_db)
+            stake_holder_detail = StakeFactory.convert_stake_holder_details_db_model_to_entity_model(
+                stake_holder_detail_db)
             stake_holder_details.append(stake_holder_detail)
         return stake_holder_details
