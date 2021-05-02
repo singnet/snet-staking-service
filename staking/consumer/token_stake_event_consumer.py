@@ -256,13 +256,20 @@ class AddRewardEventConsumer(TokenStakeEventConsumer):
             amount_approved = stake_holder_data[1]
             amount_pending_for_approval = stake_holder_data[2]
             reward_computed_index = stake_holder_data[3]
+            claimable_amount = stake_holder_data[4]
             block_no_created = event["data"]["block_no"]
             # update stake holder details
             stake_holder = StakeHolder(staker, amount_pending_for_approval, amount_approved, block_no_created)
             stake_holder_repo.add_or_update_stake_holder(stake_holder)
             # update auto renewal
             stake_holder_details = stake_holder_details_repo.get_stake_holder_details(blockchain_id, staker)
-            stake_holder_details.reward_amount = event_data["rewardAmount"]
+            reward_amount = event_data["rewardAmount"]
+            if stake_holder_details:
+                stake_holder_details.reward_amount = reward_amount
+            else:
+                amount_staked = event_data["totalStakeAmount"] - event_data["rewardAmount"]
+                auto_renewal = 0 if claimable_amount > 0 else 1
+                stake_holder_details = StakeHolderDetails(blockchain_id, staker, amount_staked, reward_amount, claimable_amount, 0, auto_renewal, block_no_created)
             stake_holder_details_repo.add_or_update_stake_holder_details(stake_holder_details)
             # update total stake
             stake_window = StakeWindowRepository().get_stake_window_for_given_blockchain_id(blockchain_id=blockchain_id)
