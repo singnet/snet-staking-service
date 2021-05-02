@@ -25,7 +25,7 @@ class StakeWindow:
             "min_stake": self._min_stake,
             "total_stake": self._total_stake,
             "open_for_external": self._open_for_external,
-            "reward_amount": self._reward_amount,
+            "window_reward_amount": self._reward_amount,
             "token_operator": self._token_operator
         }
 
