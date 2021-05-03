@@ -159,7 +159,6 @@ class RequestForClaimEventConsumer(TokenStakeEventConsumer):
             # update auto renewal
             stake_holder_details = stake_holder_details_repo.get_stake_holder_details(blockchain_id, staker)
             stake_holder_details.auto_renewal = event_data["autoRenewal"]
-            stake_holder_details.amount_staked = amount_approved
             stake_holder_details.claimable_amount = claimable_amount
             stake_holder_details_repo.add_or_update_stake_holder_details(stake_holder_details)
             # update stake transactions

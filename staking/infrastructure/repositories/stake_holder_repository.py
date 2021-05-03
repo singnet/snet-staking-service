@@ -65,3 +65,13 @@ class StakeHolderRepository(BaseRepository):
             total_amount_pending_for_approval = int(query_response.total_amount_pending_for_approval)
         total_amount_staked = total_amount_approved + total_amount_pending_for_approval
         return total_amount_staked
+
+    def get_count_of_active_stakers(self):
+        try:
+            count_of_current_stakers = self.session.query(StakeHolderRepository).filter(
+                or_(StakeHolderDBModel.amount_approved > 0, StakeHolderDBModel.amount_pending_for_approval > 0)).count()
+            self.session.commit()
+        except Exception as e:
+            self.session.rollback()
+            raise e
+        return count_of_current_stakers

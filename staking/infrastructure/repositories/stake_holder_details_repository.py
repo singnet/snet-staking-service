@@ -100,29 +100,6 @@ class StakeHolderDetailsRepository(BaseRepository):
             total_stake_deposited = int(response.total_stake_deposited)
         return total_stake_deposited
 
-    # def get_auto_renew_amount_for_given_stake_window(self, blockchain_id, staker=None):
-    #     try:
-    #         query = self.session.query(
-    #             func.SUM(StakeHolderDetailsDBModel.amount_staked).label("principal_renewed"),
-    #             func.SUM(StakeHolderDetailsDBModel.reward_amount).label("reward_renewed")). \
-    #             filter(StakeHolderDetailsDBModel.blockchain_id < blockchain_id). \
-    #             filter(StakeHolderDetailsDBModel.auto_renewal == 1)
-    #         if staker is not None:
-    #             query = query.filter(StakeHolderDetailsDBModel.staker == staker)
-    #         query_response = query.one()
-    #         self.session.commit()
-    #     except SQLAlchemyError as e:
-    #         self.session.rollback()
-    #         raise e
-    #     principal_renewed = 0
-    #     reward_renewed = 0
-    #     if query_response.principal_renewed:
-    #         principal_renewed = int(query_response.principal_renewed)
-    #     if query_response.reward_renewed:
-    #         reward_renewed = int(query_response.reward_renewed)
-    #     auto_renew_amount = principal_renewed + reward_renewed
-    #     return auto_renew_amount
-
     def get_total_no_of_stakers(self, blockchain_id):
         try:
             total_no_of_stakers = self.session.query(StakeHolderDetailsDBModel).filter(
@@ -133,18 +110,18 @@ class StakeHolderDetailsRepository(BaseRepository):
             raise e
         return total_no_of_stakers
 
-    def get_stake_holder_claims_details(self, staker):
+    def get_stake_holders_details_having_claimable_amount(self, staker):
         try:
-            stake_holder_details_db = self.session.query(StakeHolderDetailsDBModel).filter(
+            stake_holders_details_db = self.session.query(StakeHolderDetailsDBModel).filter(
                 StakeHolderDetailsDBModel.staker == staker) \
                 .filter(StakeHolderDetailsDBModel.claimable_amount > 0).all()
             self.session.commit()
         except SQLAlchemyError as e:
             self.session.rollback()
             raise e
-        stake_holder_details = []
-        for stake_holder_detail_db in stake_holder_details_db:
+        stake_holders_details = []
+        for stake_holder_details_db in stake_holders_details_db:
             stake_holder_detail = StakeFactory.convert_stake_holder_details_db_model_to_entity_model(
-                stake_holder_detail_db)
-            stake_holder_details.append(stake_holder_detail)
-        return stake_holder_details
+                stake_holder_details_db)
+            stake_holders_details.append(stake_holder_detail)
+        return stake_holders_details

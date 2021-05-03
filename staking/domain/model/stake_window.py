@@ -16,7 +16,7 @@ class StakeWindow:
 
     def to_dict(self):
         return {
-            "blockchain_id": self._blockchain_id,
+            "window_id": self._blockchain_id,
             "start_period": self._start_period,
             "submission_end_period": self._submission_end_period,
             "approval_end_period": self._approval_end_period,
