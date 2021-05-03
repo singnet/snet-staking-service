@@ -92,7 +92,7 @@ class StakeService:
         if not stake_holder:
             return claims_details
         stake_holder_detail = StakeHolderDetailsRepository().get_stake_holder_details(last_window_id, address)
-        if StakeService.is_stake_window_claimable(last_window_id) and stake_holder.amount_approved > 0:
+        if StakeService.is_stake_window_claimable(last_stake_window) and stake_holder.amount_approved > 0:
             no_of_stakers = StakeHolderDetailsRepository().get_unique_staker(last_window_id)
             claims_detail = last_stake_window.to_dict()
             claims_detail.update({"no_of_stakers": no_of_stakers})
