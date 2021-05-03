@@ -39,7 +39,7 @@ class StakeService:
             stake_window.update({
                 "no_of_stakers": StakeHolderDetailsRepository().get_total_no_of_stakers(stake_window["window_id"]),
                 # fix for last stake window
-                "total_stake_deposited": StakeHolderDetailsRepository().get_total_stake_deposited(stake_window["blockchain_id"])
+                "total_stake_deposited": StakeHolderDetailsRepository().get_total_stake_deposited(stake_window["window_id"])
             })
         return list_of_stake_window
 
