@@ -37,7 +37,7 @@ class StakeService:
         list_of_stake_window = [stake_window.to_dict() for stake_window in stake_windows]
         for stake_window in list_of_stake_window:
             stake_window.update({
-                "no_of_stakers": StakeHolderDetailsRepository().get_total_no_of_stakers(stake_window["blockchain_id"]),
+                "no_of_stakers": StakeHolderDetailsRepository().get_total_no_of_stakers(stake_window["window_id"]),
                 # fix for last stake window
                 "total_stake_deposited": StakeHolderDetailsRepository().get_total_stake_deposited(stake_window["blockchain_id"])
             })
@@ -152,7 +152,7 @@ class StakeService:
             pass
         else:
             return active_stake_details
-        no_of_stakers = StakeHolderDetailsRepository().get_unique_staker(active_stake_details)
+        no_of_stakers = StakeHolderDetailsRepository().get_unique_staker(active_window_id)
         active_stake_details = active_stake_window.to_dict()
         active_stake_details.update({"no_of_stakers": no_of_stakers})
         active_stake_details.update(stake_holder.to_dict())
