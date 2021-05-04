@@ -68,7 +68,7 @@ class StakeHolderRepository(BaseRepository):
 
     def get_count_of_active_stakers(self):
         try:
-            count_of_current_stakers = self.session.query(StakeHolderRepository).filter(
+            count_of_current_stakers = self.session.query(StakeHolderDBModel).filter(
                 or_(StakeHolderDBModel.amount_approved > 0, StakeHolderDBModel.amount_pending_for_approval > 0)).count()
             self.session.commit()
         except Exception as e:
