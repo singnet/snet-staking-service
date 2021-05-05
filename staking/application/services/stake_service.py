@@ -148,7 +148,7 @@ class StakeService:
         if active_window_id == last_window_id and (
                 stake_holder.amount_approved > 0 or stake_holder.amount_pending_for_approval > 0):
             pass
-        elif stake_holder_detail and active_window_id != last_window_id and stake_holder_detail.claimable_amount > 0:
+        elif stake_holder_detail and stake_holder_detail.claimable_amount > 0:
             pass
         else:
             return active_stake_details

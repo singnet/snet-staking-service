@@ -161,6 +161,7 @@ class RequestForClaimEventConsumer(TokenStakeEventConsumer):
             stake_holder_details.auto_renewal = event_data["autoRenewal"]
             stake_holder_details.claimable_amount = claimable_amount
             stake_holder_details_repo.add_or_update_stake_holder_details(stake_holder_details)
+            logger.info(f"stake_holder_details: {stake_holder_details.to_dict()}")
             # update stake transactions
             self._add_stake_transaction(
                 block_no=block_no_created, blockchain_id=blockchain_id,
@@ -269,7 +270,8 @@ class AddRewardEventConsumer(TokenStakeEventConsumer):
                 amount_staked = event_data["totalStakeAmount"] - event_data["rewardAmount"]
                 auto_renewal = 0 if claimable_amount > 0 else 1
                 stake_holder_details = StakeHolderDetails(blockchain_id, staker, amount_staked, reward_amount, claimable_amount, 0, auto_renewal, block_no_created)
-            stake_holder_details_repo.add_or_update_stake_holder_details(stake_holder_details)
+            stake_holder_details = stake_holder_details_repo.add_or_update_stake_holder_details(stake_holder_details)
+            logger.info(f"stake_holder_details: {stake_holder_details.to_dict()}")
             # update total stake
             stake_window = StakeWindowRepository().get_stake_window_for_given_blockchain_id(blockchain_id=blockchain_id)
             stake_window.total_stake = event_data["windowTotalStake"] - stake_window.reward_amount
