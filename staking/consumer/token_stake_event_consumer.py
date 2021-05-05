@@ -188,13 +188,14 @@ class ClaimStakeEventConsumer(TokenStakeEventConsumer):
             amount_approved = stake_holder_data[1]
             amount_pending_for_approval = stake_holder_data[2]
             reward_computed_index = stake_holder_data[3]
+            claimable_amount = stake_holder_data[4]
             block_no_created = event["data"]["block_no"]
             # update stake holder details
             stake_holder = StakeHolder(staker, amount_pending_for_approval, amount_approved, block_no_created)
             stake_holder_repo.add_or_update_stake_holder(stake_holder)
             # update auto renewal
             stake_holder_details = stake_holder_details_repo.get_stake_holder_details(blockchain_id, staker)
-            stake_holder_details.claimable_amount = event_data["totalAmount"]
+            stake_holder_details.claimable_amount = claimable_amount
             stake_holder_details_repo.add_or_update_stake_holder_details(stake_holder_details)
             # update stake transactions
             self._add_stake_transaction(
