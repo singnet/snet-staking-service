@@ -66,20 +66,19 @@ class StakeService:
         transactions_details = {}
         stake_transactions = StakeTransactionRepository().get_all_transactions_of_stake_holder_for_given_address(
             address)
+        last_stake_window = StakeWindowRepository().get_latest_stake_window()
+        last_window_id = last_stake_window.blockchain_id
         for transaction in stake_transactions:
             blockchain_id = transaction.blockchain_id
-            if transactions_details.get(blockchain_id, None) is None:
+            if blockchain_id not in transactions_details.keys():
                 stake_window = StakeWindowRepository().get_stake_window_for_given_blockchain_id(blockchain_id)
-                if stake_window is None:
-                    stake_window_dict = {}
-                else:
-                    no_of_stakers = StakeHolderDetailsRepository().get_unique_staker(stake_window.blockchain_id)
-                stake_window_dict = stake_window.to_dict()
-                stake_window_dict.update({"no_of_stakers": no_of_stakers})
-                transactions_details[blockchain_id] = {
-                    "stake_window": stake_window_dict,
-                    "transactions": []
-                }
+                no_of_stakers = StakeHolderDetailsRepository().get_unique_staker(blockchain_id)
+                transactions_details = stake_window.to_dict()
+                transactions_details.update({"no_of_stakers": no_of_stakers})
+                if blockchain_id == last_window_id:
+                    total_stake = StakeHolderRepository().get_total_amount_staked()
+                    transactions_details.update({"total_stake": total_stake})
+                transactions_details["transactions"] = []
             transactions_details[blockchain_id]["transactions"].append(transaction.to_dict())
         return list(transactions_details.values())
 
@@ -125,6 +124,7 @@ class StakeService:
     def get_stake_holder_details_for_active_stake_window(address):
         active_stake_details = {}
         active_stake_window = None
+        current_utc_time_in_epoch = time.time()
         last_stake_window = StakeWindowRepository().get_latest_stake_window()
         last_window_id = last_stake_window.blockchain_id
         if StakeService.is_stake_window_active(last_stake_window):
@@ -152,7 +152,10 @@ class StakeService:
             pass
         else:
             return active_stake_details
-        no_of_stakers = StakeHolderDetailsRepository().get_unique_staker(active_window_id)
+        if active_stake_window.submission_end_period < current_utc_time_in_epoch < active_stake_window.request_withdraw_start_period:
+            no_of_stakers = StakeHolderRepository().get_count_of_active_stakers()
+        else:
+            no_of_stakers = StakeHolderDetailsRepository().get_unique_staker(active_window_id)
         active_stake_details = active_stake_window.to_dict()
         active_stake_details.update({"no_of_stakers": no_of_stakers})
         active_stake_details.update(stake_holder.to_dict())
