@@ -73,12 +73,12 @@ class StakeService:
             if blockchain_id not in transactions_details.keys():
                 stake_window = StakeWindowRepository().get_stake_window_for_given_blockchain_id(blockchain_id)
                 no_of_stakers = StakeHolderDetailsRepository().get_unique_staker(blockchain_id)
-                stake_window_dict = stake_window.to_dict()
-                stake_window_dict.update({"no_of_stakers": no_of_stakers})
+                transactions_details = stake_window.to_dict()
+                transactions_details.update({"no_of_stakers": no_of_stakers})
                 if blockchain_id == last_window_id:
                     total_stake = StakeHolderRepository().get_total_amount_staked()
-                    stake_window_dict.update({"total_stake": total_stake})
-                transactions_details[blockchain_id] = stake_window_dict
+                    transactions_details.update({"total_stake": total_stake})
+                transactions_details["transactions"] = []
             transactions_details[blockchain_id]["transactions"].append(transaction.to_dict())
         return list(transactions_details.values())
 
