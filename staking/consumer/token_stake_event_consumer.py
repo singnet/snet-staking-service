@@ -1,13 +1,16 @@
-import time
-from common.logger import get_logger
 import os
+import time
+
 from common.blockchain_util import BlockChainUtil
-from staking.domain.model.stake_window import StakeWindow
+from common.logger import get_logger
+from common.utils import send_slack_notification
+from staking.config import SLACK_HOOK
 from staking.domain.model.stake_holder import StakeHolder
 from staking.domain.model.stake_transaction import StakeTransaction
-from staking.infrastructure.repositories.stake_window_repository import StakeWindowRepository
+from staking.domain.model.stake_window import StakeWindow
 from staking.infrastructure.repositories.stake_holder_repository import StakeHolderRepository
 from staking.infrastructure.repositories.stake_transaction_respository import StakeTransactionRepository
+from staking.infrastructure.repositories.stake_window_repository import StakeWindowRepository
 
 logger = get_logger(__name__)
 stake_window_repo = StakeWindowRepository()
@@ -250,15 +253,22 @@ class AutoRenewStakeEventConsumer(TokenStakeEventConsumer):
             f"new_stake_window_data {new_stake_window_data} from blockchain for blockchain_id {new_blockchain_id}")
         total_stake_for_new_blockchain_id = new_stake_window_data[9]
         block_no_created = event["data"]["block_no"]
-        new_stake_holder = StakeHolder(
-            new_blockchain_id, event_data["staker"], new_stake_holder_data[1],
-            new_stake_holder_data[2], new_stake_holder_data[3], block_no_created, refund_amount
-        )
-        stake_holder_repo.add_or_update_stake_holder(new_stake_holder)
-        self._add_stake_transaction(
-            block_no=block_no_created, blockchain_id=new_blockchain_id,
-            transaction_hash=event["data"]["transactionHash"],
-            event_name=event["data"]["event"], event_data=event["data"], staker=staker)
+        if new_stake_holder_data[0]:
+            new_stake_holder = StakeHolder(
+                new_blockchain_id, event_data["staker"], new_stake_holder_data[1],
+                new_stake_holder_data[2], new_stake_holder_data[3], block_no_created, refund_amount
+            )
+            stake_holder_repo.add_or_update_stake_holder(new_stake_holder)
+            self._add_stake_transaction(
+                block_no=block_no_created, blockchain_id=new_blockchain_id,
+                transaction_hash=event["data"]["transactionHash"],
+                event_name=event["data"]["event"], event_data=event["data"], staker=staker)
+        else:
+            slack_message = f"Need Attention! In case of Auto Renew Stake event, staker {staker} should have data for " \
+                            f"new blockchain id {new_blockchain_id}. new_stake_holder_data as read from blockchain " \
+                            f"{new_stake_holder_data}"
+            send_slack_notification(slack_message=slack_message, slack_url=SLACK_HOOK['url'],
+                                    slack_channel=SLACK_HOOK['channel'])
         stake_window = stake_window_repo.get_stake_window_for_given_blockchain_id(blockchain_id=new_blockchain_id)
         stake_window.total_stake = total_stake_for_new_blockchain_id
         stake_window_repo.update_stake_window(stake_window)

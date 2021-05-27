@@ -50,7 +50,7 @@ class StakeWindowRepository(BaseRepository):
         return stake_window
 
     def get_latest_stake_window(self):
-        stake_windows_raw_data = self.session.query(StakeWindowDBModel).\
+        stake_windows_raw_data = self.session.query(StakeWindowDBModel). \
             order_by(StakeWindowDBModel.blockchain_id.desc()).limit(1)
         if not bool(stake_windows_raw_data):
             self.session.commit()
@@ -110,3 +110,13 @@ class StakeWindowRepository(BaseRepository):
         if total_reward_amount is None:
             return 0
         return int(total_reward_amount)
+
+    def get_total_stake_across_all_stake_window(self):
+        try:
+            query_response = self.session.query(func.sum(StakeWindowDBModel.total_stake).label("total_stake")).one()
+            self.session.commit()
+        except SQLAlchemyError as e:
+            self.session.rollback()
+            raise e
+        total_stake = int(query_response.total_stake)
+        return total_stake

@@ -69,7 +69,7 @@ class TestStakeService(TestCase):
         response_body = json.loads(response["body"])
         assert (response_body["status"] == "success")
         assert (response_body["data"]["total_reward"] == 5000)
-        assert (response_body["data"]["total_stake_deposited"] == 0)
+        assert (response_body["data"]["total_stake_deposited"] == 70000)
         assert (response_body["data"]["no_of_stakers"] == 1)
 
     def test_get_all_stake_windows(self):
