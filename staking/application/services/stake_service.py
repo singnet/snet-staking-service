@@ -18,7 +18,7 @@ class StakeService:
     @staticmethod
     def get_stake_summary():
         total_reward = StakeWindowRepository().get_total_reward_across_all_stake_window()
-        total_stake = StakeHolderRepository().get_total_stake_across_all_stake_window()
+        total_stake = StakeWindowRepository().get_total_stake_across_all_stake_window()
         no_of_unique_stakers = StakeHolderRepository().get_unique_staker_across_all_stake_window()
         return {
             "no_of_stakers": no_of_unique_stakers,
