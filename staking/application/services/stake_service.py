@@ -136,7 +136,7 @@ class StakeService:
             previous_stake_window = StakeWindowRepository().get_stake_window_for_given_blockchain_id(
                 blockchain_id=previous_blockchain_id)
             if StakeService.is_stake_window_active(previous_stake_window):
-                active_stake_window = last_stake_window
+                active_stake_window = previous_stake_window
         if not active_stake_window:
             return active_stake_details
         stake_holder = StakeHolderRepository().get_stake_holder(staker=address)
