@@ -32,14 +32,30 @@ class StakeService:
         }
 
     @staticmethod
-    def get_all_stake_windows():
+    def get_staker_count_for_given_window_id(window_id):
+        last_stake_window = StakeWindowRepository().get_latest_stake_window()
+        last_window_id = last_stake_window.blockchain_id
+        if window_id == last_window_id:
+            no_of_stakers = StakeHolderRepository().get_count_of_active_stakers()
+        else:
+            no_of_stakers = StakeHolderDetailsRepository().get_total_no_of_stakers(window_id)
+        return no_of_stakers
+
+    @staticmethod
+    def get_total_stake_for_given_window_id(window_id):
+        total_stake_deposited = StakeHolderDetailsRepository().get_total_stake_deposited(window_id)
+        if total_stake_deposited == 0:
+            total_stake_deposited = StakeHolderRepository.get_total_amount_staked()
+        return total_stake_deposited
+
+    def get_all_stake_windows(self):
         stake_windows = StakeWindowRepository().get_stake_windows()
         list_of_stake_window = [stake_window.to_dict() for stake_window in stake_windows]
         for stake_window in list_of_stake_window:
+            window_id = stake_window["window_id"]
             stake_window.update({
-                "no_of_stakers": StakeHolderDetailsRepository().get_total_no_of_stakers(stake_window["window_id"]),
-                # fix for last stake window
-                "total_stake_deposited": StakeHolderDetailsRepository().get_total_stake_deposited(stake_window["window_id"])
+                "no_of_stakers": self.get_staker_count_for_given_window_id(window_id),
+                "total_stake_deposited": self.get_total_stake_for_given_window_id(window_id)
             })
         return list_of_stake_window
 
