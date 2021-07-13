@@ -47,13 +47,28 @@ class TokenStakeEventConsumer(object):
     def _get_metadata_hash(metadata_uri):
         return metadata_uri.decode("utf-8")
 
-    def _get_stake_window_by_stake_index(self, stake_index):
+    def get_list_of_stake_holders(self):
+        token_stake_contract = self._get_token_stake_contract()
+        total_stake = self._blockchain_util.call_contract_function(token_stake_contract, "getStakeHolders", [])
+        return total_stake
+
+    def get_stake_window_total_stake(self):
+        token_stake_contract = self._get_token_stake_contract()
+        total_stake = self._blockchain_util.call_contract_function(token_stake_contract, "windowTotalStake", [])
+        return total_stake
+
+    def get_latest_stake_window(self):
+        token_stake_contract = self._get_token_stake_contract()
+        stake_window_id = self._blockchain_util.call_contract_function(token_stake_contract, "currentStakeMapIndex", [])
+        return stake_window_id
+
+    def get_stake_window_by_stake_index(self, stake_index):
         token_stake_contract = self._get_token_stake_contract()
         stake_window_data = self._blockchain_util.call_contract_function(token_stake_contract, "stakeMap",
                                                                          [stake_index])
         return stake_window_data
 
-    def _get_stake_holder_for_given_stake_index_and_address(self, stake_index, staker):
+    def get_stake_holder_for_given_stake_index_and_address(self, stake_index, staker):
         token_stake_contract = self._get_token_stake_contract()
         stake_holder_data = self._blockchain_util.call_contract_function(
             token_stake_contract, "getStakeInfo", [stake_index, staker])
@@ -79,7 +94,7 @@ class OpenForStakeEventConsumer(TokenStakeEventConsumer):
         event_data = self._get_event_data(event)
         logger.info(f"OpenForStake event data : {event_data}")
         blockchain_id = event_data["stakeIndex"]
-        stake_window_data = self._get_stake_window_by_stake_index(blockchain_id)
+        stake_window_data = self.get_stake_window_by_stake_index(blockchain_id)
         logger.info(f"stake_window_data {stake_window_data} from blockchain for blockchain_id {blockchain_id}")
         start_period = stake_window_data[0]
         submission_end_period = stake_window_data[1]
@@ -108,7 +123,7 @@ class SubmitStakeEventConsumer(TokenStakeEventConsumer):
         logger.info(f"SubmitStake event data : {event_data}")
         blockchain_id = event_data["stakeIndex"]
         staker = event_data["staker"]
-        stake_holder_data = self._get_stake_holder_for_given_stake_index_and_address(blockchain_id, staker)
+        stake_holder_data = self.get_stake_holder_for_given_stake_index_and_address(blockchain_id, staker)
         logger.info(
             f"stake_holder_data {stake_holder_data} from blockchain for given blockchain_id {blockchain_id} and staker {staker}")
         if stake_holder_data[0]:
@@ -142,7 +157,7 @@ class RequestForClaimEventConsumer(TokenStakeEventConsumer):
         logger.info(f"RequestForClaim event data : {event_data}")
         blockchain_id = event_data["stakeIndex"]
         staker = event_data["staker"]
-        stake_holder_data = self._get_stake_holder_for_given_stake_index_and_address(blockchain_id, staker)
+        stake_holder_data = self.get_stake_holder_for_given_stake_index_and_address(blockchain_id, staker)
         logger.info(
             f"stake_holder_data {stake_holder_data} from blockchain for given blockchain_id {blockchain_id} and "
             f"staker {staker}")
@@ -179,7 +194,7 @@ class ClaimStakeEventConsumer(TokenStakeEventConsumer):
         logger.info(f"ClaimStake event data : {event_data}")
         blockchain_id = event_data["stakeIndex"]
         staker = event_data["staker"]
-        stake_holder_data = self._get_stake_holder_for_given_stake_index_and_address(blockchain_id, staker)
+        stake_holder_data = self.get_stake_holder_for_given_stake_index_and_address(blockchain_id, staker)
         logger.info(
             f"stake_holder_data {stake_holder_data} from blockchain for given blockchain_id {blockchain_id} and "
             f"staker {staker}")
@@ -214,7 +229,7 @@ class RejectStakeEventConsumer(TokenStakeEventConsumer):
         logger.info(f"RejectStake event data : {event_data}")
         blockchain_id = event_data["stakeIndex"]
         staker = event_data["staker"]
-        stake_holder_data = self._get_stake_holder_for_given_stake_index_and_address(blockchain_id, staker)
+        stake_holder_data = self.get_stake_holder_for_given_stake_index_and_address(blockchain_id, staker)
         logger.info(
             f"stake_holder_data {stake_holder_data} from blockchain for given blockchain_id {blockchain_id} and "
             f"staker {staker}")
@@ -248,7 +263,7 @@ class AddRewardEventConsumer(TokenStakeEventConsumer):
         logger.info(f"AddReward event data : {event_data}")
         blockchain_id = event_data["stakeIndex"]
         staker = event_data["staker"]
-        stake_holder_data = self._get_stake_holder_for_given_stake_index_and_address(blockchain_id, staker)
+        stake_holder_data = self.get_stake_holder_for_given_stake_index_and_address(blockchain_id, staker)
         logger.info(
             f"stake_holder_data {stake_holder_data} from blockchain for given blockchain_id {blockchain_id} and "
             f"staker {staker}")
@@ -294,7 +309,7 @@ class WithdrawStakeEventConsumer(TokenStakeEventConsumer):
         logger.info(f"WithdrawStake event data : {event_data}")
         blockchain_id = event_data["stakeIndex"]
         staker = event_data["staker"]
-        stake_holder_data = self._get_stake_holder_for_given_stake_index_and_address(blockchain_id, staker)
+        stake_holder_data = self.get_stake_holder_for_given_stake_index_and_address(blockchain_id, staker)
         logger.info(
             f"stake_holder_data {stake_holder_data} from blockchain for given blockchain_id {blockchain_id} and "
             f"staker {staker}")

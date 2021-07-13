@@ -12,6 +12,19 @@ logger = get_logger(__name__)
 
 
 class StakeHolderRepository(BaseRepository):
+    def get_stake_holders(self):
+        try:
+            staker_holders_db = self.session.query(StakeHolderDBModel).all()
+            self.session.commit()
+        except SQLAlchemyError as e:
+            self.session.rollback()
+            raise e
+        staker_holders = []
+        for staker_holder_db in staker_holders_db:
+            staker_holder = StakeFactory.convert_stake_holder_db_model_to_entity_model(staker_holder_db)
+            staker_holders.append(staker_holder)
+        return staker_holders
+
     def get_stake_holder(self, staker):
         try:
             staker_holder_db = self.session.query(StakeHolderDBModel).filter(
