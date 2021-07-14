@@ -46,7 +46,7 @@ jobs:
           name: Install required packages.
           command: |
             sudo apt-get update
-            sudo apt-get install mysql-client -y
+            sudo apt-get install default-mysql-client -y
             sudo pip install coverage coveralls pytest boto3 alembic
             mysql -h 127.0.0.1 -u root -punittest_pwd -e "create database staking_unittest_db"
             mysql -h 127.0.0.1 -u root -punittest_pwd -e "GRANT ALL PRIVILEGES ON *.* TO 'unittest_root'@'%';"
