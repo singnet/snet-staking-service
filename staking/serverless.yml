@@ -139,11 +139,6 @@ functions:
       - http:
           method: GET
           path: /stake-windows
-          authorizer:
-            name: user-authorizer
-            type: COGNITO_USER_POOLS
-            arn: ${file(./config.${self:provider.stage}.json):AUTHORIZER}
-            identitySource: method.request.header.Authorization
           cors:
             origin: ${file(./config.${self:provider.stage}.json):ORIGIN}
             headers:
@@ -581,4 +576,4 @@ functions:
         - ${file(./config.${self:provider.stage}.json):SG2}
       subnetIds:
         - ${file(./config.${self:provider.stage}.json):VPC1}
-        - ${file(./config.${self:provider.qstage}.json):VPC2}
+        - ${file(./config.${self:provider.stage}.json):VPC2}
