@@ -2,6 +2,7 @@ import time
 import math
 from typing import Dict, Any, Union
 
+from staking.config import TIME_INTERVAL_BETWEEN_CONSECUTIVE_STAKE_WINDOW, UPCOMING_STAKE_WINDOW_LIMIT
 from staking.infrastructure.repositories.stake_window_repository import StakeWindowRepository
 from staking.infrastructure.repositories.stake_holder_repository import StakeHolderRepository
 from staking.infrastructure.repositories.stake_holder_details_repository import StakeHolderDetailsRepository
@@ -114,7 +115,8 @@ class StakeService:
             if stake_holder_detail:
                 claims_detail.update(stake_holder_detail.to_dict())
             claims_details.append(claims_detail)
-        stake_holder_details = StakeHolderDetailsRepository().get_stake_holders_details_having_claimable_amount(staker=address)
+        stake_holder_details = StakeHolderDetailsRepository().get_stake_holders_details_having_claimable_amount(
+            staker=address)
         for stake_holder_detail in stake_holder_details:
             window_id = stake_holder_detail.blockchain_id
             stake_window = StakeWindowRepository().get_stake_window_for_given_blockchain_id(window_id)
@@ -193,3 +195,23 @@ class StakeService:
             "total_amount_staked": total_amount_staked
         })
         return stake_calculator_details
+
+    @staticmethod
+    def get_upcoming_stake_windows_schedule():
+        last_stake_window = StakeWindowRepository().get_latest_stake_window()
+        if not last_stake_window:
+            raise Exception("Unexpected behaviour.")
+        next_window_id, next_start_period = StakeService.get_upcoming_stake_window_schedule(
+            last_stake_window.blockchain_id, last_stake_window.start_period)
+        upcoming_schedule = []
+        for i in range(0, UPCOMING_STAKE_WINDOW_LIMIT):
+            upcoming_schedule.append({"window_id": next_window_id, "start_period": next_start_period})
+            next_window_id, next_start_period = StakeService. \
+                get_upcoming_stake_window_schedule(next_window_id, next_start_period)
+        return upcoming_schedule
+
+    @staticmethod
+    def get_upcoming_stake_window_schedule(current_window_id, current_start_period):
+        next_window_id = current_window_id + 1
+        next_start_period = current_start_period + TIME_INTERVAL_BETWEEN_CONSECUTIVE_STAKE_WINDOW
+        return next_window_id, next_start_period

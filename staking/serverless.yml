@@ -139,11 +139,6 @@ functions:
       - http:
           method: GET
           path: /stake-windows
-          authorizer:
-            name: user-authorizer
-            type: COGNITO_USER_POOLS
-            arn: ${file(./config.${self:provider.stage}.json):AUTHORIZER}
-            identitySource: method.request.header.Authorization
           cors:
             origin: ${file(./config.${self:provider.stage}.json):ORIGIN}
             headers:
@@ -419,6 +414,31 @@ functions:
                   "application/json": "ErrorMessage"
 
 
+  upcoming-stake-windows-schedule:
+    handler: staking.application.handlers.stake_handler.get_upcoming_stake_windows_schedule
+    role: ${file(./config.${self:provider.stage}.json):ROLE}
+    vpc:
+      securityGroupIds:
+        - ${file(./config.${self:provider.stage}.json):SG1}
+        - ${file(./config.${self:provider.stage}.json):SG2}
+      subnetIds:
+        - ${file(./config.${self:provider.stage}.json):VPC1}
+        - ${file(./config.${self:provider.stage}.json):VPC2}
+    events:
+      - http:
+          method: GET
+          path: /stake-window/schedule/upcoming
+          cors:
+            origin: ${file(./config.${self:provider.stage}.json):ORIGIN}
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - x-requested-with
+
   open-for-stake-consumer:
     warmup: true
     handler: staking.application.handlers.consumer_handlers.open_for_stake_consumer_handler
@@ -434,7 +454,6 @@ functions:
       subnetIds:
         - ${file(./config.${self:provider.stage}.json):VPC1}
         - ${file(./config.${self:provider.stage}.json):VPC2}
-
 
   submit-stake-consumer:
     warmup: true
@@ -452,7 +471,6 @@ functions:
         - ${file(./config.${self:provider.stage}.json):VPC1}
         - ${file(./config.${self:provider.stage}.json):VPC2}
 
-
   request-for-claim-consumer:
     warmup: true
     handler: staking.application.handlers.consumer_handlers.request_for_claim_handler
@@ -469,7 +487,6 @@ functions:
         - ${file(./config.${self:provider.stage}.json):VPC1}
         - ${file(./config.${self:provider.stage}.json):VPC2}
 
-
   claim-stake-consumer:
     warmup: true
     handler: staking.application.handlers.consumer_handlers.claim_stake_consumer_handler
@@ -485,7 +502,6 @@ functions:
       subnetIds:
         - ${file(./config.${self:provider.stage}.json):VPC1}
         - ${file(./config.${self:provider.stage}.json):VPC2}
-
 
   reject-stake-consumer:
     warmup: true
@@ -581,4 +597,4 @@ functions:
         - ${file(./config.${self:provider.stage}.json):SG2}
       subnetIds:
         - ${file(./config.${self:provider.stage}.json):VPC1}
-        - ${file(./config.${self:provider.qstage}.json):VPC2}
+        - ${file(./config.${self:provider.stage}.json):VPC2}
