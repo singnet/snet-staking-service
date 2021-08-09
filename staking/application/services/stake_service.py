@@ -201,9 +201,12 @@ class StakeService:
         last_stake_window = StakeWindowRepository().get_latest_stake_window()
         if not last_stake_window:
             raise Exception("Unexpected behaviour.")
+        current_window_id = last_stake_window.blockchain_id
+        current_start_period = last_stake_window.start_period
         next_window_id, next_start_period = StakeService.get_upcoming_stake_window_schedule(
-            last_stake_window.blockchain_id, last_stake_window.start_period)
-        upcoming_schedule = []
+            current_window_id, current_start_period)
+        upcoming_schedule = [{"window_id": current_window_id, "start_period": current_start_period,
+                              "end_period": last_stake_window.end_period}]
         for i in range(0, UPCOMING_STAKE_WINDOW_LIMIT):
             upcoming_schedule.append({"window_id": next_window_id, "start_period": next_start_period})
             next_window_id, next_start_period = StakeService. \
@@ -215,3 +218,31 @@ class StakeService:
         next_window_id = current_window_id + 1
         next_start_period = current_start_period + TIME_INTERVAL_BETWEEN_CONSECUTIVE_STAKE_WINDOW
         return next_window_id, next_start_period
+
+    def get_stake_windows_schedule(self):
+        current_stake_window = StakeWindowRepository().get_latest_stake_window()
+        if not current_stake_window:
+            raise Exception("Unexpected behaviour.")
+        current_window_id = current_stake_window.blockchain_id
+        current_start_period = current_stake_window.start_period
+
+        # Past stake window details in descending order
+        past_schedule = self.get_all_stake_windows()
+        if past_schedule and past_schedule[0]["window_id"] == current_window_id:
+            past_schedule.pop(0)
+        # Current_stake_window
+        current_schedule = current_stake_window.to_dict()
+
+        # upcoming stake window_schedule in ascending order
+        upcoming_schedule = []
+        next_window_id, next_start_period = StakeService.get_upcoming_stake_window_schedule(
+            current_window_id, current_start_period)
+        for i in range(0, UPCOMING_STAKE_WINDOW_LIMIT):
+            upcoming_schedule.append({"window_id": next_window_id, "start_period": next_start_period})
+            next_window_id, next_start_period = StakeService. \
+                get_upcoming_stake_window_schedule(next_window_id, next_start_period)
+        return {
+            "past": past_schedule,
+            "upcoming": upcoming_schedule,
+            "current": current_schedule
+        }
