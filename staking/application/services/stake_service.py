@@ -205,14 +205,13 @@ class StakeService:
     def get_stake_windows_schedule(self):
         open_stake_window = StakeWindowRepository().get_stake_window_open_for_submission()
         active_stake_window = StakeWindowRepository().get_active_stake_window()
-        if not active_stake_window:
-            raise Exception("Unexpected behaviour.")
-        active_window_id = active_stake_window.blockchain_id
 
         # Past stake window details in descending order
         past_schedule = self.get_all_stake_windows()
-        if past_schedule and past_schedule[0]["window_id"] == active_window_id:
-            past_schedule.pop(0)
+        if active_stake_window:
+            active_window_id = active_stake_window.blockchain_id
+            if past_schedule and past_schedule[0]["window_id"] == active_window_id:
+                past_schedule.pop(0)
 
         # Current_stake_window
         current_schedule = {
@@ -222,16 +221,20 @@ class StakeService:
 
         # upcoming stake window_schedule in ascending order
         upcoming_schedule = []
+        is_upcoming_schedule_computable = True
         if open_stake_window:
             current_window_id, current_start_period = open_stake_window.blockchain_id, open_stake_window.start_period
-        else:
+        elif active_stake_window:
             current_window_id, current_start_period = active_stake_window.blockchain_id, active_stake_window.start_period
-        next_window_id, next_start_period = StakeService.get_upcoming_stake_window_schedule(
-            current_window_id, current_start_period)
-        for i in range(0, UPCOMING_STAKE_WINDOW_LIMIT):
-            upcoming_schedule.append({"window_id": next_window_id, "start_period": next_start_period})
-            next_window_id, next_start_period = StakeService. \
-                get_upcoming_stake_window_schedule(next_window_id, next_start_period)
+        else:
+            is_upcoming_schedule_computable = False
+        if is_upcoming_schedule_computable:
+            next_window_id, next_start_period = StakeService.get_upcoming_stake_window_schedule(
+                current_window_id, current_start_period)
+            for i in range(0, UPCOMING_STAKE_WINDOW_LIMIT):
+                upcoming_schedule.append({"window_id": next_window_id, "start_period": next_start_period})
+                next_window_id, next_start_period = StakeService. \
+                    get_upcoming_stake_window_schedule(next_window_id, next_start_period)
         return {
             "past": past_schedule,
             "upcoming": upcoming_schedule,
