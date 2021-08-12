@@ -23,8 +23,8 @@ stake_transaction_repo = StakeTransactionRepository()
 
 class TokenStakeEventConsumer(object):
 
-    def __init__(self, ws_provider, net_id):
-        self._blockchain_util = BlockChainUtil("WS_PROVIDER", ws_provider)
+    def __init__(self, http_provider, net_id):
+        self._blockchain_util = BlockChainUtil("HTTP_PROVIDER", http_provider)
         self._net_id = net_id
 
     def on_event(self, event):
@@ -33,7 +33,7 @@ class TokenStakeEventConsumer(object):
     def _get_token_stake_contract(self):
         base_contract_path = os.path.abspath(
             os.path.join(os.path.dirname(__file__), '..', '..', 'node_modules', 'singularitynet-stake-contracts'))
-        logger.info(f"base_contract_path: {base_contract_path}")
+        # logger.info(f"base_contract_path: {base_contract_path}")
         token_stake_contract = self._blockchain_util.get_contract_instance(base_contract_path, "TokenStake",
                                                                            self._net_id)
 
@@ -87,8 +87,8 @@ class TokenStakeEventConsumer(object):
 
 class OpenForStakeEventConsumer(TokenStakeEventConsumer):
 
-    def __init__(self, net_id, ws_provider):
-        super().__init__(net_id=net_id, ws_provider=ws_provider)
+    def __init__(self, net_id, http_provider):
+        super().__init__(net_id=net_id, http_provider=http_provider)
 
     def on_event(self, event):
         event_data = self._get_event_data(event)
@@ -115,8 +115,8 @@ class OpenForStakeEventConsumer(TokenStakeEventConsumer):
 
 class SubmitStakeEventConsumer(TokenStakeEventConsumer):
 
-    def __init__(self, net_id, ws_provider):
-        super().__init__(net_id=net_id, ws_provider=ws_provider)
+    def __init__(self, net_id, http_provider):
+        super().__init__(net_id=net_id, http_provider=http_provider)
 
     def on_event(self, event):
         event_data = self._get_event_data(event)
@@ -149,8 +149,8 @@ class SubmitStakeEventConsumer(TokenStakeEventConsumer):
 
 class RequestForClaimEventConsumer(TokenStakeEventConsumer):
 
-    def __init__(self, net_id, ws_provider):
-        super().__init__(net_id=net_id, ws_provider=ws_provider)
+    def __init__(self, net_id, http_provider):
+        super().__init__(net_id=net_id, http_provider=http_provider)
 
     def on_event(self, event):
         event_data = self._get_event_data(event)
@@ -186,8 +186,8 @@ class RequestForClaimEventConsumer(TokenStakeEventConsumer):
 
 class ClaimStakeEventConsumer(TokenStakeEventConsumer):
 
-    def __init__(self, net_id, ws_provider):
-        super().__init__(net_id=net_id, ws_provider=ws_provider)
+    def __init__(self, net_id, http_provider):
+        super().__init__(net_id=net_id, http_provider=http_provider)
 
     def on_event(self, event):
         event_data = self._get_event_data(event)
@@ -221,8 +221,8 @@ class ClaimStakeEventConsumer(TokenStakeEventConsumer):
 
 class RejectStakeEventConsumer(TokenStakeEventConsumer):
 
-    def __init__(self, net_id, ws_provider):
-        super().__init__(net_id=net_id, ws_provider=ws_provider)
+    def __init__(self, net_id, http_provider):
+        super().__init__(net_id=net_id, http_provider=http_provider)
 
     def on_event(self, event):
         event_data = self._get_event_data(event)
@@ -255,8 +255,8 @@ class RejectStakeEventConsumer(TokenStakeEventConsumer):
 
 class AddRewardEventConsumer(TokenStakeEventConsumer):
 
-    def __init__(self, net_id, ws_provider):
-        super().__init__(net_id=net_id, ws_provider=ws_provider)
+    def __init__(self, net_id, http_provider):
+        super().__init__(net_id=net_id, http_provider=http_provider)
 
     def on_event(self, event):
         event_data = self._get_event_data(event)
@@ -280,10 +280,11 @@ class AddRewardEventConsumer(TokenStakeEventConsumer):
             # update auto renewal
             stake_holder_details = stake_holder_details_repo.get_stake_holder_details(blockchain_id, staker)
             reward_amount = event_data["rewardAmount"]
+            amount_staked = event_data["totalStakeAmount"] - event_data["rewardAmount"]
             if stake_holder_details:
                 stake_holder_details.reward_amount = reward_amount
+                stake_holder_details.amount_staked = amount_staked
             else:
-                amount_staked = event_data["totalStakeAmount"] - event_data["rewardAmount"]
                 auto_renewal = 0 if claimable_amount > 0 else 1
                 stake_holder_details = StakeHolderDetails(blockchain_id, staker, amount_staked, reward_amount, claimable_amount, 0, auto_renewal, block_no_created)
             stake_holder_details = stake_holder_details_repo.add_or_update_stake_holder_details(stake_holder_details)
@@ -301,8 +302,8 @@ class AddRewardEventConsumer(TokenStakeEventConsumer):
 
 class WithdrawStakeEventConsumer(TokenStakeEventConsumer):
 
-    def __init__(self, net_id, ws_provider):
-        super().__init__(net_id=net_id, ws_provider=ws_provider)
+    def __init__(self, net_id, http_provider):
+        super().__init__(net_id=net_id, http_provider=http_provider)
 
     def on_event(self, event):
         event_data = self._get_event_data(event)

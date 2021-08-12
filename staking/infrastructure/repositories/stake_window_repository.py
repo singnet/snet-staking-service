@@ -106,6 +106,21 @@ class StakeWindowRepository(BaseRepository):
             stake_window = StakeFactory.convert_stake_window_db_model_to_entity_model(stake_window_db)
         return stake_window
 
+    def get_active_stake_window(self):
+        current_time = dt.utcnow().timestamp()  # GMT Epoch
+        try:
+            stake_window_db = self.session.query(StakeWindowDBModel).\
+                filter(StakeWindowDBModel.submission_end_period <= current_time).\
+                filter(StakeWindowDBModel.end_period >= current_time).first()
+            self.session.commit()
+        except SQLAlchemyError as e:
+            self.session.rollback()
+            raise e
+        stake_window = None
+        if stake_window_db:
+            stake_window = StakeFactory.convert_stake_window_db_model_to_entity_model(stake_window_db)
+        return stake_window
+
     def get_upcoming_stake_window(self):
         current_time = dt.utcnow().timestamp()  # GMT Epoch
         try:

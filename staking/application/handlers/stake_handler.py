@@ -90,8 +90,8 @@ def get_stake_calculator_details(event, context):
 
 
 @exception_handler(SLACK_HOOK=SLACK_HOOK, NETWORK_ID=NETWORK_ID, logger=logger)
-def get_upcoming_stake_windows_schedule(event, context):
-    response = StakeService.get_upcoming_stake_windows_schedule()
+def get_stake_windows_schedule(event, context):
+    response = StakeService().get_stake_windows_schedule()
     return generate_lambda_response(
         StatusCode.OK,
         {"status": "success", "data": response, "error": {}}, cors_enabled=True

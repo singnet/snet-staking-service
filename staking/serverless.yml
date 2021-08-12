@@ -413,9 +413,8 @@ functions:
                 responseModels:
                   "application/json": "ErrorMessage"
 
-
-  upcoming-stake-windows-schedule:
-    handler: staking.application.handlers.stake_handler.get_upcoming_stake_windows_schedule
+  stake-windows-schedule:
+    handler: staking.application.handlers.stake_handler.get_stake_windows_schedule
     role: ${file(./config.${self:provider.stage}.json):ROLE}
     vpc:
       securityGroupIds:
@@ -427,7 +426,7 @@ functions:
     events:
       - http:
           method: GET
-          path: /stake-window/schedule/upcoming
+          path: /stake-window/schedule
           cors:
             origin: ${file(./config.${self:provider.stage}.json):ORIGIN}
             headers:

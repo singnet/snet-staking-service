@@ -197,21 +197,46 @@ class StakeService:
         return stake_calculator_details
 
     @staticmethod
-    def get_upcoming_stake_windows_schedule():
-        last_stake_window = StakeWindowRepository().get_latest_stake_window()
-        if not last_stake_window:
-            raise Exception("Unexpected behaviour.")
-        next_window_id, next_start_period = StakeService.get_upcoming_stake_window_schedule(
-            last_stake_window.blockchain_id, last_stake_window.start_period)
-        upcoming_schedule = []
-        for i in range(0, UPCOMING_STAKE_WINDOW_LIMIT):
-            upcoming_schedule.append({"window_id": next_window_id, "start_period": next_start_period})
-            next_window_id, next_start_period = StakeService. \
-                get_upcoming_stake_window_schedule(next_window_id, next_start_period)
-        return upcoming_schedule
-
-    @staticmethod
     def get_upcoming_stake_window_schedule(current_window_id, current_start_period):
         next_window_id = current_window_id + 1
         next_start_period = current_start_period + TIME_INTERVAL_BETWEEN_CONSECUTIVE_STAKE_WINDOW
         return next_window_id, next_start_period
+
+    def get_stake_windows_schedule(self):
+        open_stake_window = StakeWindowRepository().get_stake_window_open_for_submission()
+        active_stake_window = StakeWindowRepository().get_active_stake_window()
+
+        # Past stake window details in descending order
+        past_schedule = self.get_all_stake_windows()
+        if active_stake_window:
+            active_window_id = active_stake_window.blockchain_id
+            if past_schedule and past_schedule[0]["window_id"] == active_window_id:
+                past_schedule.pop(0)
+
+        # Current_stake_window
+        current_schedule = {
+            "open": open_stake_window.to_dict() if open_stake_window else {},
+            "active": active_stake_window.to_dict() if active_stake_window else {},
+        }
+
+        # upcoming stake window_schedule in ascending order
+        upcoming_schedule = []
+        is_upcoming_schedule_computable = True
+        if open_stake_window:
+            current_window_id, current_start_period = open_stake_window.blockchain_id, open_stake_window.start_period
+        elif active_stake_window:
+            current_window_id, current_start_period = active_stake_window.blockchain_id, active_stake_window.start_period
+        else:
+            is_upcoming_schedule_computable = False
+        if is_upcoming_schedule_computable:
+            next_window_id, next_start_period = StakeService.get_upcoming_stake_window_schedule(
+                current_window_id, current_start_period)
+            for i in range(0, UPCOMING_STAKE_WINDOW_LIMIT):
+                upcoming_schedule.append({"window_id": next_window_id, "start_period": next_start_period})
+                next_window_id, next_start_period = StakeService. \
+                    get_upcoming_stake_window_schedule(next_window_id, next_start_period)
+        return {
+            "past": past_schedule,
+            "upcoming": upcoming_schedule,
+            "current": current_schedule
+        }
