@@ -162,7 +162,7 @@ class StakeService:
         stake_holder_detail = StakeHolderDetailsRepository().get_stake_holder_details(blockchain_id=active_window_id,
                                                                                       staker=address)
         total_amount_staked = StakeHolderRepository().get_total_amount_staked()
-        if stake_holder.amount_approved > 0 or stake_holder.amount_pending_for_approval > 0:
+        if stake_holder.amount_approved > 0 or stake_holder.amount_pending_for_approval > 0 or stake_holder_detail.claimable_amount > 0:
             pass
         else:
             return active_stake_details
