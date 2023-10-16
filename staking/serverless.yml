@@ -1,14 +1,12 @@
 plugins:
   - serverless-offline
   - serverless-python-requirements
-  - serverless-plugin-tracing
   - serverless-prune-plugin
-  - serverless-aws-documentation
 
 service: staking
 provider:
   name: aws
-  runtime: python3.11
+  runtime: python3.8
   description: staking service.
   memorySize: 512
   timeout: 30
